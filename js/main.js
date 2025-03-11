@@ -301,10 +301,9 @@ form?.addEventListener('submit', async (e) => {
         submitBtn.disabled = false;
     }
 });
-
 // Load Groups
 let lastDoc = null;
-const POSTS_PER_PAGE = 15;
+const POSTS_PER_PAGE = 20;
 
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
@@ -370,31 +369,36 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 groupContainer.innerHTML = groupsHTML;
             }
 
-            //----------------------------NEW CODE: FIX LOAD MORE BUTTON ISSUE
+            //----------------------------NEW CODE: PLACE "LOAD MORE" BUTTON SEPARATELY
             // Remove existing Load More button if it exists
-            const existingLoadMoreBtn = document.querySelector('.load-more-btn');
-            if (existingLoadMoreBtn) existingLoadMoreBtn.remove();
+            let loadMoreWrapper = document.querySelector('.load-more-wrapper');
+            if (loadMoreWrapper) loadMoreWrapper.remove();
 
             // Add Load More button only if we got a full page
             if (groups.length === POSTS_PER_PAGE) {
-                const loadMoreBtn = document.createElement('button');
-                loadMoreBtn.className = 'load-more-btn';
-                loadMoreBtn.innerHTML = `
-                    Load More
-                    <i class="fas fa-chevron-down"></i>
+                loadMoreWrapper = document.createElement('div');
+                loadMoreWrapper.className = 'load-more-wrapper';
+                loadMoreWrapper.innerHTML = `
+                    <button class="load-more-btn">
+                        Load More
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
                 `;
 
+                const loadMoreBtn = loadMoreWrapper.querySelector('.load-more-btn');
+
                 loadMoreBtn.onclick = async () => {
-                    loadMoreBtn.style.display = 'none'; // Hide the button on click
+                    loadMoreBtn.style.display = 'none'; // Hide button on click
                     await loadGroups(filterTopic, filterCountry, true);
                     
-                    // Re-show button only if there are still more posts to load
+                    // Show button again only if more posts exist
                     if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
                         loadMoreBtn.style.display = 'block';
                     }
                 };
 
-                groupContainer.appendChild(loadMoreBtn);
+                // Append button wrapper AFTER the group container
+                groupContainer.parentNode.appendChild(loadMoreWrapper);
             }
         } else {
             if (!loadMore) {
@@ -416,8 +420,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         `;
     }
 }
-
-
 /*
 //----------------------------OLD CODE
             // Add Load More button if we got a full page
