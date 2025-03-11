@@ -389,6 +389,26 @@ if (groups.length === POSTS_PER_PAGE) {
     };
 
     groupContainer.appendChild(loadMoreBtn);
+} else {
+            if (!loadMore) {
+                groupContainer.innerHTML = 
+                    <div class="no-groups">
+                        <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
+                        <p>No groups found matching your criteria</p>
+                    </div>
+                ;
+            }
+        }
+
+    } catch (error) {
+        console.error('Error loading groups:', error);
+        groupContainer.innerHTML = 
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Error loading groups. Please try again later.</p>
+            </div>
+        ;
+    }
 }
 //----------------------------END
 
@@ -408,7 +428,7 @@ if (groups.length === POSTS_PER_PAGE) {
 
         } 
 ----------------------------------END*/
-else {
+/*else {
             if (!loadMore) {
                 groupContainer.innerHTML = `
                     <div class="no-groups">
@@ -430,7 +450,7 @@ else {
     }
 }
 
-
+*/
 
 // Utility Functions
 function isValidWhatsAppLink(link) {
