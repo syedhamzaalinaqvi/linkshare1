@@ -1325,6 +1325,9 @@ font-weight: 500;
 .link-preview-content p {
     font-size: 12px;
 }
+.filter-section {
+    padding: 5px;
+}
 .filter-btn{
 font-size: 12px;
 padding: 1px 3px;
