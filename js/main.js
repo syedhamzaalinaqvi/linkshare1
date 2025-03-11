@@ -388,14 +388,21 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 const loadMoreBtn = loadMoreWrapper.querySelector('.load-more-btn');
 
                 loadMoreBtn.onclick = async () => {
-                    loadMoreBtn.style.display = 'none'; // Hide button on click
-                    await loadGroups(filterTopic, filterCountry, true);
-                    
-                    // Show button again only if more posts exist
-                    if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
-                        loadMoreBtn.style.display = 'block';
-                    }
-                };
+                  
+    loadMoreBtn.classList.add('loading'); // Start spinning animation
+
+    await loadGroups(currentTopic, currentCountry, true); // Load more posts
+
+    loadMoreBtn.classList.remove('loading'); // Stop spinning animation
+
+    // Append button wrapper AFTER the group container
+    groupContainer.parentNode.appendChild(loadMoreWrapper);
+
+    // Add fade-in animation to newly loaded posts
+    document.querySelectorAll('.group-item').forEach(item => {
+        item.classList.add('new-post');
+    });
+
 
                 // Append button wrapper AFTER the group container
                 groupContainer.parentNode.appendChild(loadMoreWrapper);

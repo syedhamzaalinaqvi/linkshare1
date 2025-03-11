@@ -459,8 +459,6 @@ input:focus, textarea:focus, select:focus {
     align-items: center;
     gap: 0.8rem;
     transition: all 0.3s ease;
-    
-    /* Smooth bounce when appearing */
     animation: fadeInUp 0.6s ease-out;
 }
 
@@ -476,8 +474,14 @@ input:focus, textarea:focus, select:focus {
     transition: transform 0.3s ease;
 }
 
-.load-more-btn:hover i {
-    transform: translateY(3px);
+/* When clicked, spin the button */
+.load-more-btn.loading {
+    animation: spin 0.6s ease-in-out;
+}
+
+/* Also spin the arrow */
+.load-more-btn.loading i {
+    animation: spin 0.6s ease-in-out;
 }
 
 /* Button fade-in & bounce effect */
@@ -485,6 +489,34 @@ input:focus, textarea:focus, select:focus {
     0% {
         opacity: 0;
         transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Spinning effect */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Fade-in effect for loaded posts */
+.new-post {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
     }
     100% {
         opacity: 1;
