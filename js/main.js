@@ -266,7 +266,7 @@ form?.addEventListener('submit', async (e) => {
 
     try {
         btnText.style.display = 'none';
-        spinner.style.display = 'block';
+        spinner.style.display = 'none';
         submitBtn.disabled = true;
 
         const link = form.groupLink.value.trim();
