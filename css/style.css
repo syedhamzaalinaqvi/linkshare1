@@ -1332,4 +1332,8 @@ font-weight: 500;
 font-size: 12px;
 padding: 1px 3px;
 }
+
+.group-card{
+overflow-x: hidden;
+}
 }
