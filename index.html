@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LinkShare - Share and discover WhatsApp group links. Join communities based on your interests, connect with like-minded people, and explore trending groups worldwide.">
+    <meta name="keywords" content="LinkShare, WhatsApp groups, WhatsApp community, group links, join WhatsApp groups, share WhatsApp groups">
+    <meta name="author" content="LinkShare">
+    <meta property="og:title" content="LinkShare - WhatsApp Group Directory">
+    <meta property="og:description" content="Discover and share WhatsApp groups. Join communities based on your interests and connect with people worldwide.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="LinkShare - WhatsApp Group Directory">
+    <meta name="twitter:description" content="Discover and share WhatsApp groups. Join communities based on your interests and connect with people worldwide.">
+    <title>LinkShare - WhatsApp Group Directory</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-whatsapp"></i>
+            <span>LinkShare</span>
+        </div>
+        <button class="nav-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="pages/about.html">About</a></li>
+            <li><a href="pages/contact.html">Contact</a></li>
+            <li><a href="pages/privacy.html">Privacy</a></li>
+            <li><a href="pages/terms.html">Terms</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <h1>LinkShare</h1>
+        <p>Discover and share amazing WhatsApp groups!</p>
+    </header>
+
+    <section class="premium-groups">
+        <div class="container">
+            <h2 class="section-title">⭐ Premium Groups</h2>
+            <div class="premium-groups-grid">
+                <!-- Premium group cards will be added manually -->
+                <div class="premium-card placeholder">
+                    <div class="premium-badge">Premium</div>
+                    <h3>Premium Spot Available</h3>
+                    <p>Contact us to feature your group here</p>
+                </div>
+                <div class="premium-card placeholder">
+                    <div class="premium-badge">Premium</div>
+                    <h3>Premium Spot Available</h3>
+                    <p>Contact us to feature your group here</p>
+                </div>
+                <div class="premium-card placeholder">
+                    <div class="premium-badge">Premium</div>
+                    <h3>Premium Spot Available</h3>
+                    <p>Contact us to feature your group here</p>
+                </div>
+                <div class="premium-card placeholder">
+                    <div class="premium-badge">Premium</div>
+                    <h3>Premium Spot Available</h3>
+                    <p>Contact us to feature your group here</p>
+                </div>
+            </div>
+            <button class="load-more-btn premium">
+                View All Premium Groups
+                <i class="fas fa-star"></i>
+            </button>
+        </div>
+    </section>
+
+    <main class="container">
+        <section class="submit-section">
+            <h2>Submit Your WhatsApp Group</h2>
+            <form id="groupForm" class="group-form">
+                <div class="form-group">
+                    <input type="text" id="groupTitle" placeholder="Group Title" required>
+                    <span class="validation-feedback"></span>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" id="groupLink" placeholder="Paste group link here" required>
+                    <div id="preview" class="link-preview"></div>
+                    <span class="validation-feedback"></span>
+                </div>
+
+                <div class="form-group">
+                    <select id="groupCategory" required>
+                        <option value="">Select Topic Category</option>
+                        <!-- Entertainment -->
+                        <option value="Movies">Movies & TV Shows</option>
+                        <option value="Dramas">Dramas & Series</option>
+                        <option value="Music">Music & Audio</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Sports">Sports</option>
+
+                        <!-- Education & Professional -->
+                        <option value="Education">Education</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Science">Science</option>
+                        <option value="Business">Business</option>
+                        <option value="Jobs">Jobs & Career</option>
+
+                        <!-- News & Current Affairs -->
+                        <option value="News">News & Media</option>
+                        <option value="Politics">Politics</option>
+                        <option value="Lifestyle">Lifestyle</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <select id="groupCountry" required>
+                        <option value="">Select Country</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Bangladesh">Bangladesh</option>
+                        <option value="Canada">Canada</option>
+                        <option value="India">India</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="UAE">UAE</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="USA">United States</option>
+                        <option value="Other">Other Countries</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <textarea id="groupDescription" placeholder="Enter a short description" required></textarea>
+                    <span class="validation-feedback"></span>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Submit Group</span>
+                    <span class="loading-spinner"></span>
+                </button>
+            </form>
+        </section>
+
+        <section class="groups-section">
+            <div class="groups-header">
+                <h2>📱 Browse Groups</h2>
+            </div>
+
+            <div class="filter-section">
+                <div class="search-bar">
+                    <input type="text" id="searchGroups" placeholder="Search groups...">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <h3>Topics</h3>
+                        <div class="filter-options" id="topicFilters">
+                            <button class="filter-btn active" data-category="all">All Topics</button>
+                            <button class="filter-btn" data-category="Movies">Movies</button>
+                            <button class="filter-btn" data-category="Education">Education</button>
+                            <button class="filter-btn" data-category="Technology">Tech</button>
+                            <button class="filter-btn" data-category="Business">Business</button>
+                            <button class="filter-btn" data-category="News">News</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Countries</h3>
+                        <div class="filter-options" id="countryFilters">
+                            <button class="filter-btn active" data-country="all">All Countries</button>
+                            <button class="filter-btn" data-country="USA">USA</button>
+                            <button class="filter-btn" data-country="UK">UK</button>
+                            <button class="filter-btn" data-country="India">India</button>
+                            <button class="filter-btn" data-country="Pakistan">Pakistan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="groupArchive" class="groups-grid">
+                <!-- Groups will be dynamically loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>LinkShare</h3>
+                <p>Share and discover amazing WhatsApp groups</p>
+            </div>
+            <div class="footer-links">
+                <a href="pages/about.html">About</a>
+                <a href="pages/privacy.html">Privacy Policy</a>
+                <a href="pages/terms.html">Terms</a>
+                <a href="pages/contact.html">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 LinkShare. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
