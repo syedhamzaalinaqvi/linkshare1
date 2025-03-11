@@ -305,6 +305,7 @@ form?.addEventListener('submit', async (e) => {
 // Load Groups
 let lastDoc = null;
 const POSTS_PER_PAGE = 20;
+
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
 
@@ -368,38 +369,40 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             } else {
                 groupContainer.innerHTML = groupsHTML;
             }
-//----------------------------NEW CODE
-// Add Load More button if we got a full page
-if (groups.length === POSTS_PER_PAGE) {
-    const loadMoreBtn = document.createElement('button');
-    loadMoreBtn.className = 'load-more-btn';
-    loadMoreBtn.innerHTML = `
-        Load More
-        <i class="fas fa-chevron-down"></i>
-    `;
 
-    loadMoreBtn.onclick = () => {
-        loadMoreBtn.style.display = 'none'; // Hide the button on click
-        loadGroups(currentTopic, currentCountry, true).then(() => {
-            // Show the button again after new posts load
-            if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
-                loadMoreBtn.style.display = 'block';
+            //----------------------------NEW CODE
+            // Add Load More button if we got a full page
+            if (groups.length === POSTS_PER_PAGE) {
+                const loadMoreBtn = document.createElement('button');
+                loadMoreBtn.className = 'load-more-btn';
+                loadMoreBtn.innerHTML = `
+                    Load More
+                    <i class="fas fa-chevron-down"></i>
+                `;
+
+                loadMoreBtn.onclick = () => {
+                    loadMoreBtn.style.display = 'none'; // Hide the button on click
+                    loadGroups(currentTopic, currentCountry, true).then(() => {
+                        // Show the button again after new posts load
+                        if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
+                            loadMoreBtn.style.display = 'block';
+                        }
+                    });
+                };
+
+                groupContainer.appendChild(loadMoreBtn);
             }
-        });
-    };
-
-    groupContainer.appendChild(loadMoreBtn);
-} else {
+        } else {
             if (!loadMore) {
                 groupContainer.innerHTML = `
                     <div class="no-groups">
                         <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
                         <p>No groups found matching your criteria</p>
-                    </div>`
-                ;
+                    </div>
+                `;
             }
         }
-}catch (error) {
+    } catch (error) {  // FIXED: Catch block misplaced
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = `
             <div class="error-message">
@@ -408,8 +411,8 @@ if (groups.length === POSTS_PER_PAGE) {
             </div>
         `;
     }
-};
-//----------------------------END
+}  // FIXED: Removed extra semicolon here
+
 
 /*
 //----------------------------OLD CODE
