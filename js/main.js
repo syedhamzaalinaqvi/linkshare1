@@ -368,7 +368,32 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             } else {
                 groupContainer.innerHTML = groupsHTML;
             }
+//----------------------------NEW CODE
+// Add Load More button if we got a full page
+if (groups.length === POSTS_PER_PAGE) {
+    const loadMoreBtn = document.createElement('button');
+    loadMoreBtn.className = 'load-more-btn';
+    loadMoreBtn.innerHTML = `
+        Load More
+        <i class="fas fa-chevron-down"></i>
+    `;
 
+    loadMoreBtn.onclick = () => {
+        loadMoreBtn.style.display = 'none'; // Hide the button on click
+        loadGroups(currentTopic, currentCountry, true).then(() => {
+            // Show the button again after new posts load
+            if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
+                loadMoreBtn.style.display = 'block';
+            }
+        });
+    };
+
+    groupContainer.appendChild(loadMoreBtn);
+}
+//----------------------------END
+
+/*
+//----------------------------OLD CODE
             // Add Load More button if we got a full page
             if (groups.length === POSTS_PER_PAGE) {
                 const loadMoreBtn = document.createElement('button');
@@ -380,6 +405,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 loadMoreBtn.onclick = () => loadGroups(currentTopic, currentCountry, true);
                 groupContainer.appendChild(loadMoreBtn);
             }
+------------------------------------*/
         } else {
             if (!loadMore) {
                 groupContainer.innerHTML = `
