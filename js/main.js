@@ -370,8 +370,12 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 groupContainer.innerHTML = groupsHTML;
             }
 
-            //----------------------------NEW CODE
-            // Add Load More button if we got a full page
+            //----------------------------NEW CODE: FIX LOAD MORE BUTTON ISSUE
+            // Remove existing Load More button if it exists
+            const existingLoadMoreBtn = document.querySelector('.load-more-btn');
+            if (existingLoadMoreBtn) existingLoadMoreBtn.remove();
+
+            // Add Load More button only if we got a full page
             if (groups.length === POSTS_PER_PAGE) {
                 const loadMoreBtn = document.createElement('button');
                 loadMoreBtn.className = 'load-more-btn';
@@ -380,14 +384,14 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                     <i class="fas fa-chevron-down"></i>
                 `;
 
-                loadMoreBtn.onclick = () => {
+                loadMoreBtn.onclick = async () => {
                     loadMoreBtn.style.display = 'none'; // Hide the button on click
-                    loadGroups(currentTopic, currentCountry, true).then(() => {
-                        // Show the button again after new posts load
-                        if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
-                            loadMoreBtn.style.display = 'block';
-                        }
-                    });
+                    await loadGroups(filterTopic, filterCountry, true);
+                    
+                    // Re-show button only if there are still more posts to load
+                    if (document.querySelectorAll('.group-item').length % POSTS_PER_PAGE === 0) {
+                        loadMoreBtn.style.display = 'block';
+                    }
                 };
 
                 groupContainer.appendChild(loadMoreBtn);
@@ -402,7 +406,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 `;
             }
         }
-    } catch (error) {  // FIXED: Catch block misplaced
+    } catch (error) {
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = `
             <div class="error-message">
@@ -411,7 +415,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             </div>
         `;
     }
-}  // FIXED: Removed extra semicolon here
+}
 
 
 /*
