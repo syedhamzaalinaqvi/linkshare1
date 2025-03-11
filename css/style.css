@@ -1314,4 +1314,16 @@ select:focus {
     .static-page h2 {
         font-size: 1.5rem;
     }
+.link-preview img{
+width: 50px;
+    height: 70px;
+}
+.link-preview-content h3 {
+font-weight: 500;
+    font-size: 15px;
+}
+.link-preview-content p {
+    font-size: 12px;
+}
+
 }
