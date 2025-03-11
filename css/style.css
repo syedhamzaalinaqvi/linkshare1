@@ -282,6 +282,7 @@ input:focus, textarea:focus, select:focus {
     gap: 1rem;
     align-items: center;
     background: var(--gray-light);
+overflow: hidden;
 }
 
 .link-preview img {
