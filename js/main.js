@@ -303,7 +303,7 @@ form?.addEventListener('submit', async (e) => {
 });
 // Load Groups
 let lastDoc = null;
-const POSTS_PER_PAGE = 20;
+const POSTS_PER_PAGE = 15;
 
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
