@@ -402,12 +402,12 @@ if (groups.length === POSTS_PER_PAGE) {
 
      catch (error) {
         console.error('Error loading groups:', error);
-        groupContainer.innerHTML = 
+        groupContainer.innerHTML = `
             <div class="error-message">
                 <i class="fas fa-exclamation-circle"></i>
                 <p>Error loading groups. Please try again later.</p>
             </div>
-        ;
+        `;
     }
 }
 //----------------------------END
