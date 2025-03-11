@@ -398,9 +398,7 @@ if (groups.length === POSTS_PER_PAGE) {
                     </div>`
                 ;
             }
-        }
-
-     catch (error) {
+        }catch (error) {
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = `
             <div class="error-message">
