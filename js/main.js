@@ -257,6 +257,12 @@ document.getElementById('groupLink')?.addEventListener('input', async function()
 });
 
 
+// Ensure spinner is hidden on page load
+document.addEventListener("DOMContentLoaded", () => {
+    const spinner = document.querySelector('.loading-spinner');
+    if (spinner) spinner.style.display = 'none';
+});
+
 // Form Submission
 form?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -266,7 +272,7 @@ form?.addEventListener('submit', async (e) => {
 
     try {
         btnText.style.display = 'none';
-        spinner.style.display = 'none';
+        spinner.style.display = 'inline-block'; // Show spinner
         submitBtn.disabled = true;
 
         const link = form.groupLink.value.trim();
@@ -297,10 +303,11 @@ form?.addEventListener('submit', async (e) => {
         showNotification(error.message, 'error');
     } finally {
         btnText.style.display = 'block';
-        spinner.style.display = 'none';
+        spinner.style.display = 'none'; // Hide spinner
         submitBtn.disabled = false;
     }
 });
+
 // Load Groups
 let lastDoc = null;
 const POSTS_PER_PAGE = 15;
