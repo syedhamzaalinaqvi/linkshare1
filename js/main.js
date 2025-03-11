@@ -389,32 +389,7 @@ if (groups.length === POSTS_PER_PAGE) {
     };
 
     groupContainer.appendChild(loadMoreBtn);
-}else {
-    // If no more groups found, remove Load More button completely
-    const existingBtn = document.querySelector('.load-more-btn');
-    if (existingBtn) existingBtn.remove();
-
-    // Show "No Groups Found" only when it's the first load (not on "Load More" clicks)
-    if (!loadMore) {
-        groupContainer.innerHTML = `
-            <div class="no-groups">
-                <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
-                <p>No groups found matching your criteria</p>
-            </div>
-        `;
-    }
-}catch (error) {
-        console.error('Error loading groups:', error);
-        groupContainer.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                <p>Error loading groups. Please try again later.</p>
-            </div>
-        `;
-    }
 }
-
-
 //----------------------------END
 
 /*
@@ -431,8 +406,15 @@ if (groups.length === POSTS_PER_PAGE) {
                 groupContainer.appendChild(loadMoreBtn);
             }
 
-        } else {
+        } 
+----------------------------------END*/
+else {
             if (!loadMore) {
+
+// If no more groups found, remove Load More button completely
+    const existingBtn = document.querySelector('.load-more-btn');
+    if (existingBtn) existingBtn.remove();
+
                 groupContainer.innerHTML = `
                     <div class="no-groups">
                         <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
@@ -453,7 +435,7 @@ if (groups.length === POSTS_PER_PAGE) {
     }
 }
 
-----------------------------------END*/
+
 
 // Utility Functions
 function isValidWhatsAppLink(link) {
