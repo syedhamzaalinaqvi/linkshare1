@@ -410,11 +410,6 @@ if (groups.length === POSTS_PER_PAGE) {
 ----------------------------------END*/
 else {
             if (!loadMore) {
-
-// If no more groups found, remove Load More button completely
-    const existingBtn = document.querySelector('.load-more-btn');
-    if (existingBtn) existingBtn.remove();
-
                 groupContainer.innerHTML = `
                     <div class="no-groups">
                         <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
@@ -424,7 +419,7 @@ else {
             }
         }
 
-     catch (error) {
+  }   catch (error) {
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = `
             <div class="error-message">
