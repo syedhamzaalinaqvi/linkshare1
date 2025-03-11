@@ -389,7 +389,22 @@ if (groups.length === POSTS_PER_PAGE) {
     };
 
     groupContainer.appendChild(loadMoreBtn);
+}else {
+    // If no more groups found, remove Load More button completely
+    const existingBtn = document.querySelector('.load-more-btn');
+    if (existingBtn) existingBtn.remove();
+
+    // Show "No Groups Found" only when it's the first load (not on "Load More" clicks)
+    if (!loadMore) {
+        groupContainer.innerHTML = `
+            <div class="no-groups">
+                <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
+                <p>No groups found matching your criteria</p>
+            </div>
+        `;
+    }
 }
+
 //----------------------------END
 
 /*
@@ -405,7 +420,7 @@ if (groups.length === POSTS_PER_PAGE) {
                 loadMoreBtn.onclick = () => loadGroups(currentTopic, currentCountry, true);
                 groupContainer.appendChild(loadMoreBtn);
             }
-------------------------------------*/
+
         } else {
             if (!loadMore) {
                 groupContainer.innerHTML = `
@@ -428,7 +443,7 @@ if (groups.length === POSTS_PER_PAGE) {
     }
 }
 
-
+----------------------------------END*/
 
 // Utility Functions
 function isValidWhatsAppLink(link) {
