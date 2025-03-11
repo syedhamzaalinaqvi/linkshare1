@@ -388,11 +388,13 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 const loadMoreBtn = loadMoreWrapper.querySelector('.load-more-btn');
 
                 loadMoreBtn.onclick = async () => {
-                    loadMoreBtn.classList.add('loading'); // Start spinning animation
+                     loadMoreBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`; // Show spinner
+    		     loadMoreBtn.disabled = true; // Disable button during loading
+                    
+			await loadGroups(currentTopic, currentCountry, true); // Load more posts
 
-                    await loadGroups(currentTopic, currentCountry, true); // Load more posts
-
-                    loadMoreBtn.classList.remove('loading'); // Stop spinning animation
+                    loadMoreBtn.innerHTML = `Load More <i class="fas fa-chevron-down"></i>`; // Reset button text
+		    loadMoreBtn.disabled = false; // Re-enable button
 
                     // Add fade-in animation to newly loaded posts
                     document.querySelectorAll('.group-item').forEach(item => {

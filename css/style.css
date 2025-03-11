@@ -474,6 +474,10 @@ input:focus, textarea:focus, select:focus {
     transition: transform 0.3s ease;
 }
 
+.load-more-btn i.fa-spinner {
+    margin-right: 8px;
+}
+
 /* When clicked, spin the button */
 .load-more-btn.loading {
     animation: spin 0.6s ease-in-out;
