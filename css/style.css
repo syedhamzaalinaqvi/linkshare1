@@ -455,7 +455,7 @@ input:focus, textarea:focus, select:focus {
     font-weight: 600;
     cursor: pointer;
     margin: 2rem auto;
-//  display: flex;
+    display: block;
     align-items: center;
     gap: 0.8rem;
     transition: all 0.3s ease;
