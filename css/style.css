@@ -55,6 +55,10 @@ body {
     transform: scale(1.05);
 }
 
+.nav-brand{
+width:60px;
+height:;
+}
 .nav-toggle {
     display: none;
     background: none;
