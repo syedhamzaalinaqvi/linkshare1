@@ -1346,4 +1346,7 @@ padding: 1px 3px;
 .group-card p{
 overflow: hidden;
 }
+.hero h1 {
+font-size: 15px;
+}
 }
