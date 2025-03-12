@@ -75,10 +75,12 @@ height:;
 }
 
 .nav-links a {
-width: 100%;
+	width: 100%;
     color: var(--text-color);
     text-decoration: none;
     transition: var(--transition);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+
 }
 
 .nav-links a:hover,
