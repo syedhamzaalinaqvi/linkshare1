@@ -601,13 +601,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (category !== null) {
                     selectedTopic = category;
                     document.querySelector("#topicFilters .active").classList.remove("active");
-                    btn.textContent = item.textContent; // Update button text
+                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`; // Preserve icon
                 }
 
                 if (country !== null) {
                     selectedCountry = country;
                     document.querySelector("#countryFilters .active").classList.remove("active");
-                    btn.textContent = item.textContent; // Update button text
+                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`; // Preserve icon
                 }
 
                 item.classList.add("active");
