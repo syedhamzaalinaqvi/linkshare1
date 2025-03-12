@@ -54,10 +54,12 @@ body {
 .nav-brand:hover {
     transform: scale(1.05);
 }
-
+.brandlink{
+    text-decoration: none;
+}
 .nav-brand .logo{
-width:50px;
-height:;
+	width:50px;
+
 }
 .nav-toggle {
     display: none;
