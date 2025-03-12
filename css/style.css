@@ -103,25 +103,6 @@ body {
     font-size: 2.5rem;
     margin-bottom: 1rem;
 }
-/*Latest and premium section css*/
-.latest-premium-div{
-    padding: 5px 0px;
-    display: flex;
-    justify-content: center;
-}
-.latest, .premium{
-padding: 5px 15px;
-background-color: #25D366;
-text-decoration: none;
-color: #eee;
-font: bold;
-}
-.latest{
-
-}
-.premium{
-
-}
 /* Improved Form Styles */
 .submit-section {
     background: var(--white);
