@@ -1349,4 +1349,7 @@ overflow: hidden;
 .hero h1 {
 font-size: 25px;
 }
+.hero p {
+font-size: 16px;
+}
 }
