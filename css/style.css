@@ -51,7 +51,9 @@ body {
     transform: scale(1.05);
 }
 .brandlink{
-    text-decoration: none;
+  display: flex;
+    align-items: center;
+
 }
 .nav-brand-link-text{ 
     gap: 0.8rem;
@@ -59,6 +61,7 @@ body {
 font-size: 1.4rem;
     font-weight: bold;
     color: var(--primary-color);
+    text-decoration: none;
 }
 
 .nav-brand .logo{
