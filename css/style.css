@@ -106,11 +106,11 @@ body {
 
 /* WhatsApp-style button */
 .hero-btn {
-    display: inline-block;
+    display: block;
     width: 70%;
     margin: auto;
     margin-top: 1.5rem;
-    padding: 0.8rem 1.1rem;
+    padding: 0.8rem 1.8rem;
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
@@ -123,13 +123,41 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
-/* WhatsApp hover effect */
+/* Hover Effect: Slight bounce & glow */
 .hero-btn:hover {
     background: #1EBE5D;
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+}
+
+/* Click Effect: Shrink and restore */
+.hero-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 3px 8px rgba(37, 211, 102, 0.5);
+}
+
+/* Animation Ripple Effect on Click */
+.hero-btn::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.hero-btn:active::after {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 1;
 }
 
 /* Improved Form Styles */
