@@ -75,6 +75,7 @@ height:;
 }
 
 .nav-links a {
+width: 100%;
     color: var(--text-color);
     text-decoration: none;
     transition: var(--transition);
