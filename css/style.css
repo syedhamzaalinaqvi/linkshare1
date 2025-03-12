@@ -376,6 +376,7 @@ overflow: hidden;
 
 /* chatgpt modified Filter Section */
 /* General Styles */
+/* General Styles */
 :root {
     --primary-color: #28a745;
     --text-color: #333;
@@ -471,6 +472,12 @@ overflow: hidden;
 /* Show Dropdown */
 .dropdown.active .dropdown-menu {
     display: block;
+}
+
+/* Active Filter */
+.filter-btn.active {
+    font-weight: bold;
+    color: var(--primary-color);
 }
 
 /* Load More Button */

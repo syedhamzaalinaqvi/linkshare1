@@ -571,10 +571,15 @@ document.addEventListener('DOMContentLoaded', () => {
 //chat gpt filter script updated
 document.addEventListener("DOMContentLoaded", function () {
     const dropdowns = document.querySelectorAll(".dropdown");
+    const searchInput = document.getElementById("searchGroups");
+    let selectedTopic = "all";
+    let selectedCountry = "all";
 
+    // Toggle Dropdowns
     dropdowns.forEach(dropdown => {
         const btn = dropdown.querySelector(".dropdown-btn");
         const menu = dropdown.querySelector(".dropdown-menu");
+        const items = menu.querySelectorAll(".filter-btn");
 
         btn.addEventListener("click", function () {
             dropdown.classList.toggle("active");
@@ -586,5 +591,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 dropdown.classList.remove("active");
             }
         });
+
+        // Handle filter selection
+        items.forEach(item => {
+            item.addEventListener("click", function () {
+                const category = item.dataset.category || null;
+                const country = item.dataset.country || null;
+
+                if (category !== null) {
+                    selectedTopic = category;
+                    document.querySelector("#topicFilters .active").classList.remove("active");
+                }
+
+                if (country !== null) {
+                    selectedCountry = country;
+                    document.querySelector("#countryFilters .active").classList.remove("active");
+                }
+
+                item.classList.add("active");
+                filterGroups();
+            });
+        });
+    });
+
+    // Filter function
+    function filterGroups() {
+        console.log(`Filtering by Topic: ${selectedTopic}, Country: ${selectedCountry}`);
+        // Add your logic here to filter the groups on the page based on selectedTopic & selectedCountry
+    }
+
+    // Search Logic
+    searchInput.addEventListener("input", function () {
+        const query = searchInput.value.toLowerCase();
+        console.log(`Searching for: ${query}`);
+        // Add your search filter logic here
     });
 });
