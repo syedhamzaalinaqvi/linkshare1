@@ -91,8 +91,7 @@ body {
     background: rgba(0, 0, 0, 0.1); /* Optional: Adds a hover effect */
 }
 
-/* Hero Section */
-.hero {
+/* Hero Section */.hero {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: var(--white);
     text-align: center;
@@ -103,6 +102,25 @@ body {
     font-size: 2.5rem;
     margin-bottom: 1rem;
 }
+
+.hero-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.8rem 1.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--white);
+    background: var(--accent-color);
+    border-radius: 30px;
+    text-decoration: none;
+    transition: 0.3s ease-in-out;
+}
+
+.hero-btn:hover {
+    background: var(--secondary-color);
+    transform: scale(1.05);
+}
+
 /* Improved Form Styles */
 .submit-section {
     background: var(--white);
