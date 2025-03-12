@@ -56,14 +56,6 @@ font-size: 1.4rem;
 .nav-brand:hover {
     transform: scale(1.05);
 }
-.nav-brand a{
-    text-decoration: none;
-
-}
-.nav-brand-link-text{ 
-
-
-}
 
 .nav-brand .logo{
 	width:50px;
