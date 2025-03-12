@@ -601,15 +601,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (category !== null) {
                     selectedTopic = category;
                     document.querySelector("#topicFilters .active").classList.remove("active");
+                    btn.textContent = item.textContent; // Update button text
                 }
 
                 if (country !== null) {
                     selectedCountry = country;
                     document.querySelector("#countryFilters .active").classList.remove("active");
+                    btn.textContent = item.textContent; // Update button text
                 }
 
                 item.classList.add("active");
                 filterGroups();
+                dropdown.classList.remove("active"); // Close dropdown after selection
             });
         });
     });
