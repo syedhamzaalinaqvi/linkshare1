@@ -105,6 +105,7 @@ body {
 }
 /*Latest and premium section css*/
 .latest-premium-div{
+    padding: 5px 0px;
     display: flex;
     justify-content: center;
 }
