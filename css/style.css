@@ -44,8 +44,7 @@ body {
 .nav-brand {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
-    transition: var(--transition);
+
 }
 
 .nav-brand:hover {
@@ -54,8 +53,10 @@ body {
 .brandlink{
     text-decoration: none;
 }
-.nav-brand-link-text
-{ font-size: 1.4rem;
+.nav-brand-link-text{ 
+    gap: 0.8rem;
+    transition: var(--transition);
+font-size: 1.4rem;
     font-weight: bold;
     color: var(--primary-color);
 }
