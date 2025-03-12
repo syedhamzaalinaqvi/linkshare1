@@ -107,6 +107,7 @@ body {
 /* WhatsApp-style button */
 .hero-btn {
     display: inline-block;
+    width: 10%;
     margin-top: 1.5rem;
     padding: 0.8rem 1.1rem;
     font-size: 1.2rem;
