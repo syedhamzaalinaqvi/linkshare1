@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/pages/about", "destination": "/pages/about.html" },
+    { "source": "/pages/contact", "destination": "/pages/contact.html" }
+    { "source": "/pages/contact", "destination": "/pages/privacy.html" }
+    { "source": "/pages/contact", "destination": "/pages/terms.html" }
+  ]
+}
