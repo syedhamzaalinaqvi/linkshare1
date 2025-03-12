@@ -375,22 +375,30 @@ overflow: hidden;
 }
 
 /* chatgpt modified Filter Section */
-.filter-section {
-    background: linear-gradient(135deg, rgba(37, 211, 102, 0.05), rgba(52, 183, 241, 0.05));
-    border-radius: var(--radius);
-    padding: 2rem;
-    margin: 2rem 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+/* General Styles */
+:root {
+    --primary-color: #28a745;
+    --text-color: #333;
+    --bg-light: #f9f9f9;
+    --radius: 8px;
 }
 
-/* Search Bar */
+.filter-section {
+    background: white;
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: auto;
+}
+
+/* Search Box */
 .search-bar {
     display: flex;
     align-items: center;
-    background: white;
+    background: var(--bg-light);
     padding: 10px;
-    border-radius: 25px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius);
     margin-bottom: 15px;
     position: relative;
 }
@@ -399,79 +407,70 @@ overflow: hidden;
     width: 100%;
     border: none;
     outline: none;
+    background: none;
     padding: 10px;
     font-size: 16px;
-    border-radius: 20px;
 }
 
 .search-bar i {
     position: absolute;
     right: 15px;
     color: gray;
-    font-size: 18px;
 }
 
 /* Filter Container */
 .filter-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Filter Group */
-.filter-group {
-    background: white;
-    padding: 1.5rem;
-    border-radius: var(--radius);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.filter-group h3 {
-    color: var(--primary-color);
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-}
-
-/* List-Based Filter */
-.filter-options {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.filter-options li {
-    padding: 12px 15px;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--text-color);
     display: flex;
-    align-items: center;
-    font-weight: 500;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Dropdown Menu */
+.dropdown {
     position: relative;
 }
 
-/* Active and Hover States */
-.filter-options li:hover,
-.filter-options li.active {
+.dropdown-btn {
+    width: 100%;
+    background: var(--bg-light);
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    text-align: left;
+    border-radius: var(--radius);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-menu {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    width: 100%;
+    display: none;
+    z-index: 1000;
+}
+
+.dropdown-menu li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.dropdown-menu li:hover {
     background: var(--primary-color);
     color: white;
-    transform: translateX(5px);
 }
 
-/* Icons for Each List Item */
-.filter-options li::before {
-    content: "▶";
-    font-size: 12px;
-    color: var(--primary-color);
-    margin-right: 8px;
-    transition: color 0.3s ease;
-}
-
-.filter-options li:hover::before,
-.filter-options li.active::before {
-    color: white;
+/* Show Dropdown */
+.dropdown.active .dropdown-menu {
+    display: block;
 }
 
 /* Load More Button */
