@@ -91,7 +91,8 @@ body {
     background: rgba(0, 0, 0, 0.1); /* Optional: Adds a hover effect */
 }
 
-/* Hero Section */.hero {
+/* Hero Section */
+.hero {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: var(--white);
     text-align: center;
@@ -103,22 +104,30 @@ body {
     margin-bottom: 1rem;
 }
 
+/* WhatsApp-style button */
 .hero-btn {
     display: inline-block;
     margin-top: 1.5rem;
-    padding: 0.8rem 1.5rem;
+    padding: 0.8rem 1.8rem;
     font-size: 1.2rem;
     font-weight: bold;
-    color: var(--white);
-    background: var(--accent-color);
+    color: white;
+    background: #25D366; /* WhatsApp Green */
     border-radius: 30px;
     text-decoration: none;
     transition: 0.3s ease-in-out;
+    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
+/* WhatsApp hover effect */
 .hero-btn:hover {
-    background: var(--secondary-color);
+    background: #1EBE5D;
     transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
 }
 
 /* Improved Form Styles */
