@@ -567,3 +567,24 @@ function debounce(func, wait) {
 document.addEventListener('DOMContentLoaded', () => {
     loadGroups();
 });
+
+//chat gpt filter script updated
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = document.querySelectorAll(".dropdown");
+
+    dropdowns.forEach(dropdown => {
+        const btn = dropdown.querySelector(".dropdown-btn");
+        const menu = dropdown.querySelector(".dropdown-menu");
+
+        btn.addEventListener("click", function () {
+            dropdown.classList.toggle("active");
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function (e) {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove("active");
+            }
+        });
+    });
+});
