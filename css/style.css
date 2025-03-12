@@ -56,7 +56,7 @@ font-size: 1.4rem;
 .nav-brand:hover {
     transform: scale(1.05);
 }
-.brandlink{
+.nav-brand .brandlink{
 
     text-decoration: none;
 
