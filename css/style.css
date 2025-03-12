@@ -79,7 +79,7 @@ body {
 .nav-links a {
     display: block; /* Expands clickable area */
     width: 100%; /* Makes the link take full width of its parent */
-    padding: 10px 15px; /* Adds padding for better clickability */
+    padding: 5px 10px; /* Adds padding for better clickability */
     color: var(--text-color);
     text-decoration: none;
     transition: var(--transition);
