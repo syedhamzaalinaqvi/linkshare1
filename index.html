@@ -44,6 +44,13 @@
     <a href="http://" id="latest" class="latest"> Latest</a>
     <a href="http://" id="premium" class="premium">Premium</a>
 </div>
+<script >
+    var latest = document.getElementById("latest");
+    var premiumGroups = document.getElementsByClassName(".premium-groups");
+    latest.addEventListener('onclick', () => {
+        premiumGroups.style = "block"
+    })
+</script>
     <section class="premium-groups">
         <div class="container">
             <h2 class="section-title">⭐ Premium Groups</h2>

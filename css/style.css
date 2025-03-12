@@ -1158,6 +1158,7 @@ select:focus {
 
 /* Premium Groups Section */
 .premium-groups {
+    display: none;
     padding: 4rem 0;
     background: linear-gradient(135deg, rgba(37, 211, 102, 0.05), rgba(52, 183, 241, 0.05));
 }
