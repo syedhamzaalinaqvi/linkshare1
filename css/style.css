@@ -72,21 +72,21 @@ height:;
     display: flex;
     gap: 1.5rem;
     list-style: none;
-align-content: center;
-}
 
+}
 .nav-links a {
-	width: 100%;
+    display: block; /* Expands clickable area */
+    width: 100%; /* Makes the link take full width of its parent */
+    padding: 10px 15px; /* Adds padding for better clickability */
     color: var(--text-color);
     text-decoration: none;
     transition: var(--transition);
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     color: var(--primary-color);
+    background: rgba(0, 0, 0, 0.1); /* Optional: Adds a hover effect */
 }
 
 /* Hero Section */
