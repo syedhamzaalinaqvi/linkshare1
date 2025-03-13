@@ -1431,4 +1431,23 @@ font-size: 16px;
     display: block;
     width: 60%;
 }
+
+   /* Dropdown Mobile Styling */
+   .dropdown-content {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.05);
+    display: none;
+}
+
+.dropdown.active .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    padding: 12px;
+    padding-left: 20px;
+}
+
 }
