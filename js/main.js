@@ -630,3 +630,29 @@ document.addEventListener("DOMContentLoaded", function () {
         // Add your search filter logic here
     });
 });
+
+/*Chatgpt  dropdown Nav Js */
+document.addEventListener("DOMContentLoaded", function () {
+    const navToggle = document.querySelector(".nav-toggle");
+    const navbar = document.querySelector(".navbar");
+    const dropdown = document.querySelector(".dropdown");
+
+    // Toggle mobile menu
+    navToggle.addEventListener("click", function () {
+        navbar.classList.toggle("active");
+    });
+
+    // Toggle dropdown on mobile
+    dropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+        this.classList.toggle("active");
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", function (e) {
+        if (!navbar.contains(e.target)) {
+            navbar.classList.remove("active");
+            dropdown.classList.remove("active");
+        }
+    });
+});
