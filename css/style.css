@@ -93,7 +93,7 @@ body {
 
 /*Chat GPT NAV Dropdown css*/
 /* Dropdown Menu */
-.dropdown {
+.nav-dropdown {
     position: relative;
 }
 
@@ -106,7 +106,7 @@ body {
     transition: var(--transition);
 }
 
-.dropdown-content {
+.nav-dropdown-content {
     display: none;
     position: absolute;
     top: 100%;
@@ -118,11 +118,11 @@ body {
     z-index: 1000;
 }
 
-.dropdown-content li {
+.nav-dropdown-content li {
     list-style: none;
 }
 
-.dropdown-content a {
+.nav-dropdown-content a {
     display: block;
     padding: 10px;
     color: var(--text-color);
@@ -130,12 +130,12 @@ body {
     transition: var(--transition);
 }
 
-.dropdown-content a:hover {
+.nav-dropdown-content a:hover {
     background: rgba(0, 0, 0, 0.1);
 }
 
 /* Show dropdown on hover */
-.dropdown:hover .dropdown-content {
+.nav-dropdown:hover .nav-dropdown-content {
     display: block;
 }
 
@@ -1433,7 +1433,7 @@ font-size: 16px;
 }
 
    /* Dropdown Mobile Styling */
-   .dropdown-content {
+   .nav-dropdown-content {
     position: static;
     width: 100%;
     box-shadow: none;
@@ -1441,11 +1441,11 @@ font-size: 16px;
     display: none;
 }
 
-.dropdown.active .dropdown-content {
+.nav-dropdown.active .nav-dropdown-content{
     display: block;
 }
 
-.dropdown-content a {
+.nav-dropdown-content a {
     padding: 12px;
     padding-left: 20px;
 }
