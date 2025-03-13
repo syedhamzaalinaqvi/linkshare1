@@ -505,7 +505,7 @@ overflow: hidden;
     position: absolute;
     width: 100%;
     display: none;
-/*    z-index: 1000;*/
+   z-index: 500;
 }
 
 .dropdown-menu li {
