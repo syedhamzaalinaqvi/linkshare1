@@ -165,7 +165,7 @@ function handleRoute() {
 window.addEventListener('popstate', handleRoute);
 handleRoute();
 
-function truncateDescription(description, wordLimit = 30) {
+function truncateDescription(description, wordLimit = 20) {
     const words = description.split(' ');
     if (words.length > wordLimit) {
         return words.slice(0, wordLimit).join(' ') + '...';
