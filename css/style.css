@@ -74,6 +74,7 @@ body {
     display: flex;
     gap: 1.5rem;
     list-style: none;
+    z-index: 1;
 
 }
 .nav-links a {
