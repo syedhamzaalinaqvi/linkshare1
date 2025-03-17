@@ -80,5 +80,31 @@
         </div>
     </section>
 </main>
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>LinkShare</h3>
+            <p>Share and discover amazing WhatsApp groups</p>
+        </div>
+        <div class="footer-links">
+            <a href="https://www.linkshare.online/">Home</a>
+            <a href="../about">About</a>
+            <a href="../privacy">Privacy</a>
+            <a href="../contact">Contact</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 LinkShare. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+</script>
 </body>
 </html>
