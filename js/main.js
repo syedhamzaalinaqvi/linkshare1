@@ -216,7 +216,7 @@ function createGroupCard(group) {
             </div>
             <div class="card-footer">
                 <small><i class="far fa-clock"></i> ${timeString}</small>
-            </div> <span><p>Views: <span class="view-count">{{ post.views }}</span></p></span>
+            </div> <span><p>Views: <span class="view-count"> 1015 +</span></p></span>
         </div>
     `;
 }
