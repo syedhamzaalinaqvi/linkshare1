@@ -99,6 +99,8 @@
                 <div class="search-bar">
                     <input type="text" id="searchGroups" placeholder="Search groups...">
                     <i class="fas fa-search"></i>
+
+                    
                 </div>
             
                 <!-- Filter Container -->
@@ -163,6 +165,55 @@
                 <!-- Groups will be dynamically loaded here -->
             </div>
         </section>
+
+        <div class="rating-review">
+            <div class="rating">
+              <span class="star-rating">
+                <i class="fa fa-star" aria-hidden="true"></i>
+                <i class="fa fa-star" aria-hidden="true"></i>
+                <i class="fa fa-star" aria-hidden="true"></i>
+                <i class="fa fa-star" aria-hidden="true"></i>
+                <i class="fa fa-star" aria-hidden="true"></i>
+              </span>
+              <span class="rating-value">4.5/5</span>
+            </div>
+            <div class="review">
+              <textarea placeholder="Write a review..."></textarea>
+              <button>Submit Review</button>
+            </div>
+          </div>
+          <script>
+          const ratingStars = document.querySelectorAll('.star-rating i');
+          const ratingValue = document.querySelector('.rating-value');
+          const reviewInput = document.querySelector('.review textarea');
+          const submitReviewButton = document.querySelector('.review button');
+          
+          // Add event listener to rating stars
+          ratingStars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+              const rating = index + 1;
+              ratingValue.textContent = `${rating}/5`;
+            });
+          });
+          
+          // Add event listener to submit review button
+          submitReviewButton.addEventListener('click', () => {
+            const reviewText = reviewInput.value.trim();
+            if (reviewText) {
+              // Send review to your data source (e.g., Firebase)
+              fetch('/api/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ review: reviewText }),
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log(data);
+                });
+            }
+          });
+</script>
+
     </main>
 
     <footer class="footer">
