@@ -176,6 +176,27 @@ function truncateDescription(description, wordLimit = 20) {
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
+    
+    // adding codeium view count code sccript
+
+    const postCards = document.querySelectorAll('.post-card');
+    postCards.forEach((postCard) => {
+    const postId = postCard.getAttribute('data-post-id');
+    const viewsRef = firebase.database().ref(`posts/${postId}/views`);
+  
+    postCard.addEventListener('click', () => {
+      viewsRef.transaction((currentViews) => {
+        return currentViews + 1;
+      });
+    });
+  
+    viewsRef.on('value', (snapshot) => {
+      const views = snapshot.val();
+      postCard.querySelector('.view-count').textContent = views;
+    });
+  });
+
+//end codium script............  
 
     return `
         <div class="group-card">
@@ -199,24 +220,6 @@ function createGroupCard(group) {
         </div>
     `;
 }
-// adding codeium view count code sccript
-const postCards = document.querySelectorAll('.post-card');
-
-postCards.forEach((postCard) => {
-  const postId = postCard.getAttribute('data-post-id');
-  const viewsRef = firebase.database().ref(`posts/${postId}/views`);
-
-  postCard.addEventListener('click', () => {
-    viewsRef.transaction((currentViews) => {
-      return currentViews + 1;
-    });
-  });
-
-  viewsRef.on('value', (snapshot) => {
-    const views = snapshot.val();
-    postCard.querySelector('.view-count').textContent = views;
-  });
-});
 
 // Adding the OpenGraph preview functionality to the existing code
 async function fetchOpenGraph(url) {
