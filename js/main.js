@@ -173,6 +173,55 @@ function truncateDescription(description, wordLimit = 20) {
     return description;
 }
 
+// New COdium script to display cards
+function createGroupCard(group, postId) {
+    const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
+    const truncatedDescription = truncateDescription(group.description);
+  
+    // Create the group card HTML
+    const groupCard = `
+      <div class="group-card" data-post-id="${postId}">
+        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+        <h3>${group.title}</h3>
+        <div class="group-badges">
+          <span class="category-badge">${group.category}</span>
+          <span class="country-badge">${group.country}</span>
+        </div>
+        <p>${truncatedDescription}</p>
+  
+        <div class="card-actions">
+          <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn whatsapp-style">
+            <i class="fab fa-whatsapp"></i> Join Group
+            <span class="whatsapp-icon-bg"></span>
+          </a>
+        </div>
+        <div class="card-footer">
+          <small><i class="far fa-clock"></i> ${timeString}</small>
+        </div>
+        <span><p>Views: <span class="view-count">0</span></p></span>
+      </div>
+    `;
+  
+    // Create a reference to the Firebase Realtime Database
+    const viewsRef = firebase.database().ref(`posts/${postId}/views`);
+  
+    // Initialize the view count
+    viewsRef.on('value', (snapshot) => {
+      const views = snapshot.val() || 0;
+      document.querySelector(`.group-card[data-post-id="${postId}"] .view-count`).textContent = views;
+    });
+  
+    // Increment the view count when the group card is clicked
+    document.querySelector(`.group-card[data-post-id="${postId}"]`).addEventListener('click', () => {
+      viewsRef.transaction((currentViews) => {
+        return (currentViews || 0) + 1;
+      });
+    });
+  
+    return groupCard;
+  }
+
+/*
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
@@ -220,6 +269,7 @@ function createGroupCard(group) {
         </div>
     `;
 }
+*/
 
 // Adding the OpenGraph preview functionality to the existing code
 async function fetchOpenGraph(url) {
