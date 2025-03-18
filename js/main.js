@@ -174,13 +174,13 @@ function truncateDescription(description, wordLimit = 20) {
 }
 
 // New COdium script to display cards
-function createGroupCard(group, postId) {
+function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
   
     // Create the group card HTML
     const groupCard = `
-      <div class="group-card" data-post-id="${postId}">
+      <div class="group-card">
         ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
         <h3>${group.title}</h3>
         <div class="group-badges">
@@ -203,16 +203,18 @@ function createGroupCard(group, postId) {
     `;
   
     // Create a reference to the Firebase Realtime Database
+    const postId = group.postId;
     const viewsRef = firebase.database().ref(`posts/${postId}/views`);
   
     // Initialize the view count
     viewsRef.on('value', (snapshot) => {
       const views = snapshot.val() || 0;
-      document.querySelector(`.group-card[data-post-id="${postId}"] .view-count`).textContent = views;
+      document.querySelector(`.group-card .view-count`).textContent = views;
     });
   
     // Increment the view count when the group card is clicked
-    document.querySelector(`.group-card[data-post-id="${postId}"]`).addEventListener('click', () => {
+    const groupCardElement = document.querySelector('.group-card');
+    groupCardElement.addEventListener('click', () => {
       viewsRef.transaction((currentViews) => {
         return (currentViews || 0) + 1;
       });
@@ -220,7 +222,6 @@ function createGroupCard(group, postId) {
   
     return groupCard;
   }
-
 /*
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
