@@ -174,80 +174,13 @@ function truncateDescription(description, wordLimit = 20) {
 }
 
 // New COdium script to display cards
-function createGroupCard(group) {
-    const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
-    const truncatedDescription = truncateDescription(group.description);
-  
-    // Create the group card HTML
-    const groupCard = `
-      <div class="group-card">
-        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
-        <h3>${group.title}</h3>
-        <div class="group-badges">
-          <span class="category-badge">${group.category}</span>
-          <span class="country-badge">${group.country}</span>
-        </div>
-        <p>${truncatedDescription}</p>
-  
-        <div class="card-actions">
-          <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn whatsapp-style">
-            <i class="fab fa-whatsapp"></i> Join Group
-            <span class="whatsapp-icon-bg"></span>
-          </a>
-        </div>
-        <div class="card-footer">
-          <small><i class="far fa-clock"></i> ${timeString}</small>
-        </div>
-        <span><p>Views: <span class="view-count">0</span></p></span>
-      </div>
-    `;
-  
-    // Create a reference to the Firebase Realtime Database
-    const postId = group.postId;
-    const viewsRef = firebase.database().ref(`posts/${postId}/views`);
-  
-    // Initialize the view count
-    viewsRef.on('value', (snapshot) => {
-      const views = snapshot.val() || 0;
-      document.querySelector(`.group-card .view-count`).textContent = views;
-    });
-  
-    // Increment the view count when the group card is clicked
-    const groupCardElement = document.querySelector('.group-card');
-    groupCardElement.addEventListener('click', () => {
-      viewsRef.transaction((currentViews) => {
-        return (currentViews || 0) + 1;
-      });
-    });
-  
-    return groupCard;
-  }
-/*
+
+
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
     
-    // adding codeium view count code sccript
-
-    const postCards = document.querySelectorAll('.post-card');
-    postCards.forEach((postCard) => {
-    const postId = postCard.getAttribute('data-post-id');
-    const viewsRef = firebase.database().ref(`posts/${postId}/views`);
-  
-    postCard.addEventListener('click', () => {
-      viewsRef.transaction((currentViews) => {
-        return currentViews + 1;
-      });
-    });
-  
-    viewsRef.on('value', (snapshot) => {
-      const views = snapshot.val();
-      postCard.querySelector('.view-count').textContent = views;
-    });
-  });
-
-//end codium script............  
-
+   
     return `
         <div class="group-card">
             ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
@@ -266,11 +199,11 @@ function createGroupCard(group) {
             </div>
             <div class="card-footer">
                 <small><i class="far fa-clock"></i> ${timeString}</small>
-            </div> <span><p>Views: <span class="view-count"> 1015 +</span></p></span>
+            </div> 
         </div>
     `;
 }
-*/
+
 
 // Adding the OpenGraph preview functionality to the existing code
 async function fetchOpenGraph(url) {
