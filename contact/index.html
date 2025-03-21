@@ -141,18 +141,21 @@
             const spinner = submitBtn.querySelector('.loading-spinner');
 
             try {
+                // Show spinner and hide text
                 btnText.style.display = 'none';
-                spinner.style.display = 'block';
+                spinner.style.display = 'inline-block';
                 submitBtn.disabled = true;
 
                 // Simulate form submission
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
+                // Show success message
                 alert('Message sent successfully! We will get back to you soon.');
                 contactForm.reset();
             } catch (error) {
                 alert('Error sending message. Please try again later.');
             } finally {
+                // Hide spinner and show text
                 btnText.style.display = 'block';
                 spinner.style.display = 'none';
                 submitBtn.disabled = false;
