@@ -10,6 +10,7 @@ const navToggle = document.querySelector('.nav-toggle');
 const navLinks = document.querySelector('.nav-links');
 const topicFilters = document.querySelector('#topicFilters');
 const countryFilters = document.querySelector('#countryFilters');
+const categoryButtons = document.querySelectorAll('.category-btn');
 
 // Navigation Toggle
 navToggle?.addEventListener('click', () => {
@@ -555,6 +556,28 @@ filterButtons?.forEach(button => {
     });
 });
 
+// Category Menu Event Listeners
+categoryButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        categoryButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        // Get the selected category
+        const selectedCategory = button.dataset.category;
+        
+        // Update the topic filter dropdown to match
+        const topicFilter = document.querySelector(`#topicFilters .filter-btn[data-category="${selectedCategory}"]`);
+        if (topicFilter) {
+            document.querySelectorAll('#topicFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            topicFilter.classList.add('active');
+        }
+        
+        // Load groups with the selected category
+        loadGroups(selectedCategory, 'all');
+    });
+});
 
 // Debounce Function
 function debounce(func, wait) {
