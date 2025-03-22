@@ -958,12 +958,15 @@ select:focus {
     line-height: 1.8;
 }
 
-.group-article ul {
+.group-article ul, 
+.group-article ol {
     list-style-type: none;
     padding: 0;
+    margin-bottom: 1.5rem;
 }
 
-.group-article ul li {
+.group-article ul li,
+.group-article ol li {
     padding: 0.5rem 0;
     position: relative;
     padding-left: 1.5rem;
@@ -976,50 +979,16 @@ select:focus {
     left: 0;
 }
 
-/* Card Actions */
-.card-actions {
-    display: flex;
-    gap: 1rem;
-    margin: 1rem 0;
+.group-article ol li {
+    counter-increment: item;
 }
 
-.view-more-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
-    background: var(--gray-light);
-    color: var(--text-color);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.view-more-btn:hover {
-    background: var(--gray);
-    color: var(--white);
-    transform: translateY(-2px);
-}
-
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-    font-size: 0.8em;
-    color: #666;
-}
-
-.views-count {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.views-count i {
-    color: #25D366;
+.group-article ol li::before {
+    content: counter(item);
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
 }
 
 @media (max-width: 768px) {
@@ -1695,4 +1664,15 @@ font-size: 16px;
         gap: 1rem;
         text-align: center;
     }
+}
+
+/* Group Title Link */
+.group-title-link {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.group-title-link:hover {
+    color: var(--primary-color);
 }
