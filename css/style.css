@@ -351,14 +351,14 @@ input:focus, textarea:focus, select:focus {
     padding: 1rem 0;
 }
 
-/* Group Card Enhancements */
+/* Group Card Styles */
 .group-card {
     background: var(--white);
     border-radius: var(--radius);
     padding: 1.5rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
-    height: 450px; /* Fixed height for consistent cards */
+    height: 450px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -382,7 +382,7 @@ input:focus, textarea:focus, select:focus {
     font-size: 1.2rem;
     margin-bottom: 0.8rem;
     line-height: 1.4;
-    height: 2.8em; /* Fixed height for title */
+    height: 2.8em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -393,13 +393,16 @@ input:focus, textarea:focus, select:focus {
     flex-grow: 1;
     margin-bottom: 1rem;
     line-height: 1.5;
-    height: 4.5em; /* Fixed height for description */
+    height: 4.5em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    color: var(--text-color);
+    font-size: 0.95rem;
 }
 
+/* Enhanced Category and Country Badges */
 .group-badges {
     display: flex;
     gap: 0.8rem;
@@ -407,29 +410,44 @@ input:focus, textarea:focus, select:focus {
     flex-wrap: wrap;
 }
 
-.card-actions {
-    margin-top: auto; /* Push button to bottom */
-    padding-top: 1rem;
-}
-
-.join-btn {
-    width: 100%; /* Full width button */
+.category-badge,
+.country-badge {
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: var(--white);
-    padding: 0.8rem 1.5rem;
-    border-radius: 30px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
+    gap: 0.5rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
-    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.category-badge {
+    background: linear-gradient(135deg, var(--accent-color), #2196F3);
+    color: white;
+}
+
+.category-badge i {
+    font-size: 0.9rem;
+}
+
+.country-badge {
+    background: linear-gradient(135deg, var(--secondary-color), #128C7E);
+    color: white;
+}
+
+.country-badge i {
+    font-size: 0.9rem;
+}
+
+.category-badge:hover,
+.country-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Footer */
 .card-footer {
     display: flex;
     justify-content: space-between;
@@ -437,14 +455,14 @@ input:focus, textarea:focus, select:focus {
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: var(--gray);
 }
 
 .views-count {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--gray);
-    font-size: 0.9rem;
 }
 
 .views-count i {

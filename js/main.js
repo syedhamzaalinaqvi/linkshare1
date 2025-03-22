@@ -265,21 +265,6 @@ async function updateGroupViews(groupId) {
     }
 }
 
-// Add click event listener for view tracking
-function setupViewTracking() {
-    document.querySelectorAll('.group-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            // Don't trigger if clicking the join button
-            if (!e.target.closest('.join-btn')) {
-                const groupId = card.dataset.groupId;
-                if (groupId) {
-                    updateGroupViews(groupId);
-                }
-            }
-        });
-    });
-}
-
 // Function to generate URL-friendly slug
 function generateSlug(title) {
     return title
@@ -294,14 +279,11 @@ function createGroupDetailUrl(group) {
     return `/group/${slug}`;
 }
 
-// Update createGroupCard function to remove detail page links
+// Update createGroupCard function to add view tracking to join button
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
     const views = group.views || 0;
-    
-    // Set up real-time view updates for this group
-    setupViewTracking();
     
     return `
         <div class="group-card" data-group-id="${group.id}">
@@ -317,13 +299,16 @@ function createGroupCard(group) {
             ` : ''}
             <h3>${group.title}</h3>
             <div class="group-badges">
-                <span class="category-badge">${group.category}</span>
-                <span class="country-badge">${group.country}</span>
+                <span class="category-badge"><i class="fas fa-tag"></i> ${group.category}</span>
+                <span class="country-badge"><i class="fas fa-globe"></i> ${group.country}</span>
             </div>
             <p>${truncatedDescription}</p>
 
             <div class="card-actions">
-                <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn whatsapp-style" aria-label="Join ${group.title} WhatsApp group">
+                <a href="${group.link}" target="_blank" rel="noopener noreferrer" 
+                   class="join-btn whatsapp-style" 
+                   aria-label="Join ${group.title} WhatsApp group"
+                   onclick="updateGroupViews('${group.id}')">
                     <i class="fab fa-whatsapp" aria-hidden="true"></i> Join Group
                     <span class="whatsapp-icon-bg"></span>
                 </a>
@@ -586,7 +571,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
             // After rendering the cards, set up lazy loading and view tracking
             setupLazyLoading();
-            setupViewTracking();
         } else {
             if (!loadMore) {
                 groupContainer.innerHTML = `
