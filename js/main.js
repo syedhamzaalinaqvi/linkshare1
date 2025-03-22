@@ -137,6 +137,72 @@ async function renderGroupPage(slug) {
                     <p>&copy; 2024 WhatsApp Group Hub. All rights reserved.</p>
                 </div>
             </footer>
+
+            <!-- Add structured data -->
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WhatsAppGroup",
+                "name": "${groupData.title}",
+                "description": "${groupData.description}",
+                "url": "${window.location.href}",
+                "category": "${groupData.category}",
+                "country": "${groupData.country}",
+                "image": "${groupData.image || ''}",
+                "dateCreated": "${groupData.timestamp?.toDate().toISOString() || new Date().toISOString()}",
+                "interactionStatistic": {
+                    "@type": "InteractionCounter",
+                    "interactionType": "https://schema.org/ViewAction",
+                    "userInteractionCount": ${groupData.views || 0}
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "url": "${groupData.link}",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                }
+            }
+            </script>
+
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": "${groupData.title}",
+                "description": "${groupData.description}",
+                "image": "${groupData.image || ''}",
+                "author": {
+                    "@type": "Organization",
+                    "name": "LinkShare",
+                    "url": "https://www.linkshare.online"
+                },
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "LinkShare",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://www.linkshare.online/linkshare-favicon.png"
+                    }
+                },
+                "datePublished": "${groupData.timestamp?.toDate().toISOString() || new Date().toISOString()}",
+                "dateModified": "${groupData.timestamp?.toDate().toISOString() || new Date().toISOString()}"
+            }
+            </script>
+
+            <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "LinkShare",
+                "url": "https://www.linkshare.online",
+                "logo": "https://www.linkshare.online/linkshare-favicon.png",
+                "sameAs": [
+                    "https://www.linkshare.online/about",
+                    "https://www.linkshare.online/contact"
+                ],
+                "description": "Share and discover WhatsApp group links. Join communities based on your interests, connect with like-minded people, and explore trending groups worldwide."
+            }
+            </script>
         `;
 
         // Reattach event listeners
