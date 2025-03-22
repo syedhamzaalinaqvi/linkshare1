@@ -307,12 +307,11 @@ function createGroupDetailUrl(group) {
     return `/group/${slug}`;
 }
 
-// Update createGroupCard function to include link to detail page
+// Update createGroupCard function to remove detail page links
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
     const views = group.views || 0;
-    const detailUrl = createGroupDetailUrl(group);
     
     // Set up real-time view updates for this group
     setupRealtimeViews(group.id);
@@ -329,7 +328,7 @@ function createGroupCard(group) {
                     onerror="this.src='https://via.placeholder.com/150'"
                 >
             ` : ''}
-            <h3><a href="${detailUrl}" class="group-title-link">${group.title}</a></h3>
+            <h3>${group.title}</h3>
             <div class="group-badges">
                 <span class="category-badge">${group.category}</span>
                 <span class="country-badge">${group.country}</span>
@@ -340,9 +339,6 @@ function createGroupCard(group) {
                 <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn whatsapp-style" aria-label="Join ${group.title} WhatsApp group">
                     <i class="fab fa-whatsapp" aria-hidden="true"></i> Join Group
                     <span class="whatsapp-icon-bg"></span>
-                </a>
-                <a href="${detailUrl}" class="view-more-btn" aria-label="View details for ${group.title}">
-                    <i class="fas fa-info-circle"></i> View Details
                 </a>
             </div>
             <div class="card-footer">
