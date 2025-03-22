@@ -114,6 +114,9 @@
             <p>&copy; 2025 LinkShare. All rights reserved.</p>
         </div>
     </footer>
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
     <script>
         const navToggle = document.querySelector('.nav-toggle');
@@ -121,6 +124,24 @@
 
         navToggle.addEventListener('click', () => {
             navLinks.classList.toggle('active');
+        });
+
+        // Scroll to Top Button
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
     </script>
 </body>
