@@ -16,9 +16,28 @@
     <title>LinkShare - Promote Your WhatsApp Group Links Free Directory</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Add structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "LinkShare",
+        "url": "https://www.linkshare.online",
+        "description": "Share and discover WhatsApp group links. Join communities based on your interests, connect with like-minded people, and explore trending groups worldwide.",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.linkshare.online/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
 </head>
 <body>
-    <nav class="navbar">
+    <!-- Add skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
         <a href="https://www.linkshare.online/" class="nav-brand">
             <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
             <span class="nav-brand-link-text">LinkShare</span>
@@ -47,7 +66,7 @@
     </nav>
     
 
-    <header class="hero">
+    <header class="hero" role="banner">
         <h1>LinkShare - The largest WhatsApp Group Links Hub</h1>
         <p>Discover and Promote Your Active WhatsApp Group Links!</p>
         <a href="../add-group" class="hero-btn">➕ Add Group</a>
@@ -153,7 +172,7 @@
         </div>
     </section>
 
-    <main class="container">
+    <main id="main-content" class="container" role="main">
         
 
         <section class="groups-section">
@@ -236,7 +255,7 @@
 
     </main>
 
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="footer-content">
             <div class="footer-section">
                 <h3>LinkShare</h3>

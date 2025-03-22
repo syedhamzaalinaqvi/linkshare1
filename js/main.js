@@ -186,6 +186,22 @@ async function updateGroupViews(groupId) {
     }
 }
 
+// Add loading state component
+function createLoadingState() {
+    return `
+        <div class="loading-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-badges"></div>
+                <div class="skeleton-description"></div>
+                <div class="skeleton-button"></div>
+            </div>
+        </div>
+    `;
+}
+
+// Update createGroupCard function to use lazy loading
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
@@ -193,7 +209,16 @@ function createGroupCard(group) {
     
     return `
         <div class="group-card" data-group-id="${group.id}">
-            ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+            ${group.image ? `
+                <img 
+                    loading="lazy"
+                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                    data-src="${group.image}"
+                    alt="${group.title}"
+                    class="lazy-image"
+                    onerror="this.src='https://via.placeholder.com/150'"
+                >
+            ` : ''}
             <h3>${group.title}</h3>
             <div class="group-badges">
                 <span class="category-badge">${group.category}</span>
@@ -202,14 +227,14 @@ function createGroupCard(group) {
             <p>${truncatedDescription}</p>
 
             <div class="card-actions">
-                <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn whatsapp-style">
-                    <i class="fab fa-whatsapp"></i> Join Group
+                <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn whatsapp-style" aria-label="Join ${group.title} WhatsApp group">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i> Join Group
                     <span class="whatsapp-icon-bg"></span>
                 </a>
             </div>
             <div class="card-footer">
-                <small><i class="far fa-clock"></i> ${timeString}</small>
-                <small class="views-count"><i class="far fa-eye"></i> ${views}</small>
+                <small><i class="far fa-clock" aria-hidden="true"></i> ${timeString}</small>
+                <small class="views-count"><i class="far fa-eye" aria-hidden="true"></i> ${views}</small>
             </div> 
         </div>
     `;
@@ -349,12 +374,32 @@ function setupViewTracking() {
     });
 }
 
+// Add lazy loading implementation
+function setupLazyLoading() {
+    const lazyImages = document.querySelectorAll('.lazy-image');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy-image');
+                observer.unobserve(img);
+            }
+        });
+    });
+
+    lazyImages.forEach(img => imageObserver.observe(img));
+}
+
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
 
     try {
         if (!loadMore) {
-            groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
+            // Show loading skeletons
+            const loadingSkeletons = Array(6).fill(createLoadingState()).join('');
+            groupContainer.innerHTML = loadingSkeletons;
             lastDoc = null;
         }
 
@@ -450,7 +495,8 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 groupContainer.parentNode.appendChild(loadMoreWrapper);
             }
 
-            // After rendering the cards, set up view tracking
+            // After rendering the cards, set up lazy loading and view tracking
+            setupLazyLoading();
             setupViewTracking();
         } else {
             if (!loadMore) {
@@ -464,53 +510,22 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         }
     } catch (error) {
         console.error('Error loading groups:', error);
-        groupContainer.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                <p>Error loading groups. Please try again later.</p>
-            </div>
-        `;
-    }
-}
-/*
-//----------------------------OLD CODE
-            // Add Load More button if we got a full page
-            if (groups.length === POSTS_PER_PAGE) {
-                const loadMoreBtn = document.createElement('button');
-                loadMoreBtn.className = 'load-more-btn';
-                loadMoreBtn.innerHTML = `
-                    Load More
-                    <i class="fas fa-chevron-down"></i>
-                `;
-                loadMoreBtn.onclick = () => loadGroups(currentTopic, currentCountry, true);
-                groupContainer.appendChild(loadMoreBtn);
-            }
-
-        } 
-----------------------------------END*/
-/*else {
-            if (!loadMore) {
-                groupContainer.innerHTML = `
-                    <div class="no-groups">
-                        <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
-                        <p>No groups found matching your criteria</p>
-                    </div>
-                `;
-            }
-        }
-
-  }   catch (error) {
-        console.error('Error loading groups:', error);
-        groupContainer.innerHTML = `
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                <p>Error loading groups. Please try again later.</p>
-            </div>
-        `;
+        showErrorState('Failed to load groups. Please try again later.');
     }
 }
 
-*/
+// Add error handling function
+function showErrorState(message) {
+    groupContainer.innerHTML = `
+        <div class="error-state" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>${message}</p>
+            <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+        </div>
+    `;
+}
 
 // Utility Functions
 function isValidWhatsAppLink(link) {
