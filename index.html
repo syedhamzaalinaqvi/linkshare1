@@ -277,47 +277,40 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- Navigation Toggle Script -->
     <script>
-        // Navigation toggle and Scroll to Top functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Navigation Toggle
-            const navToggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            
-            if (navToggle && navLinks) {
-                navToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navLinks.classList.toggle('active');
-                });
+        // Simple navigation toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        if (navToggle && navLinks) {
+            navToggle.onclick = function() {
+                navLinks.classList.toggle('active');
+            };
+        }
+    </script>
 
-                // Close menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
-                        navLinks.classList.remove('active');
-                    }
-                });
+    <!-- Scroll to Top Script -->
+    <script>
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
             }
+        });
 
-            // Scroll to Top Button
-            const scrollToTopBtn = document.querySelector('.scroll-to-top');
-            
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add('visible');
-                } else {
-                    scrollToTopBtn.classList.remove('visible');
-                }
-            });
-
-            scrollToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         });
     </script>
+
+    <!-- Module Scripts -->
     <script type="module" src="js/firebase-config.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
