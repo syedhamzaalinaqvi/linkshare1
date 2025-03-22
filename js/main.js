@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { db } from './firebase-config.js';
 
 // DOM Elements
@@ -174,16 +174,25 @@ function truncateDescription(description, wordLimit = 20) {
     return description;
 }
 
-// New COdium script to display cards
-
+// Function to update views count
+async function updateGroupViews(groupId) {
+    try {
+        const groupRef = doc(db, "groups", groupId);
+        await updateDoc(groupRef, {
+            views: increment(1)
+        });
+    } catch (error) {
+        console.error("Error updating views:", error);
+    }
+}
 
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
+    const views = group.views || 0;
     
-   
     return `
-        <div class="group-card">
+        <div class="group-card" data-group-id="${group.id}">
             ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
             <h3>${group.title}</h3>
             <div class="group-badges">
@@ -200,11 +209,11 @@ function createGroupCard(group) {
             </div>
             <div class="card-footer">
                 <small><i class="far fa-clock"></i> ${timeString}</small>
+                <small class="views-count"><i class="far fa-eye"></i> ${views}</small>
             </div> 
         </div>
     `;
 }
-
 
 // Adding the OpenGraph preview functionality to the existing code
 async function fetchOpenGraph(url) {
@@ -319,6 +328,27 @@ form?.addEventListener('submit', async (e) => {
 let lastDoc = null;
 const POSTS_PER_PAGE = 15;
 
+// Add intersection observer for view tracking
+function setupViewTracking() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const groupId = entry.target.dataset.groupId;
+                if (groupId) {
+                    updateGroupViews(groupId);
+                }
+            }
+        });
+    }, {
+        threshold: 0.5 // Trigger when 50% of the card is visible
+    });
+
+    // Observe all group cards
+    document.querySelectorAll('.group-card').forEach(card => {
+        observer.observe(card);
+    });
+}
+
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
 
@@ -419,6 +449,9 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 // Append button wrapper AFTER the group container
                 groupContainer.parentNode.appendChild(loadMoreWrapper);
             }
+
+            // After rendering the cards, set up view tracking
+            setupViewTracking();
         } else {
             if (!loadMore) {
                 groupContainer.innerHTML = `
