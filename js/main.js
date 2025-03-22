@@ -240,21 +240,9 @@ function truncateDescription(description, wordLimit = 20) {
     return description;
 }
 
-// Function to update views count with improved tracking
+// Function to update views count with click tracking
 async function updateGroupViews(groupId) {
     try {
-        // Get the last view time from localStorage
-        const lastViewTime = localStorage.getItem(`lastView_${groupId}`);
-        const currentTime = new Date().getTime();
-        
-        // Check if 24 hours have passed since last view
-        if (lastViewTime && (currentTime - parseInt(lastViewTime)) < 24 * 60 * 60 * 1000) {
-            return; // Skip if viewed within 24 hours
-        }
-
-        // Update the last view time
-        localStorage.setItem(`lastView_${groupId}`, currentTime.toString());
-
         // Get the current views count
         const groupRef = doc(db, "groups", groupId);
         const groupDoc = await getDoc(groupRef);
@@ -277,19 +265,18 @@ async function updateGroupViews(groupId) {
     }
 }
 
-// Add real-time view count updates
-function setupRealtimeViews(groupId) {
-    const groupRef = doc(db, "groups", groupId);
-    
-    // Listen for real-time updates
-    onSnapshot(groupRef, (doc) => {
-        if (doc.exists()) {
-            const views = doc.data().views || 0;
-            const viewCountElement = document.querySelector(`[data-group-id="${groupId}"] .views-count`);
-            if (viewCountElement) {
-                viewCountElement.innerHTML = `<i class="far fa-eye" aria-hidden="true"></i> ${views}`;
+// Add click event listener for view tracking
+function setupViewTracking() {
+    document.querySelectorAll('.group-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking the join button
+            if (!e.target.closest('.join-btn')) {
+                const groupId = card.dataset.groupId;
+                if (groupId) {
+                    updateGroupViews(groupId);
+                }
             }
-        }
+        });
     });
 }
 
@@ -314,7 +301,7 @@ function createGroupCard(group) {
     const views = group.views || 0;
     
     // Set up real-time view updates for this group
-    setupRealtimeViews(group.id);
+    setupViewTracking();
     
     return `
         <div class="group-card" data-group-id="${group.id}">
@@ -461,27 +448,6 @@ form?.addEventListener('submit', async (e) => {
 // Load Groups
 let lastDoc = null;
 const POSTS_PER_PAGE = 15;
-
-// Add intersection observer for view tracking
-function setupViewTracking() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const groupId = entry.target.dataset.groupId;
-                if (groupId) {
-                    updateGroupViews(groupId);
-                }
-            }
-        });
-    }, {
-        threshold: 0.5 // Trigger when 50% of the card is visible
-    });
-
-    // Observe all group cards
-    document.querySelectorAll('.group-card').forEach(card => {
-        observer.observe(card);
-    });
-}
 
 // Add lazy loading implementation
 function setupLazyLoading() {
