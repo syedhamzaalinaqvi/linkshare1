@@ -237,7 +237,8 @@ function truncateDescription(description, wordLimit = 20) {
     if (words.length > wordLimit) {
         return words.slice(0, wordLimit).join(' ') + '...';
     }
-    return description;
+    // If description is shorter than 20 words, pad it with spaces to maintain consistent height
+    return description + ' '.repeat(wordLimit - words.length);
 }
 
 // Function to update views count with click tracking

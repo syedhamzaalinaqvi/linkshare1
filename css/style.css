@@ -393,13 +393,15 @@ input:focus, textarea:focus, select:focus {
     flex-grow: 1;
     margin-bottom: 1rem;
     line-height: 1.5;
-    height: 4.5em;
+    min-height: 4.5em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     color: var(--text-color);
     font-size: 0.95rem;
+    min-width: 20ch;
+    word-break: break-word;
 }
 
 /* Enhanced Category and Country Badges */
