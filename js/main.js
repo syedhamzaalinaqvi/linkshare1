@@ -487,6 +487,22 @@ function setupLazyLoading() {
     lazyImages.forEach(img => imageObserver.observe(img));
 }
 
+// Add loading state component
+function createLoadingState() {
+    return `
+        <div class="loading-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-badges"></div>
+                <div class="skeleton-description"></div>
+                <div class="skeleton-button"></div>
+            </div>
+        </div>
+    `;
+}
+
+// Update loadGroups function with better error handling
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
 
@@ -553,7 +569,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 groupContainer.innerHTML = groupsHTML;
             }
 
-            //----------------------------NEW CODE: PLACE "LOAD MORE" BUTTON SEPARATELY
             // Remove existing Load More button if it exists
             let loadMoreWrapper = document.querySelector('.load-more-wrapper');
             if (loadMoreWrapper) loadMoreWrapper.remove();
@@ -572,13 +587,13 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 const loadMoreBtn = loadMoreWrapper.querySelector('.load-more-btn');
 
                 loadMoreBtn.onclick = async () => {
-                     loadMoreBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`; // Show spinner
-    		     loadMoreBtn.disabled = true; // Disable button during loading
+                    loadMoreBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+                    loadMoreBtn.disabled = true;
                     
-			await loadGroups(currentTopic, currentCountry, true); // Load more posts
+                    await loadGroups(currentTopic, currentCountry, true);
 
-                    loadMoreBtn.innerHTML = `Load More <i class="fas fa-chevron-down"></i>`; // Reset button text
-		    loadMoreBtn.disabled = false; // Re-enable button
+                    loadMoreBtn.innerHTML = `Load More <i class="fas fa-chevron-down"></i>`;
+                    loadMoreBtn.disabled = false;
 
                     // Add fade-in animation to newly loaded posts
                     document.querySelectorAll('.group-item').forEach(item => {
@@ -586,7 +601,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                     });
                 };
 
-                // Append button wrapper AFTER the group container
                 groupContainer.parentNode.appendChild(loadMoreWrapper);
             }
 
@@ -605,7 +619,14 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         }
     } catch (error) {
         console.error('Error loading groups:', error);
-        showErrorState('Failed to load groups. Please try again later.');
+        // More specific error message based on the error type
+        let errorMessage = 'Failed to load groups. Please try again later.';
+        if (error.code === 'permission-denied') {
+            errorMessage = 'Access denied. Please check your permissions.';
+        } else if (error.code === 'unavailable') {
+            errorMessage = 'Service temporarily unavailable. Please try again in a few minutes.';
+        }
+        showErrorState(errorMessage);
     }
 }
 
