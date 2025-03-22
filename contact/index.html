@@ -49,60 +49,46 @@
         </ul>
     </nav>
 
-    <main class="container static-page">
-        <section class="contact-section">
+    <main class="page-container">
+        <div class="page-header">
             <h1>Contact Us</h1>
+            <p>Get in touch with us for any questions or support</p>
+        </div>
+        <div class="content-section">
             <div class="contact-content">
                 <div class="contact-info">
-                    <h2>Get in Touch</h2>
-                    <p>Have questions or concerns? We're here to help! Fill out the form below or reach out to us directly.</p>
-
-                    <div class="contact-methods">
-                        <div class="contact-method">
-                            <i class="fas fa-envelope"></i>
-                            <p>Email: syedhamzaalinaqvi4@gmail.com</p>
-                        </div>
-                        <div class="contact-method">
-                            <i class="fas fa-clock"></i>
-                            <p>Response Time: Within 24 hours</p>
-                        </div>
-                    </div>
+                    <h2>Contact Information</h2>
+                    <p>Have questions or need assistance? We're here to help!</p>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> Email: support@linkshare.online</li>
+                        <li><i class="fas fa-clock"></i> Response Time: Within 24 hours</li>
+                    </ul>
                 </div>
 
-                <form class="contact-form" id="contactForm">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <select id="subject" name="subject" required>
-                            <option value="">Select a subject</option>
-                            <option value="general">General Inquiry</option>
-                            <option value="support">Technical Support</option>
-                            <option value="report">Report an Issue</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">
-                        <span class="btn-text">Send Message</span>
-                        <span class="loading-spinner"></span>
-                    </button>
-                </form>
+                <div class="contact-form">
+                    <h2>Send us a Message</h2>
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" required></textarea>
+                        </div>
+                        <button type="submit" class="page-btn">Send Message</button>
+                    </form>
+                </div>
             </div>
-        </section>
+        </div>
     </main>
 
     <footer class="footer">
