@@ -858,32 +858,47 @@ input:focus, textarea:focus, select:focus {
 .join-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.8rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: var(--white);
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
     padding: 1rem 2rem;
     border-radius: 30px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.1rem;
-    transition: all 0.4s ease;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
     border: 2px solid transparent;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .join-btn i {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     transition: transform 0.3s ease;
 }
 
 .join-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
-    border-color: var(--white);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    border-color: white;
+    background: linear-gradient(135deg, #128C7E, #25D366);
 }
 
 .join-btn:hover i {
     transform: scale(1.1);
+}
+
+.join-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(37, 211, 102, 0.3);
+}
+
+.card-actions {
+    margin-top: auto;
+    width: 100%;
 }
 
 /* Update to existing CSS */
