@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { db } from './firebase-config.js';
 
 // DOM Elements
@@ -240,38 +240,67 @@ function truncateDescription(description, wordLimit = 20) {
     return description;
 }
 
-// Function to update views count
+// Function to update views count with improved tracking
 async function updateGroupViews(groupId) {
     try {
+        // Get the last view time from localStorage
+        const lastViewTime = localStorage.getItem(`lastView_${groupId}`);
+        const currentTime = new Date().getTime();
+        
+        // Check if 24 hours have passed since last view
+        if (lastViewTime && (currentTime - parseInt(lastViewTime)) < 24 * 60 * 60 * 1000) {
+            return; // Skip if viewed within 24 hours
+        }
+
+        // Update the last view time
+        localStorage.setItem(`lastView_${groupId}`, currentTime.toString());
+
+        // Get the current views count
         const groupRef = doc(db, "groups", groupId);
+        const groupDoc = await getDoc(groupRef);
+        const currentViews = groupDoc.data()?.views || 0;
+
+        // Update views count in Firestore
         await updateDoc(groupRef, {
-            views: increment(1)
+            views: increment(1),
+            lastUpdated: serverTimestamp()
         });
+
+        // Update the view count in the UI immediately
+        const viewCountElement = document.querySelector(`[data-group-id="${groupId}"] .views-count`);
+        if (viewCountElement) {
+            viewCountElement.innerHTML = `<i class="far fa-eye" aria-hidden="true"></i> ${currentViews + 1}`;
+        }
+
     } catch (error) {
         console.error("Error updating views:", error);
     }
 }
 
-// Add loading state component
-function createLoadingState() {
-    return `
-        <div class="loading-skeleton">
-            <div class="skeleton-image"></div>
-            <div class="skeleton-content">
-                <div class="skeleton-title"></div>
-                <div class="skeleton-badges"></div>
-                <div class="skeleton-description"></div>
-                <div class="skeleton-button"></div>
-            </div>
-        </div>
-    `;
+// Add real-time view count updates
+function setupRealtimeViews(groupId) {
+    const groupRef = doc(db, "groups", groupId);
+    
+    // Listen for real-time updates
+    onSnapshot(groupRef, (doc) => {
+        if (doc.exists()) {
+            const views = doc.data().views || 0;
+            const viewCountElement = document.querySelector(`[data-group-id="${groupId}"] .views-count`);
+            if (viewCountElement) {
+                viewCountElement.innerHTML = `<i class="far fa-eye" aria-hidden="true"></i> ${views}`;
+            }
+        }
+    });
 }
 
-// Update createGroupCard function to use lazy loading
+// Update createGroupCard function to include real-time view updates
 function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
     const views = group.views || 0;
+    
+    // Set up real-time view updates for this group
+    setupRealtimeViews(group.id);
     
     return `
         <div class="group-card" data-group-id="${group.id}">
