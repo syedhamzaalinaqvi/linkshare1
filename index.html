@@ -35,15 +35,15 @@
 
     <!-- Add navigation script -->
     <script>
-        window.addEventListener('load', function() {
+        // Simple navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
             const navToggle = document.querySelector('.nav-toggle');
             const navLinks = document.querySelector('.nav-links');
-
+            
             if (navToggle && navLinks) {
-                navToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
+                navToggle.onclick = function() {
                     navLinks.classList.toggle('active');
-                });
+                };
             }
         });
     </script>
@@ -294,7 +294,7 @@
 
     <!-- Scroll to Top Script -->
     <script>
-        window.addEventListener('load', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const scrollToTopBtn = document.querySelector('.scroll-to-top');
             
             window.addEventListener('scroll', () => {
