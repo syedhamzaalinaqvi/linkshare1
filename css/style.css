@@ -390,21 +390,18 @@ input:focus, textarea:focus, select:focus {
 }
 
 .group-card p {
-    flex-grow: 1;
     margin-bottom: 1rem;
     line-height: 1.5;
-    min-height: 4.5em;
-    max-height: 6em;
+    height: 4.5em;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     color: var(--text-color);
     font-size: 0.95rem;
     word-break: break-word;
 }
 
-/* Enhanced Category and Country Badges */
 .group-badges {
     display: flex;
     gap: 0.8rem;
@@ -412,44 +409,12 @@ input:focus, textarea:focus, select:focus {
     flex-wrap: wrap;
 }
 
-.category-badge,
-.country-badge {
-    padding: 0.5rem 1.2rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.card-actions {
+    margin-top: auto;
+    width: 100%;
+    padding-bottom: 0.5rem;
 }
 
-.category-badge {
-    background: linear-gradient(135deg, var(--accent-color), #2196F3);
-    color: white;
-}
-
-.category-badge i {
-    font-size: 0.9rem;
-}
-
-.country-badge {
-    background: linear-gradient(135deg, var(--secondary-color), #128C7E);
-    color: white;
-}
-
-.country-badge i {
-    font-size: 0.9rem;
-}
-
-.category-badge:hover,
-.country-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Card Footer */
 .card-footer {
     display: flex;
     justify-content: space-between;
@@ -458,7 +423,13 @@ input:focus, textarea:focus, select:focus {
     border-top: 1px solid #eee;
     font-size: 0.9rem;
     color: var(--gray);
-    margin-top: auto;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 0.5rem 1.5rem;
+    z-index: 1;
 }
 
 .views-count {
