@@ -32,6 +32,21 @@
         }
     }
     </script>
+
+    <!-- Add navigation script -->
+    <script>
+        window.addEventListener('load', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    navLinks.classList.toggle('active');
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Add skip link for accessibility -->
@@ -278,18 +293,8 @@
     </button>
 
     <script>
-        // Navigation toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const navToggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-
-            if (navToggle && navLinks) {
-                navToggle.addEventListener('click', () => {
-                    navLinks.classList.toggle('active');
-                });
-            }
-
-            // Scroll to Top Button
+        // Scroll to Top Button
+        window.addEventListener('load', function() {
             const scrollToTopBtn = document.querySelector('.scroll-to-top');
             
             window.addEventListener('scroll', () => {
