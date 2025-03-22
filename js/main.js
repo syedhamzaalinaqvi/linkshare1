@@ -285,7 +285,7 @@ function createGroupCard(group) {
     const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
     const truncatedDescription = truncateDescription(group.description);
     const views = group.views || 0;
-    
+   
     return `
         <div class="group-card" data-group-id="${group.id}">
             ${group.image ? `
@@ -597,16 +597,16 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
 // Add error handling function
 function showErrorState(message) {
-    groupContainer.innerHTML = `
+                groupContainer.innerHTML = `
         <div class="error-state" role="alert">
-            <i class="fas fa-exclamation-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
             <p>${message}</p>
             <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
                 <i class="fas fa-redo"></i> Try Again
             </button>
-        </div>
-    `;
-}
+            </div>
+        `;
+    }
 
 // Utility Functions
 function isValidWhatsAppLink(link) {
