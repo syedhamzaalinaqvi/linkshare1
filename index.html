@@ -32,21 +32,6 @@
         }
     }
     </script>
-
-    <!-- Add navigation script -->
-    <script>
-        // Simple navigation toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const navToggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-            
-            if (navToggle && navLinks) {
-                navToggle.onclick = function() {
-                    navLinks.classList.toggle('active');
-                };
-            }
-        });
-    </script>
 </head>
 <body>
     <!-- Add skip link for accessibility -->
@@ -292,24 +277,32 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- Simple Navigation Toggle -->
+    <script>
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+
     <!-- Scroll to Top Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const scrollToTopBtn = document.querySelector('.scroll-to-top');
-            
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add('visible');
-                } else {
-                    scrollToTopBtn.classList.remove('visible');
-                }
-            });
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
 
-            scrollToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         });
     </script>
