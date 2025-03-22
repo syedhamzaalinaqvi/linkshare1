@@ -393,7 +393,7 @@ input:focus, textarea:focus, select:focus {
     flex-grow: 1;
     margin-bottom: 1rem;
     line-height: 1.5;
-    min-height: 4.5em;
+    height: 4.5em;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -454,11 +454,11 @@ input:focus, textarea:focus, select:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1rem;
-    padding-top: 1rem;
+    padding-top: 0.5rem;
     border-top: 1px solid #eee;
     font-size: 0.9rem;
     color: var(--gray);
+    margin-top: auto;
 }
 
 .views-count {
@@ -899,6 +899,7 @@ input:focus, textarea:focus, select:focus {
 .card-actions {
     margin-top: auto;
     width: 100%;
+    padding-bottom: 1rem;
 }
 
 /* Update to existing CSS */
