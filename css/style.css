@@ -1263,6 +1263,80 @@ select:focus {
     box-shadow: var(--shadow);
 }
 
+/* Form Styles for All Pages */
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e1e1e1;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+    outline: none;
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Button Styles for All Pages */
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.page-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+}
+
+.page-btn i {
+    font-size: 1.2rem;
+}
+
+/* Responsive Styles for All Pages */
 @media (max-width: 768px) {
     .page-container {
         padding: 1rem;
@@ -1282,5 +1356,84 @@ select:focus {
 
     .page-content {
         padding: 1.5rem;
+    }
+
+    .form-container {
+        padding: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.7rem;
+        font-size: 0.95rem;
+    }
+
+    .page-btn {
+        width: 100%;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .groups-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .group-card {
+        height: auto;
+        min-height: 450px;
+    }
+
+    .group-card img {
+        height: 160px;
+    }
+
+    .group-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .group-card p {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .card-footer {
+        padding: 0.5rem 1rem;
+    }
+
+    .views-count {
+        font-size: 0.8rem;
+    }
+}
+
+/* Additional Mobile Optimizations */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .form-container {
+        padding: 1rem;
+    }
+
+    .group-card {
+        padding: 1rem;
+    }
+
+    .group-badges {
+        gap: 0.4rem;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .join-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
     }
 }
