@@ -337,7 +337,7 @@ input:focus, textarea:focus, select:focus {
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .group-card:hover {
@@ -419,7 +419,9 @@ input:focus, textarea:focus, select:focus {
 .card-actions {
     margin-top: auto;
     width: 100%;
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
+    position: relative;
+    z-index: 2;
 }
 
 .card-footer {
@@ -430,13 +432,10 @@ input:focus, textarea:focus, select:focus {
     border-top: 1px solid #eee;
     font-size: 0.9rem;
     color: var(--gray);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     background: var(--white);
     padding: 0.5rem 1.5rem;
-    z-index: 1;
+    z-index: 2;
 }
 
 .views-count {
@@ -740,6 +739,29 @@ input:focus, textarea:focus, select:focus {
         max-width: 250px;
         padding: 0.8rem 1.5rem;
         font-size: 1rem;
+    }
+
+    .group-card {
+        height: auto;
+        min-height: 450px;
+        padding-bottom: 4rem;
+    }
+
+    .card-actions {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: var(--white);
+        border-top: 1px solid #eee;
+    }
+
+    .join-btn {
+        width: 100%;
+        margin: 0;
+        position: relative;
+        z-index: 2;
     }
 }
 
