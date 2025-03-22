@@ -32,21 +32,6 @@
         }
     }
     </script>
-
-    <!-- Add navigation script -->
-    <script>
-        window.addEventListener('load', function() {
-            const navToggle = document.querySelector('.nav-toggle');
-            const navLinks = document.querySelector('.nav-links');
-
-            if (navToggle && navLinks) {
-                navToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    navLinks.classList.toggle('active');
-                });
-            }
-        });
-    </script>
 </head>
 <body>
     <!-- Add skip link for accessibility -->
@@ -293,8 +278,28 @@
     </button>
 
     <script>
-        // Scroll to Top Button
-        window.addEventListener('load', function() {
+        // Navigation toggle and Scroll to Top functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation Toggle
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navLinks.classList.toggle('active');
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            }
+
+            // Scroll to Top Button
             const scrollToTopBtn = document.querySelector('.scroll-to-top');
             
             window.addEventListener('scroll', () => {
