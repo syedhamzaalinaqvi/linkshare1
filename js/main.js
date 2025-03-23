@@ -244,25 +244,22 @@ function truncateDescription(description, wordLimit = 20) {
 // Function to update views count with click tracking
 async function updateGroupViews(groupId) {
     try {
-        // Get the current views count
         const groupRef = doc(db, "groups", groupId);
-        const groupDoc = await getDoc(groupRef);
-        const currentViews = groupDoc.data()?.views || 0;
-
-        // Update views count in Firestore
+        
+        // Use increment to atomically update the views count
         await updateDoc(groupRef, {
             views: increment(1),
-            lastUpdated: serverTimestamp()
+            lastViewedAt: serverTimestamp()
         });
 
-        // Update the view count in the UI immediately
-        const viewCountElement = document.querySelector(`[data-group-id="${groupId}"] .views-count`);
-        if (viewCountElement) {
-            viewCountElement.innerHTML = `<i class="far fa-eye" aria-hidden="true"></i> ${currentViews + 1}`;
+        // Update the views count in the UI
+        const viewsElement = document.querySelector(`[data-group-id="${groupId}"] .views-count span`);
+        if (viewsElement) {
+            const currentViews = parseInt(viewsElement.textContent) || 0;
+            viewsElement.textContent = currentViews + 1;
         }
-
     } catch (error) {
-        console.error("Error updating views:", error);
+        console.error('Error updating views:', error);
     }
 }
 
@@ -280,46 +277,60 @@ function createGroupDetailUrl(group) {
     return `/group/${slug}`;
 }
 
-// Update createGroupCard function to add view tracking to join button
+// Function to create group card
 function createGroupCard(group) {
-    const timeString = group.timestamp ? timeAgo(group.timestamp.seconds) : 'N/A';
-    const truncatedDescription = truncateDescription(group.description);
-    const views = group.views || 0;
-   
-    return `
-        <div class="group-card" data-group-id="${group.id}">
-            ${group.image ? `
-                <img 
-                    loading="lazy"
-                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                    data-src="${group.image}"
-                    alt="${group.title}"
-                    class="lazy-image"
-                    onerror="this.src='https://via.placeholder.com/150'"
-                >
-            ` : ''}
-            <h3>${group.title}</h3>
-            <div class="group-badges">
-                <span class="category-badge"><i class="fas fa-tag"></i> ${group.category}</span>
-                <span class="country-badge"><i class="fas fa-globe"></i> ${group.country}</span>
-            </div>
-            <p>${truncatedDescription}</p>
+    const card = document.createElement('div');
+    card.className = 'group-card';
+    card.setAttribute('data-group-id', group.id);
 
-            <div class="card-actions">
-                <a href="${group.link}" target="_blank" rel="noopener noreferrer" 
-                   class="join-btn whatsapp-style" 
-                   aria-label="Join ${group.title} WhatsApp group"
-                   onclick="updateGroupViews('${group.id}')">
-                    <i class="fab fa-whatsapp" aria-hidden="true"></i> Join Group
-                    <span class="whatsapp-icon-bg"></span>
-                </a>
+    card.innerHTML = `
+        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+        <div class="group-badges">
+            <span class="category-badge">${group.category}</span>
+            <span class="country-badge">${group.country}</span>
+        </div>
+        <h3>${group.title}</h3>
+        <p>${truncateDescription(group.description)}</p>
+        <div class="card-actions">
+            <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="event.preventDefault();">
+                <i class="fab fa-whatsapp"></i> Join Group
+            </a>
+        </div>
+        <div class="card-footer">
+            <div class="views-count">
+                <i class="fas fa-eye"></i>
+                <span>${group.views || 0}</span> views
             </div>
-            <div class="card-footer">
-                <small><i class="far fa-clock" aria-hidden="true"></i> ${timeString}</small>
-                <small class="views-count"><i class="far fa-eye" aria-hidden="true"></i> ${views}</small>
-            </div> 
+            <div class="date-added">
+                ${group.timestamp ? new Date(group.timestamp.toDate()).toLocaleDateString() : 'Recently added'}
+            </div>
         </div>
     `;
+
+    // Add click event listener to the join button
+    const joinBtn = card.querySelector('.join-btn');
+    joinBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        // Update views count
+        await updateGroupViews(group.id);
+        
+        // After updating the count, redirect to the WhatsApp group
+        window.open(group.link, '_blank');
+    });
+
+    return card;
+}
+
+// Function to render groups
+async function renderGroups(groups) {
+    if (!groupContainer) return;
+    
+    groupContainer.innerHTML = '';
+    groups.forEach(group => {
+        const card = createGroupCard(group);
+        groupContainer.appendChild(card);
+    });
 }
 
 // Adding the OpenGraph preview functionality to the existing code
