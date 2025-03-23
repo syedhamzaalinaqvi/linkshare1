@@ -2254,3 +2254,31 @@ select:focus {
         font-size: 0.9rem;
     }
 }
+
+.footer-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.footer-section .logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.footer-section p {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
