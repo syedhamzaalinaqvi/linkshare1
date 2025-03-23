@@ -314,7 +314,7 @@ function openModal(group) {
                     <span>${group.views || 0}</span> views
                 </div>
                 <div class="date-added">
-                    ${group.timestamp ? new Date(group.timestamp.toDate()).toLocaleDateString() : 'Recently added'}
+                    ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
                 </div>
             </div>
         </div>
@@ -356,7 +356,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
 });
 
-// Update createGroupCard function to add click handler for modal
+// Update createGroupCard function to use timeAgo
 function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
@@ -381,7 +381,7 @@ function createGroupCard(group) {
                 <span>${group.views || 0}</span> views
             </div>
             <div class="date-added">
-                ${group.timestamp ? new Date(group.timestamp.toDate()).toLocaleDateString() : 'Recently added'}
+                ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
             </div>
         </div>
     `;
