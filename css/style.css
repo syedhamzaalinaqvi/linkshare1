@@ -1806,6 +1806,9 @@ select:focus {
 
 .modal-group-info {
     padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Important for flex container */
 }
 
 .modal-group-info h2 {
@@ -1823,17 +1826,33 @@ select:focus {
     flex-wrap: wrap;
 }
 
-.modal-group-badges .category-badge,
-.modal-group-badges .country-badge {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-}
-
 .modal-description {
     margin: 1.5rem 0;
     line-height: 1.6;
     color: var(--text-color);
     word-break: break-word;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 200px;
+    padding-right: 0.5rem;
+}
+
+.modal-description::-webkit-scrollbar {
+    width: 4px;
+}
+
+.modal-description::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.modal-description::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.modal-description::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
 }
 
 .modal-footer {
@@ -1845,6 +1864,10 @@ select:focus {
     margin-top: 1.5rem;
     flex-wrap: wrap;
     gap: 0.5rem;
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+    z-index: 1;
 }
 
 .modal-footer .views-count,
@@ -1861,24 +1884,56 @@ select:focus {
 }
 
 @media (max-width: 768px) {
+    .modal-content {
+        padding: 1.5rem;
+        margin: 0.5rem;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-group-info {
+        padding: 1rem;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .modal-description {
+        max-height: 150px;
+        margin: 1rem 0;
+        font-size: 0.95rem;
+    }
+
     .modal-footer {
-        padding-top: 0.8rem;
+        padding: 0.8rem 0;
         margin-top: 1rem;
-        font-size: 0.85rem;
-    }
-
-    .modal-footer .views-count,
-    .modal-footer .date-added {
-        font-size: 0.8rem;
-        gap: 0.3rem;
-    }
-
-    .modal-footer .views-count i {
-        font-size: 0.9rem;
+        background: var(--white);
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
     }
 }
 
 @media (max-width: 480px) {
+    .modal-content {
+        padding: 1rem;
+        margin: 0.3rem;
+    }
+
+    .modal-group-info {
+        padding: 0.8rem;
+    }
+
+    .modal-group-info h2 {
+        font-size: 1.2rem;
+    }
+
+    .modal-description {
+        max-height: 120px;
+        font-size: 0.9rem;
+        margin: 0.8rem 0;
+    }
+
     .modal-footer {
         flex-direction: row;
         justify-content: space-between;
@@ -1886,6 +1941,9 @@ select:focus {
         margin-top: 0.8rem;
         background: #f8f8f8;
         border-radius: var(--radius);
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
     }
 
     .modal-footer .views-count,
