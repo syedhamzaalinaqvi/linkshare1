@@ -322,10 +322,17 @@ function openModal(group) {
 
     // Add click event listener to the join button in modal
     const joinBtn = modalContent.querySelector('.join-btn');
-    joinBtn.addEventListener('click', async (e) => {
+    joinBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        await updateGroupViews(group.id);
+        
+        // Open the link immediately
         window.open(group.link, '_blank');
+        
+        // Update views count in the background
+        updateGroupViews(group.id).catch(console.error);
+        
+        // Close the modal
+        closeModal();
     });
 
     modalOverlay.classList.add('active');
@@ -381,11 +388,15 @@ function createGroupCard(group) {
 
     // Add click event listener to the join button
     const joinBtn = card.querySelector('.join-btn');
-    joinBtn.addEventListener('click', async (e) => {
+    joinBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation(); // Prevent modal from opening when clicking join button
-        await updateGroupViews(group.id);
+        
+        // Open the link immediately
         window.open(group.link, '_blank');
+        
+        // Update views count in the background
+        updateGroupViews(group.id).catch(console.error);
     });
 
     // Add click event listener to the card for modal
