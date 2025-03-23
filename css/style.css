@@ -2258,7 +2258,7 @@ select:focus {
 .footer-section {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.8rem;
 }
 
 .footer-section h3 {
@@ -2266,15 +2266,20 @@ select:focus {
     align-items: center;
     gap: 0.5rem;
     color: var(--primary-color);
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: bold;
     margin: 0;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.footer-section h3:hover {
+    transform: scale(1.05);
 }
 
 .footer-section .logo {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
+    width: 40px;
+    height: auto;
 }
 
 .footer-section p {
