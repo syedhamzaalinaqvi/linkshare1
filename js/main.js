@@ -291,52 +291,75 @@ document.body.insertAdjacentHTML('beforeend', `
 
 // Modal functions
 function openModal(group) {
-    const modalOverlay = document.querySelector('.modal-overlay');
-    const modalContent = document.querySelector('.modal-group-card');
-    
-    modalContent.innerHTML = `
-        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
-        <div class="modal-group-info">
-            <h2>${group.title}</h2>
-            <div class="modal-group-badges">
-                <span class="category-badge">${group.category}</span>
-                <span class="country-badge">${group.country}</span>
-            </div>
-            <div class="modal-description">${group.description}</div>
-            <div class="card-actions">
-                <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="event.preventDefault();">
-                    <i class="fab fa-whatsapp"></i> Join Group
-                </a>
-            </div>
-            <div class="modal-footer">
-                <div class="views-count">
-                    <i class="fas fa-eye"></i>
-                    <span>${group.views || 0}</span> views
-                </div>
-                <div class="date-added">
-                    ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <button class="modal-close" aria-label="Close modal">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="modal-content">
+            <div class="modal-group-card">
+                <img src="${group.imageUrl}" alt="${group.name}" class="lazy-image">
+                <div class="modal-group-info">
+                    <h2>${group.name}</h2>
+                    <div class="modal-group-badges">
+                        <span class="category-badge">
+                            <i class="fas fa-tag"></i> ${group.category}
+                        </span>
+                        <span class="country-badge">
+                            <i class="fas fa-globe"></i> ${group.country}
+                        </span>
+                    </div>
+                    <div class="modal-description">
+                        ${group.description}
+                    </div>
+                    <div class="modal-card-actions">
+                        <a href="${group.link}" class="join-btn modal-join-btn" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-whatsapp"></i> Join Group
+                        </a>
+                        <div class="modal-footer">
+                            <div class="views-count">
+                                <i class="fas fa-eye"></i> ${group.views || 0} views
+                            </div>
+                            <div class="date-added">
+                                <i class="far fa-clock"></i> ${timeAgo(group.timestamp)}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 
-    // Add click event listener to the join button in modal
-    const joinBtn = modalContent.querySelector('.join-btn');
-    joinBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Open the link immediately
-        window.open(group.link, '_blank');
-        
-        // Update views count in the background
-        updateGroupViews(group.id).catch(console.error);
-        
-        // Close the modal
-        closeModal();
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('active'));
+
+    // Close modal when clicking close button or outside
+    modal.querySelector('.modal-close').addEventListener('click', () => {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
     });
 
-    modalOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.remove(), 300);
+        }
+    });
+
+    // Handle join button click
+    const joinBtn = modal.querySelector('.modal-join-btn');
+    joinBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        updateGroupViews(group.id);
+        window.open(group.link, '_blank');
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    });
+
+    // Lazy load image
+    const img = modal.querySelector('.lazy-image');
+    img.addEventListener('load', () => img.classList.add('loaded'));
 }
 
 function closeModal() {
