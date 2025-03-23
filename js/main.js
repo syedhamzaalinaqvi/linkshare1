@@ -277,7 +277,79 @@ function createGroupDetailUrl(group) {
     return `/group/${slug}`;
 }
 
-// Function to create group card
+// Add modal HTML to the document
+document.body.insertAdjacentHTML('beforeend', `
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-group-card"></div>
+        </div>
+    </div>
+`);
+
+// Modal functions
+function openModal(group) {
+    const modalOverlay = document.querySelector('.modal-overlay');
+    const modalContent = document.querySelector('.modal-group-card');
+    
+    modalContent.innerHTML = `
+        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+        <div class="modal-group-info">
+            <h2>${group.title}</h2>
+            <div class="modal-group-badges">
+                <span class="category-badge">${group.category}</span>
+                <span class="country-badge">${group.country}</span>
+            </div>
+            <div class="modal-description">${group.description}</div>
+            <div class="card-actions">
+                <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="event.preventDefault();">
+                    <i class="fab fa-whatsapp"></i> Join Group
+                </a>
+            </div>
+            <div class="modal-footer">
+                <div class="views-count">
+                    <i class="fas fa-eye"></i>
+                    <span>${group.views || 0}</span> views
+                </div>
+                <div class="date-added">
+                    ${group.timestamp ? new Date(group.timestamp.toDate()).toLocaleDateString() : 'Recently added'}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add click event listener to the join button in modal
+    const joinBtn = modalContent.querySelector('.join-btn');
+    joinBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await updateGroupViews(group.id);
+        window.open(group.link, '_blank');
+    });
+
+    modalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeModal() {
+    const modalOverlay = document.querySelector('.modal-overlay');
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+}
+
+// Add modal close events
+document.querySelector('.modal-close')?.addEventListener('click', closeModal);
+document.querySelector('.modal-overlay')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+});
+
+// Add escape key handler for modal
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+});
+
+// Update createGroupCard function to add click handler for modal
 function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
@@ -311,13 +383,13 @@ function createGroupCard(group) {
     const joinBtn = card.querySelector('.join-btn');
     joinBtn.addEventListener('click', async (e) => {
         e.preventDefault();
-        
-        // Update views count
+        e.stopPropagation(); // Prevent modal from opening when clicking join button
         await updateGroupViews(group.id);
-        
-        // After updating the count, redirect to the WhatsApp group
         window.open(group.link, '_blank');
     });
+
+    // Add click event listener to the card for modal
+    card.addEventListener('click', () => openModal(group));
 
     return card;
 }

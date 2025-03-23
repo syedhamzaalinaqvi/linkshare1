@@ -1723,13 +1723,129 @@ select:focus {
     }
 }
 
-// Function to render groups
-async function renderGroups(groups) {
-    if (!groupContainer) return;
-    
-    groupContainer.innerHTML = '';
-    groups.forEach(group => {
-        const card = createGroupCard(group);
-        groupContainer.appendChild(card);  // This is correct, we're appending DOM elements
-    });
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 90%;
+    width: 600px;
+    position: relative;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-overlay.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition);
+    z-index: 2;
+}
+
+.modal-close:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.modal-group-card {
+    background: var(--white);
+    border-radius: var(--radius);
+}
+
+.modal-group-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.modal-group-info {
+    padding: 1.5rem;
+}
+
+.modal-group-info h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.modal-group-badges {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.modal-description {
+    margin: 1.5rem 0;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .modal-group-card img {
+        height: 200px;
+    }
+
+    .modal-group-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-close {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+}
+
+/* Function to render groups */
+.group-render {
+    display: block;
 }
