@@ -1722,3 +1722,14 @@ select:focus {
         font-size: 1rem;
     }
 }
+
+// Function to render groups
+async function renderGroups(groups) {
+    if (!groupContainer) return;
+    
+    groupContainer.innerHTML = '';
+    groups.forEach(group => {
+        const card = createGroupCard(group);
+        groupContainer.appendChild(card);  // This is correct, we're appending DOM elements
+    });
+}

@@ -539,12 +539,15 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
         // Render groups
         if (groups.length) {
-            const groupsHTML = groups.map(group => createGroupCard(group)).join('');
-            if (loadMore) {
-                groupContainer.insertAdjacentHTML('beforeend', groupsHTML);
-            } else {
-                groupContainer.innerHTML = groupsHTML;
+            if (!loadMore) {
+                groupContainer.innerHTML = ''; // Clear container first
             }
+            
+            // Append each group card
+            groups.forEach(group => {
+                const card = createGroupCard(group);
+                groupContainer.appendChild(card);
+            });
 
             // Remove existing Load More button if it exists
             let loadMoreWrapper = document.querySelector('.load-more-wrapper');
@@ -571,17 +574,12 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
                     loadMoreBtn.innerHTML = `Load More <i class="fas fa-chevron-down"></i>`;
                     loadMoreBtn.disabled = false;
-
-                    // Add fade-in animation to newly loaded posts
-                    document.querySelectorAll('.group-item').forEach(item => {
-                        item.classList.add('new-post');
-                    });
                 };
 
                 groupContainer.parentNode.appendChild(loadMoreWrapper);
             }
 
-            // After rendering the cards, set up lazy loading and view tracking
+            // After rendering the cards, set up lazy loading
             setupLazyLoading();
         } else {
             if (!loadMore) {
@@ -595,7 +593,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         }
     } catch (error) {
         console.error('Error loading groups:', error);
-        // More specific error message based on the error type
         let errorMessage = 'Failed to load groups. Please try again later.';
         if (error.code === 'permission-denied') {
             errorMessage = 'Access denied. Please check your permissions.';
