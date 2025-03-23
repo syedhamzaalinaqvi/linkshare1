@@ -299,9 +299,9 @@ function openModal(group) {
         </button>
         <div class="modal-content">
             <div class="modal-group-card">
-                <img src="${group.imageUrl}" alt="${group.name}" class="lazy-image">
+                <img src="${group.image || 'https://via.placeholder.com/150'}" alt="${group.title}" class="lazy-image">
                 <div class="modal-group-info">
-                    <h2>${group.name}</h2>
+                    <h2>${group.title}</h2>
                     <div class="modal-group-badges">
                         <span class="category-badge">
                             <i class="fas fa-tag"></i> ${group.category}
@@ -322,7 +322,7 @@ function openModal(group) {
                                 <i class="fas fa-eye"></i> ${group.views || 0} views
                             </div>
                             <div class="date-added">
-                                <i class="far fa-clock"></i> ${timeAgo(group.timestamp)}
+                                <i class="far fa-clock"></i> ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
                             </div>
                         </div>
                     </div>
