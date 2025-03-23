@@ -2257,9 +2257,9 @@ select:focus {
 
 .footer-section {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.8rem;
 }
 
 .footer-section .logo {
@@ -2276,6 +2276,7 @@ select:focus {
 
 .footer-tagline {
     margin-top: 0.5rem;
+    width: 100%;
 }
 
 .footer-tagline p {
