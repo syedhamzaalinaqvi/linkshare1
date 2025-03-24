@@ -384,28 +384,28 @@ function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
     card.setAttribute('data-group-id', group.id);
-
+    
     card.innerHTML = `
-        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
-        <div class="group-badges">
-            <span class="category-badge">${group.category}</span>
-            <span class="country-badge">${group.country}</span>
-        </div>
+            ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+            <div class="group-badges">
+                <span class="category-badge">${group.category}</span>
+                <span class="country-badge">${group.country}</span>
+            </div>
         <h3>${group.title}</h3>
         <p>${truncateDescription(group.description)}</p>
-        <div class="card-actions">
+            <div class="card-actions">
             <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="event.preventDefault();">
-                <i class="fab fa-whatsapp"></i> Join Group
-            </a>
-        </div>
-        <div class="card-footer">
+                    <i class="fab fa-whatsapp"></i> Join Group
+                </a>
+            </div>
+            <div class="card-footer">
             <div class="views-count">
                 <i class="fas fa-eye"></i>
                 <span>${group.views || 0}</span> views
             </div>
             <div class="date-added">
                 ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
-            </div>
+            </div> 
         </div>
     `;
 
