@@ -2304,19 +2304,19 @@ select:focus {
 
 /* Add mobile-specific styles for link preview */
 @media (max-width: 768px) {
-    .whatsapp-preview-inner {
+    .link-preview {
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
     }
 
-    .whatsapp-preview-inner img {
+    .link-preview img {
         height: 100px;
         width: auto;
         object-fit: contain;
     }
 
-    .whatsapp-preview-inner h3 {
+    .link-preview h3 {
         font-size: 1.2rem;
         margin-top: 10px;
     }
