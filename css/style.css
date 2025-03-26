@@ -2291,3 +2291,44 @@ select:focus {
     font-size: 0.9rem;
     line-height: 1.4;
 }
+
+.add-group-form {
+    max-width: 100%;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.add-group-form input[type="text"],
+.add-group-form input[type="url"] {
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.preview-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 15px;
+    overflow: hidden;
+}
+
+.preview-section img {
+    max-width: 100%;
+    height: auto;
+}
+
+.whatsapp-preview {
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 10px;
+}
+
+.whatsapp-preview-inner {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+}
