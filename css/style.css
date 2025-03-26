@@ -2311,8 +2311,9 @@ select:focus {
     }
 
     .whatsapp-preview-inner img {
-        width: 100px;
-        height: auto;
+        height: 100px;
+        width: auto;
+        object-fit: contain;
     }
 
     .whatsapp-preview-inner h3 {
