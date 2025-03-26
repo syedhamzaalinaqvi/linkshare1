@@ -2292,43 +2292,31 @@ select:focus {
     line-height: 1.4;
 }
 
-.add-group-form {
-    max-width: 100%;
-    padding: 20px;
-    overflow: hidden;
-}
-
+.add-group-form,
 .add-group-form input[type="text"],
-.add-group-form input[type="url"] {
-    width: 100%;
-    max-width: 100%;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-
-.preview-section {
-    width: 100%;
-    max-width: 100%;
-    padding: 15px;
-    overflow: hidden;
-}
-
-.preview-section img {
-    max-width: 100%;
-    height: auto;
-}
-
-.whatsapp-preview {
-    width: 100%;
-    max-width: 100%;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    padding: 10px;
-}
-
+.add-group-form input[type="url"],
+.preview-section,
+.preview-section img,
+.whatsapp-preview,
 .whatsapp-preview-inner {
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    word-wrap: break-word;
+    /* Reset any previously added styles */
+}
+
+/* Add mobile-specific styles for link preview */
+@media (max-width: 768px) {
+    .whatsapp-preview-inner {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .whatsapp-preview-inner img {
+        width: 100px;
+        height: auto;
+    }
+
+    .whatsapp-preview-inner h3 {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
 }
