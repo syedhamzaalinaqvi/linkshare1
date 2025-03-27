@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -31,6 +31,7 @@
             <div class="group-header">
                 <h1 id="groupTitle">Loading...</h1>
                 <div class="group-meta">
+                    <span class="category" id="groupCategory">
                     <span class="views-count">
                         <i class="fas fa-eye"></i>
                         <span id="viewCount">0</span> views
