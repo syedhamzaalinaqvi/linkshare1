@@ -1,4 +1,4 @@
-import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment, getDoc, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 // Firebase configuration
@@ -12,15 +12,9 @@ const firebaseConfig = {
   measurementId: "G-KESZWF9G4B"
 };
 
-// Initialize Firebase only if it hasn't been initialized yet
-let app;
-let db;
-try {
-    app = getApp();
-} catch (e) {
-    app = initializeApp(firebaseConfig);
-}
-db = getFirestore(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Global variables
 const groupContainer = document.getElementById('groupArchive');
@@ -34,38 +28,19 @@ let lastDoc = null;
 let currentTopic = 'all';
 let currentCountry = 'all';
 
-// Add this function to handle WhatsApp image URLs
-function getImageUrl(url) {
-    if (!url) return 'https://via.placeholder.com/150';
-    
-    // If it's a WhatsApp URL, use a proxy or fallback
-    if (url.includes('pps.whatsapp.net')) {
-        return 'https://via.placeholder.com/150';
-    }
-    return url;
-}
-
-// Update createGroupCard function to include modal functionality
+// Fix createGroupCard function
 function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
     
-    // Ensure group properties exist
-    const title = group.title || 'Untitled Group';
-    const description = group.description || 'No description available';
-    const category = group.category || 'Uncategorized';
-    const country = group.country || 'Unknown';
-    const views = group.views || 0;
-    const imageUrl = getImageUrl(group.image);
-    
     card.innerHTML = `
-        <img src="${imageUrl}" alt="${title}" onerror="this.src='https://via.placeholder.com/150'">
+        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
         <div class="group-badges">
-            <span class="category-badge">${category}</span>
-            <span class="country-badge">${country}</span>
+            <span class="category-badge">${group.category || 'Uncategorized'}</span>
+            <span class="country-badge">${group.country || 'Unknown'}</span>
         </div>
-        <h3>${title}</h3>
-        <p>${description}</p>
+        <h3>${group.title}</h3>
+        <p>${group.description}</p>
         <div class="card-actions">
             <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn">
                 <i class="fab fa-whatsapp"></i> Join Group
@@ -74,7 +49,7 @@ function createGroupCard(group) {
         <div class="card-footer">
             <div class="views-count">
                 <i class="fas fa-eye"></i>
-                <span>${views}</span> views
+                <span>${group.views || 0}</span> views
             </div>
             <div class="date-added">
                 ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
@@ -82,66 +57,10 @@ function createGroupCard(group) {
         </div>
     `;
     
-    // Add click event for modal
-    card.addEventListener('click', () => openModal(group));
-    
     return card;
 }
 
-// Add modal functions
-function openModal(group) {
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    const imageUrl = getImageUrl(group.image);
-    
-    modal.innerHTML = `
-        <div class="modal-content">
-            <button class="modal-close"><i class="fas fa-times"></i></button>
-            <div class="modal-group-card">
-                <img src="${imageUrl}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">
-                <div class="modal-group-info">
-                    <h2>${group.title}</h2>
-                    <div class="modal-group-badges">
-                        <span class="category-badge">${group.category || 'Uncategorized'}</span>
-                        <span class="country-badge">${group.country || 'Unknown'}</span>
-                    </div>
-                    <div class="modal-description">${group.description || 'No description available'}</div>
-                    <div class="modal-card-actions">
-                        <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn modal-join-btn">
-                            <i class="fab fa-whatsapp"></i> Join Group
-                        </a>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="views-count">
-                            <i class="fas fa-eye"></i>
-                            <span>${group.views || 0}</span> views
-                        </div>
-                        <div class="date-added">
-                            ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    setTimeout(() => modal.classList.add('active'), 10);
-
-    // Close modal events
-    const closeBtn = modal.querySelector('.modal-close');
-    closeBtn.addEventListener('click', () => closeModal(modal));
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal(modal);
-    });
-}
-
-function closeModal(modal) {
-    modal.classList.remove('active');
-    setTimeout(() => modal.remove(), 300);
-}
-
-// Fix loadGroups function
+// Fixed loadGroups function
 async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) {
         console.error('Group container not found');
@@ -232,44 +151,26 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
     }
 }
 
-// Initialize on page load
+// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Page loaded, initializing groups...');
-    
-    // Initialize groups
     loadGroups();
     
-    // Category button clicks
+    // Filter buttons
+    filterButtons?.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentTopic = button.dataset.category;
+            loadGroups(currentTopic, currentCountry);
+        });
+    });
+
+    // Category buttons
     categoryButtons?.forEach(button => {
         button.addEventListener('click', () => {
-            console.log('Category clicked:', button.dataset.category);
             categoryButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             currentTopic = button.dataset.category;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Topic filter clicks
-    const topicButtons = document.querySelectorAll('#topicFilters .filter-btn');
-    topicButtons?.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log('Topic filter clicked:', button.dataset.category);
-            topicButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            currentTopic = button.dataset.category;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Country filter clicks
-    const countryButtons = document.querySelectorAll('#countryFilters .filter-btn');
-    countryButtons?.forEach(button => {
-        button.addEventListener('click', () => {
-            console.log('Country filter clicked:', button.dataset.country);
-            countryButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            currentCountry = button.dataset.country;
             loadGroups(currentTopic, currentCountry);
         });
     });
@@ -278,32 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput?.addEventListener('input', debounce(() => {
         loadGroups(currentTopic, currentCountry);
     }, 300));
-
-    // Initialize dropdowns
-    const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach(dropdown => {
-        const btn = dropdown.querySelector('.dropdown-btn');
-        
-        // Toggle dropdown on button click
-        btn?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
-            });
-            dropdown.classList.toggle('active');
-        });
-    });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.dropdown')) {
-            dropdowns.forEach(dropdown => {
-                dropdown.classList.remove('active');
-            });
-        }
-    });
 });
 
 // Utility Functions
