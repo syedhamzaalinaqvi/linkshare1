@@ -16,8 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment, getDoc, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
 // Global variables
 const groupContainer = document.getElementById('groupArchive');
 const filterButtons = document.querySelectorAll('.filter-btn');
@@ -163,31 +161,54 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Page loaded, initializing groups...');
+    
+    // Initialize groups
     loadGroups();
     
-    // Add event listeners
-    searchInput?.addEventListener('input', debounce(() => {
-        loadGroups(currentTopic, currentCountry);
-    }, 300));
-
+    // Category button clicks
     categoryButtons?.forEach(button => {
         button.addEventListener('click', () => {
+            console.log('Category clicked:', button.dataset.category);
             categoryButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             currentTopic = button.dataset.category;
             loadGroups(currentTopic, currentCountry);
         });
     });
-});
 
-// Fix dropdown functionality
-document.addEventListener('DOMContentLoaded', function() {
+    // Topic filter clicks
+    const topicButtons = document.querySelectorAll('#topicFilters .filter-btn');
+    topicButtons?.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log('Topic filter clicked:', button.dataset.category);
+            topicButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentTopic = button.dataset.category;
+            loadGroups(currentTopic, currentCountry);
+        });
+    });
+
+    // Country filter clicks
+    const countryButtons = document.querySelectorAll('#countryFilters .filter-btn');
+    countryButtons?.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log('Country filter clicked:', button.dataset.country);
+            countryButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentCountry = button.dataset.country;
+            loadGroups(currentTopic, currentCountry);
+        });
+    });
+
+    // Search input
+    searchInput?.addEventListener('input', debounce(() => {
+        loadGroups(currentTopic, currentCountry);
+    }, 300));
+
     // Initialize dropdowns
     const dropdowns = document.querySelectorAll('.dropdown');
-    
     dropdowns.forEach(dropdown => {
         const btn = dropdown.querySelector('.dropdown-btn');
-        const menu = dropdown.querySelector('.dropdown-menu');
         
         // Toggle dropdown on button click
         btn?.addEventListener('click', (e) => {
