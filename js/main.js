@@ -1,3 +1,21 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment, getDoc, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBL3wtzUezPymRqe1aADr9xpOEQE7ecqa4",
+  authDomain: "linkshare-7037a.firebaseapp.com",
+  projectId: "linkshare-7037a",
+  storageBucket: "linkshare-7037a.appspot.com",
+  messagingSenderId: "641686824241",
+  appId: "1:641686824241:web:c510eb7691b273100d24f9",
+  measurementId: "G-KESZWF9G4B"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment, getDoc, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 // Global variables
@@ -159,6 +177,37 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTopic = button.dataset.category;
             loadGroups(currentTopic, currentCountry);
         });
+    });
+});
+
+// Fix dropdown functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dropdowns
+    const dropdowns = document.querySelectorAll('.dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        const btn = dropdown.querySelector('.dropdown-btn');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        // Toggle dropdown on button click
+        btn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
+            });
+            dropdown.classList.toggle('active');
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown')) {
+            dropdowns.forEach(dropdown => {
+                dropdown.classList.remove('active');
+            });
+        }
     });
 });
 
