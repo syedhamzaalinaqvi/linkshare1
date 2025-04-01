@@ -34,20 +34,32 @@ let lastDoc = null;
 let currentTopic = 'all';
 let currentCountry = 'all';
 
-// Fix createGroupCard function
+// Add this function to handle WhatsApp image URLs
+function getImageUrl(url) {
+    if (!url) return 'https://via.placeholder.com/150';
+    
+    // If it's a WhatsApp URL, use a proxy or fallback
+    if (url.includes('pps.whatsapp.net')) {
+        return 'https://via.placeholder.com/150';
+    }
+    return url;
+}
+
+// Update createGroupCard function to include modal functionality
 function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
     
-    // Ensure group properties exist to prevent undefined errors
+    // Ensure group properties exist
     const title = group.title || 'Untitled Group';
     const description = group.description || 'No description available';
     const category = group.category || 'Uncategorized';
     const country = group.country || 'Unknown';
     const views = group.views || 0;
+    const imageUrl = getImageUrl(group.image);
     
     card.innerHTML = `
-        ${group.image ? `<img src="${group.image}" alt="${title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+        <img src="${imageUrl}" alt="${title}" onerror="this.src='https://via.placeholder.com/150'">
         <div class="group-badges">
             <span class="category-badge">${category}</span>
             <span class="country-badge">${country}</span>
@@ -70,7 +82,63 @@ function createGroupCard(group) {
         </div>
     `;
     
+    // Add click event for modal
+    card.addEventListener('click', () => openModal(group));
+    
     return card;
+}
+
+// Add modal functions
+function openModal(group) {
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    const imageUrl = getImageUrl(group.image);
+    
+    modal.innerHTML = `
+        <div class="modal-content">
+            <button class="modal-close"><i class="fas fa-times"></i></button>
+            <div class="modal-group-card">
+                <img src="${imageUrl}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="modal-group-info">
+                    <h2>${group.title}</h2>
+                    <div class="modal-group-badges">
+                        <span class="category-badge">${group.category || 'Uncategorized'}</span>
+                        <span class="country-badge">${group.country || 'Unknown'}</span>
+                    </div>
+                    <div class="modal-description">${group.description || 'No description available'}</div>
+                    <div class="modal-card-actions">
+                        <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn modal-join-btn">
+                            <i class="fab fa-whatsapp"></i> Join Group
+                        </a>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="views-count">
+                            <i class="fas fa-eye"></i>
+                            <span>${group.views || 0}</span> views
+                        </div>
+                        <div class="date-added">
+                            ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('active'), 10);
+
+    // Close modal events
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', () => closeModal(modal));
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal(modal);
+    });
+}
+
+function closeModal(modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 300);
 }
 
 // Fix loadGroups function
