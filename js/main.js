@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, where, startAfter, limit, doc, updateDoc, increment, getDoc, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 // Firebase configuration
@@ -12,9 +12,15 @@ const firebaseConfig = {
   measurementId: "G-KESZWF9G4B"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialize Firebase only if it hasn't been initialized yet
+let app;
+let db;
+try {
+    app = getApp();
+} catch (e) {
+    app = initializeApp(firebaseConfig);
+}
+db = getFirestore(app);
 
 // Global variables
 const groupContainer = document.getElementById('groupArchive');
