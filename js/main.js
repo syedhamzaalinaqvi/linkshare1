@@ -10,6 +10,21 @@ let currentTopic = 'all';
 let currentCountry = 'all';
 let form = document.querySelector('#addGroupForm');
 
+// Debug function to check document fields
+async function debugCollection() {
+    try {
+        const snapshot = await getDocs(collection(db, "groups"));
+        snapshot.forEach(doc => {
+            console.log('Document data:', {
+                id: doc.id,
+                data: doc.data()
+            });
+        });
+    } catch (error) {
+        console.error('Debug error:', error);
+    }
+}
+
 // Function to create a group card
 function createGroupCard(group) {
     const card = document.createElement('div');
@@ -60,66 +75,81 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
     if (!groupContainer) return;
 
     try {
+        console.log('Loading groups with filters:', { filterTopic, filterCountry });
+        
         if (!loadMore) {
             const loadingSkeletons = Array(6).fill(createLoadingState()).join('');
             groupContainer.innerHTML = loadingSkeletons;
             lastDoc = null;
         }
 
-        let groupsQuery;
+        let baseQuery = collection(db, "groups");
+        let constraints = [];
+
+        // Add category filter if not 'all'
+        if (filterTopic !== 'all') {
+            console.log('Adding category filter:', filterTopic);
+            constraints.push(where("category", "==", filterTopic));
+        }
+
+        // Add country filter if not 'all'
+        if (filterCountry !== 'all') {
+            console.log('Adding country filter:', filterCountry);
+            constraints.push(where("country", "==", filterCountry));
+        }
+
+        // Always add ordering and limit
+        constraints.push(orderBy("timestamp", "desc"));
         
-        if (filterTopic === 'all') {
-            groupsQuery = query(
-                collection(db, "groups"),
-                orderBy("timestamp", "desc"),
-                limit(POSTS_PER_PAGE)
-            );
+        // Create the query
+        let groupsQuery = query(baseQuery, ...constraints);
+
+        // Add pagination
+        if (lastDoc && loadMore) {
+            groupsQuery = query(groupsQuery, startAfter(lastDoc), limit(POSTS_PER_PAGE));
         } else {
-            groupsQuery = query(
-                collection(db, "groups"),
-                where("category", "==", filterTopic),
-                orderBy("timestamp", "desc"),
-                limit(POSTS_PER_PAGE)
-            );
+            groupsQuery = query(groupsQuery, limit(POSTS_PER_PAGE));
         }
 
-        if (lastDoc) {
-            groupsQuery = query(
-                groupsQuery,
-                startAfter(lastDoc)
-            );
-        }
-
+        console.log('Executing query...');
         const querySnapshot = await getDocs(groupsQuery);
         
         if (!loadMore) {
             groupContainer.innerHTML = '';
         }
 
-        if (querySnapshot.empty && !loadMore) {
-            groupContainer.innerHTML = '<div class="no-groups">No groups found for this category</div>';
-            return;
-        }
-
         let groups = [];
         querySnapshot.forEach((doc) => {
-            groups.push({ id: doc.id, ...doc.data() });
+            const data = doc.data();
+            console.log('Document data:', {
+                id: doc.id,
+                category: data.category,
+                country: data.country,
+                timestamp: data.timestamp
+            });
+            groups.push({ 
+                id: doc.id, 
+                ...data,
+                timestamp: data.timestamp?.toDate() // Convert Firebase timestamp to JS Date
+            });
         });
+
+        if (groups.length === 0 && !loadMore) {
+            console.log('No groups found');
+            groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+            return;
+        }
 
         // Update lastDoc for pagination
         lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
 
-        // Apply country filter if needed
-        if (filterCountry !== 'all') {
-            groups = groups.filter(group => group.country === filterCountry);
-        }
-
         // Apply search filter if there's a search term
         const searchTerm = searchInput?.value.toLowerCase();
         if (searchTerm) {
+            console.log('Applying search filter:', searchTerm);
             groups = groups.filter(group => 
-                group.title.toLowerCase().includes(searchTerm) ||
-                group.description.toLowerCase().includes(searchTerm)
+                group.title?.toLowerCase().includes(searchTerm) ||
+                group.description?.toLowerCase().includes(searchTerm)
             );
         }
 
@@ -127,6 +157,8 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             const card = createGroupCard(group);
             groupContainer.appendChild(card);
         });
+
+        console.log(`Rendered ${groups.length} groups`);
 
     } catch (error) {
         console.error('Error loading groups:', error);
@@ -136,22 +168,32 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Debug check for data structure
+    debugCollection();
+
     // Initial load
     loadGroups();
 
     // Category buttons (top section)
     document.querySelectorAll('.category-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            const category = btn.dataset.category;
+            console.log('Category button clicked:', category);
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const category = btn.dataset.category;
             currentTopic = category;
             loadGroups(category, currentCountry);
             
             // Update dropdown to match selected category
-            const dropdownBtn = document.querySelector('.dropdown-btn');
+            const dropdownBtn = document.querySelector('#topicFilters').closest('.dropdown').querySelector('.dropdown-btn');
             if (dropdownBtn) {
                 dropdownBtn.innerHTML = `${btn.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
+                // Also update the dropdown menu selection
+                const dropdownItem = document.querySelector(`#topicFilters .filter-btn[data-category="${category}"]`);
+                if (dropdownItem) {
+                    document.querySelectorAll('#topicFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                    dropdownItem.classList.add('active');
+                }
             }
         });
     });
@@ -174,19 +216,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Handle filter selection
-        menu.querySelectorAll('.filter-btn').forEach(item => {
-            item.addEventListener('click', () => {
-                menu.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                item.classList.add('active');
-                
-                const category = item.dataset.category;
-                currentTopic = category;
-                loadGroups(category, currentCountry);
-                
-                btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`;
-                dropdown.classList.remove('active');
+        if (menu.id === 'topicFilters') {
+            menu.querySelectorAll('.filter-btn').forEach(item => {
+                item.addEventListener('click', () => {
+                    const category = item.dataset.category;
+                    console.log('Topic filter clicked:', category);
+                    menu.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    item.classList.add('active');
+                    currentTopic = category;
+                    loadGroups(category, currentCountry);
+                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`;
+                    dropdown.classList.remove('active');
+
+                    // Update category buttons to match
+                    const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
+                    if (categoryBtn) {
+                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                        categoryBtn.classList.add('active');
+                    }
+                });
             });
-        });
+        } else if (menu.id === 'countryFilters') {
+            menu.querySelectorAll('.filter-btn').forEach(item => {
+                item.addEventListener('click', () => {
+                    const country = item.dataset.country;
+                    console.log('Country filter clicked:', country);
+                    menu.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    item.classList.add('active');
+                    currentCountry = country;
+                    loadGroups(currentTopic, country);
+                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`;
+                    dropdown.classList.remove('active');
+                });
+            });
+        }
     });
 
     // Close dropdowns when clicking outside
