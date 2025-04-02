@@ -1,5 +1,5 @@
 import { db } from './firebase-config.js';
-import { collection, getDocs, query, orderBy, where, startAfter, limit, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, getDocs, query, orderBy, where, startAfter, limit, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 const POSTS_PER_PAGE = 12;
 let lastDoc = null;
@@ -7,6 +7,7 @@ const groupContainer = document.querySelector('.groups-grid');
 const searchInput = document.querySelector('#searchGroups');
 let currentTopic = 'all';
 let currentCountry = 'all';
+let form = document.querySelector('#addGroupForm');
 
 // Update createGroupCard function to handle missing thumbnails and titles
 function createGroupCard(group) {
@@ -59,291 +60,9 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
     try {
         if (!loadMore) {
-            groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
-            lastDoc = null;
-        }
-
-        let groupsQuery = query(
-            collection(db, "groups"),
-            orderBy("timestamp", "desc"),
-            limit(POSTS_PER_PAGE)
-        );
-
-        if (lastDoc) {
-            groupsQuery = query(
-                collection(db, "groups"),
-                orderBy("timestamp", "desc"),
-                startAfter(lastDoc),
-                limit(POSTS_PER_PAGE)
-            );
-        }
-
-        const querySnapshot = await getDocs(groupsQuery);
-        
-        if (querySnapshot.empty && !loadMore) {
-            groupContainer.innerHTML = '<div class="no-groups">No groups found</div>';
-            return;
-        }
-
-        let groups = [];
-        querySnapshot.forEach((doc) => {
-            groups.push({ id: doc.id, ...doc.data() });
-        });
-
-        // Update lastDoc for pagination
-        lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-        // Apply filters
-        if (filterTopic !== 'all') {
-            groups = groups.filter(group => group.category === filterTopic);
-        }
-        if (filterCountry !== 'all') {
-            groups = groups.filter(group => group.country === filterCountry);
-        }
-
-        // Apply search filter if there's a search term
-        const searchTerm = searchInput?.value.toLowerCase();
-        if (searchTerm) {
-            groups = groups.filter(group => 
-                group.title.toLowerCase().includes(searchTerm) ||
-                group.description.toLowerCase().includes(searchTerm)
-            );
-        }
-
-        if (!loadMore) {
-            groupContainer.innerHTML = '';
-        }
-
-        groups.forEach(group => {
-            const card = createGroupCard(group);
-            groupContainer.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error('Error loading groups:', error);
-        if (!loadMore) {
-            groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
-        }
-    }
-}
-
-// Helper function for time ago
-function timeAgo(date) {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + ' years ago';
-    
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + ' months ago';
-    
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + ' days ago';
-    
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + ' hours ago';
-    
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + ' minutes ago';
-    
-    return Math.floor(seconds) + ' seconds ago';
-}
-
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Initial load
-    loadGroups();
-
-    // Topic filter listeners
-    document.querySelectorAll('#topicFilters .filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('#topicFilters .filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentTopic = btn.dataset.category;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Country filter listeners
-    document.querySelectorAll('#countryFilters .filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('#countryFilters .filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCountry = btn.dataset.country;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Search input listener
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(() => {
-            loadGroups(currentTopic, currentCountry);
-        }, 300));
-    }
-});
-
-// Utility function for debouncing
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Adding the OpenGraph preview functionality to the existing code
-async function fetchOpenGraph(url) {
-    try {
-        // Using allorigins.win as CORS proxy
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        const data = await response.json();
-
-        // Parse HTML response
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, "text/html");
-
-        // Extract Open Graph metadata
-        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
-                       doc.querySelector('title')?.textContent || 
-                       "No Title Found";
-        const ogImage = doc.querySelector('meta[property="og:image"]')?.content || 
-                       "https://via.placeholder.com/150";
-        const ogDescription = doc.querySelector('meta[property="og:description"]')?.content || 
-                             doc.querySelector('meta[name="description"]')?.content || 
-                             "No Description Available";
-
-        return { title: ogTitle, image: ogImage, description: ogDescription };
-    } catch (error) {
-        console.error("Error fetching Open Graph data:", error);
-        return null;
-    }
-}
-
-// Update the form event listener to include preview functionality
-document.getElementById('groupLink')?.addEventListener('input', async function() {
-    const url = this.value.trim();
-    const previewDiv = document.getElementById('preview');
-
-    if (!previewDiv) return;
-
-    if (url.includes('chat.whatsapp.com/')) {
-        previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
-
-        const ogData = await fetchOpenGraph(url);
-        if (ogData) {
-            previewDiv.innerHTML = `
-                <div class="link-preview">
-                    <img src="${ogData.image}" alt="Preview" onerror="this.src='https://via.placeholder.com/150'">
-                    <div class="link-preview-content">
-                        <h3>${ogData.title}</h3>
-                        <p>${ogData.description}</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
-        }
-    } else {
-        previewDiv.innerHTML = '';
-    }
-});
-
-// Form Submission
-form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = form.querySelector('.submit-btn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const spinner = submitBtn.querySelector('.loading-spinner');
-
-    try {
-        btnText.style.display = 'none';
-        spinner.style.display = 'inline-block'; // Show spinner
-        submitBtn.disabled = true;
-
-        const link = form.groupLink.value.trim();
-        const ogData = await fetchOpenGraph(link);
-
-        const groupData = {
-            title: form.groupTitle.value.trim(),
-            link: link,
-            category: form.groupCategory.value,
-            country: form.groupCountry.value,
-            description: form.groupDescription.value.trim(),
-            image: ogData?.image || null,
-            timestamp: serverTimestamp()
-        };
-
-        if (!isValidWhatsAppLink(groupData.link)) {
-            throw new Error('Please enter a valid WhatsApp group link');
-        }
-
-        await addDoc(collection(db, "groups"), groupData);
-
-        showNotification('Group added successfully!', 'success');
-        form.reset();
-        document.getElementById('preview').innerHTML = '';
-        loadGroups(currentTopic, currentCountry);
-
-    } catch (error) {
-        showNotification(error.message, 'error');
-    } finally {
-        btnText.style.display = 'block';
-        spinner.style.display = 'none'; // Hide spinner
-        submitBtn.disabled = false;
-    }
-});
-
-// Load Groups
-let lastDoc = null;
-const POSTS_PER_PAGE = 15;
-
-// Add lazy loading implementation
-function setupLazyLoading() {
-    const lazyImages = document.querySelectorAll('.lazy-image');
-    
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.remove('lazy-image');
-                observer.unobserve(img);
-            }
-        });
-    });
-
-    lazyImages.forEach(img => imageObserver.observe(img));
-}
-
-// Add loading state component
-function createLoadingState() {
-    return `
-        <div class="loading-skeleton">
-            <div class="skeleton-image"></div>
-            <div class="skeleton-content">
-                <div class="skeleton-title"></div>
-                <div class="skeleton-badges"></div>
-                <div class="skeleton-description"></div>
-                <div class="skeleton-button"></div>
-            </div>
-        </div>
-    `;
-}
-
-// Update loadGroups function with better error handling
-async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
-    if (!groupContainer) return;
-
-    try {
-        if (!loadMore) {
             // Show loading skeletons
             const loadingSkeletons = Array(6).fill(createLoadingState()).join('');
             groupContainer.innerHTML = loadingSkeletons;
-            lastDoc = null;
         }
 
         let groupsQuery;
@@ -456,6 +175,39 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         }
         showErrorState(errorMessage);
     }
+}
+
+// Function to create loading state
+function createLoadingState() {
+    return `
+        <div class="loading-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-badges"></div>
+                <div class="skeleton-description"></div>
+                <div class="skeleton-button"></div>
+            </div>
+        </div>
+    `;
+}
+
+// Setup lazy loading for images
+function setupLazyLoading() {
+    const lazyImages = document.querySelectorAll('.lazy-image');
+    
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.remove('lazy-image');
+                observer.unobserve(img);
+            }
+        });
+    });
+
+    lazyImages.forEach(img => imageObserver.observe(img));
 }
 
 // Add error handling function
@@ -647,4 +399,105 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(`Searching for: ${query}`);
         // Add your search filter logic here
     });
+});
+
+// Adding the OpenGraph preview functionality to the existing code
+async function fetchOpenGraph(url) {
+    try {
+        // Using allorigins.win as CORS proxy
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+
+        // Parse HTML response
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.contents, "text/html");
+
+        // Extract Open Graph metadata
+        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
+                       doc.querySelector('title')?.textContent || 
+                       "No Title Found";
+        const ogImage = doc.querySelector('meta[property="og:image"]')?.content || 
+                       "https://via.placeholder.com/150";
+        const ogDescription = doc.querySelector('meta[property="og:description"]')?.content || 
+                             doc.querySelector('meta[name="description"]')?.content || 
+                             "No Description Available";
+
+        return { title: ogTitle, image: ogImage, description: ogDescription };
+    } catch (error) {
+        console.error("Error fetching Open Graph data:", error);
+        return null;
+    }
+}
+
+// Update the form event listener to include preview functionality
+document.getElementById('groupLink')?.addEventListener('input', async function() {
+    const url = this.value.trim();
+    const previewDiv = document.getElementById('preview');
+
+    if (!previewDiv) return;
+
+    if (url.includes('chat.whatsapp.com/')) {
+        previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
+
+        const ogData = await fetchOpenGraph(url);
+        if (ogData) {
+            previewDiv.innerHTML = `
+                <div class="link-preview">
+                    <img src="${ogData.image}" alt="Preview" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="link-preview-content">
+                        <h3>${ogData.title}</h3>
+                        <p>${ogData.description}</p>
+                    </div>
+                </div>
+            `;
+        } else {
+            previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
+        }
+    } else {
+        previewDiv.innerHTML = '';
+    }
+});
+
+// Form Submission
+form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = form.querySelector('.submit-btn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const spinner = submitBtn.querySelector('.loading-spinner');
+
+    try {
+        btnText.style.display = 'none';
+        spinner.style.display = 'inline-block';
+        submitBtn.disabled = true;
+
+        const link = form.groupLink.value.trim();
+        const ogData = await fetchOpenGraph(link);
+
+        const groupData = {
+            title: form.groupTitle.value.trim(),
+            link: link,
+            category: form.groupCategory.value,
+            country: form.groupCountry.value,
+            description: form.groupDescription.value.trim(),
+            image: ogData?.image || null,
+            timestamp: new Date()
+        };
+
+        if (!isValidWhatsAppLink(groupData.link)) {
+            throw new Error('Please enter a valid WhatsApp group link');
+        }
+
+        await addDoc(collection(db, "groups"), groupData);
+        showNotification('Group added successfully!', 'success');
+        form.reset();
+        document.getElementById('preview').innerHTML = '';
+        loadGroups(currentTopic, currentCountry);
+
+    } catch (error) {
+        showNotification(error.message, 'error');
+    } finally {
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+        submitBtn.disabled = false;
+    }
 });
