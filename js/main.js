@@ -1,6 +1,7 @@
 import { db } from './firebase-config.js';
 import { collection, getDocs, query, orderBy, where, startAfter, limit, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
+// Global variables
 const POSTS_PER_PAGE = 12;
 let lastDoc = null;
 const groupContainer = document.querySelector('.groups-grid');
@@ -263,61 +264,39 @@ function timeAgo(timestamp) {
 }
 
 // Event Listeners
-let currentTopic = 'all';
-let currentCountry = 'all';
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial load
+    loadGroups();
 
-// Update filter event listeners
-topicFilters?.addEventListener('click', (e) => {
-    if (e.target.classList.contains('filter-btn')) {
-        topicFilters.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        currentTopic = e.target.dataset.category;
-        loadGroups(currentTopic, currentCountry);
-    }
-});
-
-countryFilters?.addEventListener('click', (e) => {
-    if (e.target.classList.contains('filter-btn')) {
-        countryFilters.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        currentCountry = e.target.dataset.country;
-        loadGroups(currentTopic, currentCountry);
-    }
-});
-
-searchInput?.addEventListener('input', debounce(() => {
-    loadGroups(currentTopic, currentCountry);
-}, 300));
-
-filterButtons?.forEach(button => {
-    button.addEventListener('click', () => {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        loadGroups(button.dataset.category, currentCountry); 
+    // Topic filter listeners
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTopic = btn.dataset.category;
+            loadGroups(currentTopic, currentCountry);
+        });
     });
-});
 
-// Category Menu Event Listeners
-categoryButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        // Remove active class from all buttons
-        categoryButtons.forEach(btn => btn.classList.remove('active'));
-        // Add active class to clicked button
-        button.classList.add('active');
-        
-        // Get the selected category
-        const selectedCategory = button.dataset.category;
-        
-        // Update the topic filter dropdown to match
-        const topicFilter = document.querySelector(`#topicFilters .filter-btn[data-category="${selectedCategory}"]`);
-        if (topicFilter) {
-            document.querySelectorAll('#topicFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
-            topicFilter.classList.add('active');
-        }
-        
-        // Load groups with the selected category
-        loadGroups(selectedCategory, 'all');
+    // Country filter listeners
+    document.querySelectorAll('.country-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCountry = btn.dataset.country;
+            loadGroups(currentTopic, currentCountry);
+        });
     });
+
+    // Search input listener
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(() => {
+            loadGroups(currentTopic, currentCountry);
+        }, 300));
+    }
+
+    // Initialize lazy loading
+    setupLazyLoading();
 });
 
 // Debounce Function
@@ -332,74 +311,6 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    loadGroups();
-});
-
-//chat gpt filter script updated
-document.addEventListener("DOMContentLoaded", function () {
-    const dropdowns = document.querySelectorAll(".dropdown");
-    const searchInput = document.getElementById("searchGroups");
-    let selectedTopic = "all";
-    let selectedCountry = "all";
-
-    // Toggle Dropdowns
-    dropdowns.forEach(dropdown => {
-        const btn = dropdown.querySelector(".dropdown-btn");
-        const menu = dropdown.querySelector(".dropdown-menu");
-        const items = menu.querySelectorAll(".filter-btn");
-
-        btn.addEventListener("click", function () {
-            dropdown.classList.toggle("active");
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener("click", function (e) {
-            if (!dropdown.contains(e.target)) {
-                dropdown.classList.remove("active");
-            }
-        });
-
-        // Handle filter selection
-        items.forEach(item => {
-            item.addEventListener("click", function () {
-                const category = item.dataset.category || null;
-                const country = item.dataset.country || null;
-
-                if (category !== null) {
-                    selectedTopic = category;
-                    document.querySelector("#topicFilters .active").classList.remove("active");
-                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`; // Preserve icon
-                }
-
-                if (country !== null) {
-                    selectedCountry = country;
-                    document.querySelector("#countryFilters .active").classList.remove("active");
-                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`; // Preserve icon
-                }
-
-                item.classList.add("active");
-                filterGroups();
-                dropdown.classList.remove("active"); // Close dropdown after selection
-            });
-        });
-    });
-
-    // Filter function
-    function filterGroups() {
-        console.log(`Filtering by Topic: ${selectedTopic}, Country: ${selectedCountry}`);
-        // Add your logic here to filter the groups on the page based on selectedTopic & selectedCountry
-    }
-
-    // Search Logic
-    searchInput.addEventListener("input", function () {
-        const query = searchInput.value.toLowerCase();
-        console.log(`Searching for: ${query}`);
-        // Add your search filter logic here
-    });
-});
 
 // Adding the OpenGraph preview functionality to the existing code
 async function fetchOpenGraph(url) {
