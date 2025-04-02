@@ -34,8 +34,14 @@ function createGroupCard(group) {
         console.error('Error formatting timestamp:', error);
     }
     
+    // Use a default image if none is provided
+    const defaultImage = 'images/default-group.png';
+    const imageUrl = group.image || defaultImage;
+    
     card.innerHTML = `
-        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+        <div class="card-image">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.src='${defaultImage}'">
+        </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
             <span class="country-badge">${group.country || 'Global'}</span>
@@ -92,13 +98,26 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         // Add category filter if not 'all'
         if (filterTopic && filterTopic !== 'all') {
             console.log('Adding category filter:', filterTopic);
-            constraints.push(where("category", "==", filterTopic));
+            // Handle special cases with spaces
+            const categoryMap = {
+                "News": "News & Media",
+                "Movies": "Movies & TV Shows",
+                "Jobs": "Jobs & Career"
+            };
+            const categoryValue = categoryMap[filterTopic] || filterTopic;
+            constraints.push(where("category", "==", categoryValue));
         }
 
         // Add country filter if not 'all'
         if (filterCountry && filterCountry !== 'all') {
             console.log('Adding country filter:', filterCountry);
-            constraints.push(where("country", "==", filterCountry));
+            // Handle special cases for countries
+            const countryMap = {
+                "UK": "United Kingdom",
+                "USA": "United States"
+            };
+            const countryValue = countryMap[filterCountry] || filterCountry;
+            constraints.push(where("country", "==", countryValue));
         }
 
         // Always add ordering
