@@ -10,33 +10,33 @@ let currentTopic = 'all';
 let currentCountry = 'all';
 let form = document.querySelector('#addGroupForm');
 
-// Update createGroupCard function to handle missing thumbnails and titles
+// Function to create a group card
 function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
     card.setAttribute('data-group-id', group.id);
     
     card.innerHTML = `
-            ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
-            <div class="group-badges">
-                <span class="category-badge">${group.category}</span>
-                <span class="country-badge">${group.country}</span>
-            </div>
+        ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
+        <div class="group-badges">
+            <span class="category-badge">${group.category || 'Uncategorized'}</span>
+            <span class="country-badge">${group.country || 'Global'}</span>
+        </div>
         <h3>${group.title}</h3>
         <p>${group.description}</p>
-            <div class="card-actions">
+        <div class="card-actions">
             <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="updateGroupViews('${group.id}')">
-                    <i class="fab fa-whatsapp"></i> Join Group
-                </a>
-            </div>
-            <div class="card-footer">
+                <i class="fab fa-whatsapp"></i> Join Group
+            </a>
+        </div>
+        <div class="card-footer">
             <div class="views-count">
                 <i class="fas fa-eye"></i>
                 <span>${group.views || 0}</span> views
             </div>
             <div class="date-added">
                 ${group.timestamp ? timeAgo(group.timestamp.toDate()) : 'Recently added'}
-            </div> 
+            </div>
         </div>
     `;
 
@@ -61,31 +61,44 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
     try {
         if (!loadMore) {
-            // Show loading skeletons
             const loadingSkeletons = Array(6).fill(createLoadingState()).join('');
             groupContainer.innerHTML = loadingSkeletons;
+            lastDoc = null;
         }
 
         let groupsQuery;
-        if (lastDoc) {
+        
+        if (filterTopic === 'all') {
             groupsQuery = query(
                 collection(db, "groups"),
                 orderBy("timestamp", "desc"),
-                startAfter(lastDoc),
                 limit(POSTS_PER_PAGE)
             );
         } else {
             groupsQuery = query(
                 collection(db, "groups"),
+                where("category", "==", filterTopic),
                 orderBy("timestamp", "desc"),
                 limit(POSTS_PER_PAGE)
             );
         }
 
-        const querySnapshot = await getDocs(groupsQuery);
+        if (lastDoc) {
+            groupsQuery = query(
+                groupsQuery,
+                startAfter(lastDoc)
+            );
+        }
 
-        if (!querySnapshot.empty) {
-            lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const querySnapshot = await getDocs(groupsQuery);
+        
+        if (!loadMore) {
+            groupContainer.innerHTML = '';
+        }
+
+        if (querySnapshot.empty && !loadMore) {
+            groupContainer.innerHTML = '<div class="no-groups">No groups found for this category</div>';
+            return;
         }
 
         let groups = [];
@@ -93,92 +106,126 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             groups.push({ id: doc.id, ...doc.data() });
         });
 
-        // Apply filters
-        const searchTerm = searchInput?.value.toLowerCase();
-        if (searchTerm) {
-            groups = groups.filter(group => 
-                group.title.toLowerCase().includes(searchTerm) ||
-                group.description.toLowerCase().includes(searchTerm) ||
-                group.category.toLowerCase().includes(searchTerm) ||
-                group.country.toLowerCase().includes(searchTerm)
-            );
-        }
+        // Update lastDoc for pagination
+        lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
 
-        if (filterTopic !== 'all') {
-            groups = groups.filter(group => group.category === filterTopic);
-        }
-
+        // Apply country filter if needed
         if (filterCountry !== 'all') {
             groups = groups.filter(group => group.country === filterCountry);
         }
 
-        // Render groups
-        if (groups.length) {
-            if (!loadMore) {
-                groupContainer.innerHTML = ''; // Clear container first
-            }
-            
-            // Append each group card
-            groups.forEach(group => {
-                const card = createGroupCard(group);
-                groupContainer.appendChild(card);
-            });
-
-            // Remove existing Load More button if it exists
-            let loadMoreWrapper = document.querySelector('.load-more-wrapper');
-            if (loadMoreWrapper) loadMoreWrapper.remove();
-
-            // Add Load More button only if we got a full page
-            if (groups.length === POSTS_PER_PAGE) {
-                loadMoreWrapper = document.createElement('div');
-                loadMoreWrapper.className = 'load-more-wrapper';
-                loadMoreWrapper.innerHTML = `
-                    <button class="load-more-btn">
-                        Load More
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                `;
-
-                const loadMoreBtn = loadMoreWrapper.querySelector('.load-more-btn');
-
-                loadMoreBtn.onclick = async () => {
-                    loadMoreBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
-                    loadMoreBtn.disabled = true;
-                    
-                    await loadGroups(currentTopic, currentCountry, true);
-
-                    loadMoreBtn.innerHTML = `Load More <i class="fas fa-chevron-down"></i>`;
-                    loadMoreBtn.disabled = false;
-                };
-
-                groupContainer.parentNode.appendChild(loadMoreWrapper);
-            }
-
-            // After rendering the cards, set up lazy loading
-            setupLazyLoading();
-        } else {
-            if (!loadMore) {
-                groupContainer.innerHTML = `
-                    <div class="no-groups">
-                        <i class="fas fa-search" style="font-size: 3rem; color: var(--gray);"></i>
-                        <p>No groups found matching your criteria</p>
-                    </div>
-                `;
-            }
+        // Apply search filter if there's a search term
+        const searchTerm = searchInput?.value.toLowerCase();
+        if (searchTerm) {
+            groups = groups.filter(group => 
+                group.title.toLowerCase().includes(searchTerm) ||
+                group.description.toLowerCase().includes(searchTerm)
+            );
         }
+
+        groups.forEach(group => {
+            const card = createGroupCard(group);
+            groupContainer.appendChild(card);
+        });
+
     } catch (error) {
         console.error('Error loading groups:', error);
-        let errorMessage = 'Failed to load groups. Please try again later.';
-        if (error.code === 'permission-denied') {
-            errorMessage = 'Access denied. Please check your permissions.';
-        } else if (error.code === 'unavailable') {
-            errorMessage = 'Service temporarily unavailable. Please try again in a few minutes.';
-        }
-        showErrorState(errorMessage);
+        groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
     }
 }
 
-// Function to create loading state
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial load
+    loadGroups();
+
+    // Category buttons (top section)
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const category = btn.dataset.category;
+            currentTopic = category;
+            loadGroups(category, currentCountry);
+            
+            // Update dropdown to match selected category
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            if (dropdownBtn) {
+                dropdownBtn.innerHTML = `${btn.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
+            }
+        });
+    });
+
+    // Dropdown functionality
+    const dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach(dropdown => {
+        const btn = dropdown.querySelector('.dropdown-btn');
+        const menu = dropdown.querySelector('.dropdown-menu');
+
+        // Toggle dropdown
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdowns.forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('active');
+                }
+            });
+            dropdown.classList.toggle('active');
+        });
+
+        // Handle filter selection
+        menu.querySelectorAll('.filter-btn').forEach(item => {
+            item.addEventListener('click', () => {
+                menu.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                item.classList.add('active');
+                
+                const category = item.dataset.category;
+                currentTopic = category;
+                loadGroups(category, currentCountry);
+                
+                btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`;
+                dropdown.classList.remove('active');
+            });
+        });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+        dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
+    });
+
+    // Search input listener
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(() => {
+            loadGroups(currentTopic, currentCountry);
+        }, 300));
+    }
+
+    // Topic filter listeners
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTopic = btn.dataset.category;
+            loadGroups(currentTopic, currentCountry);
+        });
+    });
+
+    // Country filter listeners
+    document.querySelectorAll('.country-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCountry = btn.dataset.country;
+            loadGroups(currentTopic, currentCountry);
+        });
+    });
+
+    // Initialize lazy loading
+    setupLazyLoading();
+});
+
+// Helper Functions
 function createLoadingState() {
     return `
         <div class="loading-skeleton">
@@ -191,6 +238,39 @@ function createLoadingState() {
             </div>
         </div>
     `;
+}
+
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + ' years ago';
+    
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + ' months ago';
+    
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + ' days ago';
+    
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + ' hours ago';
+    
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + ' minutes ago';
+    
+    return Math.floor(seconds) + ' seconds ago';
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // Setup lazy loading for images
@@ -238,78 +318,6 @@ function showNotification(message, type) {
     setTimeout(() => {
         notification.remove();
     }, 3000);
-}
-
-function timeAgo(timestamp) {
-    if (!timestamp) return 'N/A';
-
-    const seconds = Math.floor((new Date() - new Date(timestamp * 1000)) / 1000);
-
-    let interval = seconds / 31536000; // years
-    if (interval > 1) return Math.floor(interval) + ' years ago';
-
-    interval = seconds / 2592000; // months
-    if (interval > 1) return Math.floor(interval) + ' months ago';
-
-    interval = seconds / 86400; // days
-    if (interval > 1) return Math.floor(interval) + ' days ago';
-
-    interval = seconds / 3600; // hours
-    if (interval > 1) return Math.floor(interval) + 'h ago';
-
-    interval = seconds / 60; // minutes
-    if (interval > 1) return Math.floor(interval) + 'm ago';
-
-    return Math.floor(seconds) + 's ago';
-}
-
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Initial load
-    loadGroups();
-
-    // Topic filter listeners
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentTopic = btn.dataset.category;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Country filter listeners
-    document.querySelectorAll('.country-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCountry = btn.dataset.country;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Search input listener
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(() => {
-            loadGroups(currentTopic, currentCountry);
-        }, 300));
-    }
-
-    // Initialize lazy loading
-    setupLazyLoading();
-});
-
-// Debounce Function
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
 }
 
 // Adding the OpenGraph preview functionality to the existing code
