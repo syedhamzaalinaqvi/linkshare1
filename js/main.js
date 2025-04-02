@@ -31,14 +31,30 @@ function createGroupCard(group) {
     card.className = 'group-card';
     card.setAttribute('data-group-id', group.id);
     
+    // Handle timestamp display safely
+    let timeDisplay = 'Recently added';
+    try {
+        if (group.timestamp) {
+            if (typeof group.timestamp === 'object' && group.timestamp.toDate) {
+                timeDisplay = timeAgo(group.timestamp.toDate());
+            } else if (group.timestamp instanceof Date) {
+                timeDisplay = timeAgo(group.timestamp);
+            } else if (typeof group.timestamp === 'number') {
+                timeDisplay = timeAgo(new Date(group.timestamp));
+            }
+        }
+    } catch (error) {
+        console.error('Error formatting timestamp:', error);
+    }
+    
     card.innerHTML = `
         ${group.image ? `<img src="${group.image}" alt="${group.title}" onerror="this.src='https://via.placeholder.com/150'">` : ''}
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
             <span class="country-badge">${group.country || 'Global'}</span>
         </div>
-        <h3>${group.title}</h3>
-        <p>${group.description}</p>
+        <h3>${group.title || 'Untitled Group'}</h3>
+        <p>${group.description || 'No description available'}</p>
         <div class="card-actions">
             <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="updateGroupViews('${group.id}')">
                 <i class="fab fa-whatsapp"></i> Join Group
@@ -50,7 +66,7 @@ function createGroupCard(group) {
                 <span>${group.views || 0}</span> views
             </div>
             <div class="date-added">
-                ${group.timestamp ? timeAgo(group.timestamp.toDate()) : 'Recently added'}
+                ${timeDisplay}
             </div>
         </div>
     `;
@@ -78,30 +94,26 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         console.log('Loading groups with filters:', { filterTopic, filterCountry });
         
         if (!loadMore) {
-            const loadingSkeletons = Array(6).fill(createLoadingState()).join('');
-            groupContainer.innerHTML = loadingSkeletons;
+            groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
             lastDoc = null;
         }
 
+        // Create base query
         let baseQuery = collection(db, "groups");
         let constraints = [];
 
-        // Add category filter if not 'all'
+        // Add filters
         if (filterTopic !== 'all') {
-            console.log('Adding category filter:', filterTopic);
             constraints.push(where("category", "==", filterTopic));
         }
-
-        // Add country filter if not 'all'
         if (filterCountry !== 'all') {
-            console.log('Adding country filter:', filterCountry);
             constraints.push(where("country", "==", filterCountry));
         }
 
-        // Always add ordering and limit
+        // Add ordering
         constraints.push(orderBy("timestamp", "desc"));
-        
-        // Create the query
+
+        // Create query with filters and ordering
         let groupsQuery = query(baseQuery, ...constraints);
 
         // Add pagination
@@ -111,48 +123,49 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             groupsQuery = query(groupsQuery, limit(POSTS_PER_PAGE));
         }
 
-        console.log('Executing query...');
+        // Execute query
         const querySnapshot = await getDocs(groupsQuery);
         
+        // Clear container if not loading more
         if (!loadMore) {
             groupContainer.innerHTML = '';
         }
 
-        let groups = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            console.log('Document data:', {
-                id: doc.id,
-                category: data.category,
-                country: data.country,
-                timestamp: data.timestamp
-            });
-            groups.push({ 
-                id: doc.id, 
-                ...data,
-                timestamp: data.timestamp?.toDate() // Convert Firebase timestamp to JS Date
-            });
-        });
-
-        if (groups.length === 0 && !loadMore) {
-            console.log('No groups found');
+        // Process results
+        if (querySnapshot.empty && !loadMore) {
             groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
             return;
         }
 
-        // Update lastDoc for pagination
+        // Store the last document for pagination
         lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
 
-        // Apply search filter if there's a search term
+        // Create array of groups
+        let groups = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            groups.push({
+                id: doc.id,
+                ...data
+            });
+        });
+
+        // Apply search filter if needed
         const searchTerm = searchInput?.value.toLowerCase();
         if (searchTerm) {
-            console.log('Applying search filter:', searchTerm);
             groups = groups.filter(group => 
-                group.title?.toLowerCase().includes(searchTerm) ||
-                group.description?.toLowerCase().includes(searchTerm)
+                (group.title || '').toLowerCase().includes(searchTerm) ||
+                (group.description || '').toLowerCase().includes(searchTerm)
             );
         }
 
+        // Show no results message if needed
+        if (groups.length === 0 && !loadMore) {
+            groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+            return;
+        }
+
+        // Render groups
         groups.forEach(group => {
             const card = createGroupCard(group);
             groupContainer.appendChild(card);
@@ -163,6 +176,33 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
     } catch (error) {
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
+    }
+}
+
+// Helper function for time formatting
+function timeAgo(date) {
+    try {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + ' years ago';
+        
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + ' months ago';
+        
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + ' days ago';
+        
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + ' hours ago';
+        
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + ' minutes ago';
+        
+        return Math.floor(seconds) + ' seconds ago';
+    } catch (error) {
+        console.error('Error calculating time ago:', error);
+        return 'Recently added';
     }
 }
 
@@ -303,27 +343,6 @@ function createLoadingState() {
     `;
 }
 
-function timeAgo(date) {
-    const seconds = Math.floor((new Date() - date) / 1000);
-    
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + ' years ago';
-    
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + ' months ago';
-    
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + ' days ago';
-    
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + ' hours ago';
-    
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + ' minutes ago';
-    
-    return Math.floor(seconds) + ' seconds ago';
-}
-
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -462,7 +481,7 @@ form?.addEventListener('submit', async (e) => {
             country: form.groupCountry.value,
             description: form.groupDescription.value.trim(),
             image: ogData?.image || null,
-            timestamp: new Date()
+            timestamp: serverTimestamp()
         };
 
         if (!isValidWhatsAppLink(groupData.link)) {
