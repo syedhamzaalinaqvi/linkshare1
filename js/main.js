@@ -4,7 +4,9 @@ import { collection, getDocs, query, orderBy, where, startAfter, limit, doc, upd
 const POSTS_PER_PAGE = 12;
 let lastDoc = null;
 const groupContainer = document.querySelector('.groups-grid');
-const searchInput = document.querySelector('#searchInput');
+const searchInput = document.querySelector('#searchGroups');
+let currentTopic = 'all';
+let currentCountry = 'all';
 
 // Update createGroupCard function to handle missing thumbnails and titles
 function createGroupCard(group) {
@@ -19,9 +21,9 @@ function createGroupCard(group) {
                 <span class="country-badge">${group.country}</span>
             </div>
         <h3>${group.title}</h3>
-        <p>${truncateDescription(group.description)}</p>
+        <p>${group.description}</p>
             <div class="card-actions">
-            <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="event.preventDefault();">
+            <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="updateGroupViews('${group.id}')">
                     <i class="fab fa-whatsapp"></i> Join Group
                 </a>
             </div>
@@ -31,39 +33,166 @@ function createGroupCard(group) {
                 <span>${group.views || 0}</span> views
             </div>
             <div class="date-added">
-                ${group.timestamp ? timeAgo(group.timestamp.seconds) : 'Recently added'}
+                ${group.timestamp ? timeAgo(group.timestamp.toDate()) : 'Recently added'}
             </div> 
         </div>
     `;
 
-    // Add click event listener to the join button
-    const joinBtn = card.querySelector('.join-btn');
-    joinBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation(); // Prevent modal from opening when clicking join button
-        
-        // Open the link immediately
-        window.open(group.link, '_blank');
-        
-        // Update views count in the background
-        updateGroupViews(group.id).catch(console.error);
-    });
-
-    // Add click event listener to the card for modal
-    card.addEventListener('click', () => openModal(group));
-
     return card;
 }
 
-// Function to render groups
-async function renderGroups(groups) {
+// Function to update group views
+async function updateGroupViews(groupId) {
+    try {
+        const groupRef = doc(db, "groups", groupId);
+        await updateDoc(groupRef, {
+            views: increment(1)
+        });
+    } catch (error) {
+        console.error('Error updating views:', error);
+    }
+}
+
+// Function to load groups
+async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
+
+    try {
+        if (!loadMore) {
+            groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
+            lastDoc = null;
+        }
+
+        let groupsQuery = query(
+            collection(db, "groups"),
+            orderBy("timestamp", "desc"),
+            limit(POSTS_PER_PAGE)
+        );
+
+        if (lastDoc) {
+            groupsQuery = query(
+                collection(db, "groups"),
+                orderBy("timestamp", "desc"),
+                startAfter(lastDoc),
+                limit(POSTS_PER_PAGE)
+            );
+        }
+
+        const querySnapshot = await getDocs(groupsQuery);
+        
+        if (querySnapshot.empty && !loadMore) {
+            groupContainer.innerHTML = '<div class="no-groups">No groups found</div>';
+            return;
+        }
+
+        let groups = [];
+        querySnapshot.forEach((doc) => {
+            groups.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Update lastDoc for pagination
+        lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        // Apply filters
+        if (filterTopic !== 'all') {
+            groups = groups.filter(group => group.category === filterTopic);
+        }
+        if (filterCountry !== 'all') {
+            groups = groups.filter(group => group.country === filterCountry);
+        }
+
+        // Apply search filter if there's a search term
+        const searchTerm = searchInput?.value.toLowerCase();
+        if (searchTerm) {
+            groups = groups.filter(group => 
+                group.title.toLowerCase().includes(searchTerm) ||
+                group.description.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (!loadMore) {
+            groupContainer.innerHTML = '';
+        }
+
+        groups.forEach(group => {
+            const card = createGroupCard(group);
+            groupContainer.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error loading groups:', error);
+        if (!loadMore) {
+            groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
+        }
+    }
+}
+
+// Helper function for time ago
+function timeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
     
-    groupContainer.innerHTML = '';
-    groups.forEach(group => {
-        const card = createGroupCard(group);
-        groupContainer.appendChild(card);
+    let interval = seconds / 31536000;
+    if (interval > 1) return Math.floor(interval) + ' years ago';
+    
+    interval = seconds / 2592000;
+    if (interval > 1) return Math.floor(interval) + ' months ago';
+    
+    interval = seconds / 86400;
+    if (interval > 1) return Math.floor(interval) + ' days ago';
+    
+    interval = seconds / 3600;
+    if (interval > 1) return Math.floor(interval) + ' hours ago';
+    
+    interval = seconds / 60;
+    if (interval > 1) return Math.floor(interval) + ' minutes ago';
+    
+    return Math.floor(seconds) + ' seconds ago';
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Initial load
+    loadGroups();
+
+    // Topic filter listeners
+    document.querySelectorAll('#topicFilters .filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#topicFilters .filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTopic = btn.dataset.category;
+            loadGroups(currentTopic, currentCountry);
+        });
     });
+
+    // Country filter listeners
+    document.querySelectorAll('#countryFilters .filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#countryFilters .filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCountry = btn.dataset.country;
+            loadGroups(currentTopic, currentCountry);
+        });
+    });
+
+    // Search input listener
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(() => {
+            loadGroups(currentTopic, currentCountry);
+        }, 300));
+    }
+});
+
+// Utility function for debouncing
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // Adding the OpenGraph preview functionality to the existing code
@@ -121,13 +250,6 @@ document.getElementById('groupLink')?.addEventListener('input', async function()
     } else {
         previewDiv.innerHTML = '';
     }
-});
-
-
-// Ensure spinner is hidden on page load
-document.addEventListener("DOMContentLoaded", () => {
-    const spinner = document.querySelector('.loading-spinner');
-    if (spinner) spinner.style.display = 'none';
 });
 
 // Form Submission
@@ -375,9 +497,6 @@ function timeAgo(timestamp) {
 
     interval = seconds / 2592000; // months
     if (interval > 1) return Math.floor(interval) + ' months ago';
-
-    interval = seconds / 604800; // weeks
-    if (interval > 1) return Math.floor(interval) + ' weeks ago';
 
     interval = seconds / 86400; // days
     if (interval > 1) return Math.floor(interval) + ' days ago';
