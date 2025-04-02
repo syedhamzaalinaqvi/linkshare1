@@ -4,26 +4,13 @@ import { collection, getDocs, query, orderBy, where, startAfter, limit, doc, upd
 // Global variables
 const POSTS_PER_PAGE = 12;
 let lastDoc = null;
+let isLastPage = false;
 const groupContainer = document.querySelector('.groups-grid');
+const loadMoreBtn = document.querySelector('#loadMoreBtn');
 const searchInput = document.querySelector('#searchGroups');
 let currentTopic = 'all';
 let currentCountry = 'all';
 let form = document.querySelector('#addGroupForm');
-
-// Debug function to check document fields
-async function debugCollection() {
-    try {
-        const snapshot = await getDocs(collection(db, "groups"));
-        snapshot.forEach(doc => {
-            console.log('Document data:', {
-                id: doc.id,
-                data: doc.data()
-            });
-        });
-    } catch (error) {
-        console.error('Debug error:', error);
-    }
-}
 
 // Function to create a group card
 function createGroupCard(group) {
@@ -74,15 +61,14 @@ function createGroupCard(group) {
     return card;
 }
 
-// Function to update group views
-async function updateGroupViews(groupId) {
-    try {
-        const groupRef = doc(db, "groups", groupId);
-        await updateDoc(groupRef, {
-            views: increment(1)
-        });
-    } catch (error) {
-        console.error('Error updating views:', error);
+// Function to update load more button visibility
+function updateLoadMoreButton(totalGroups) {
+    if (loadMoreBtn) {
+        if (isLastPage || totalGroups < POSTS_PER_PAGE) {
+            loadMoreBtn.style.display = 'none';
+        } else {
+            loadMoreBtn.style.display = 'block';
+        }
     }
 }
 
@@ -96,6 +82,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         if (!loadMore) {
             groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
             lastDoc = null;
+            isLastPage = false;
         }
 
         // Create base query
@@ -105,9 +92,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         // Add category filter if not 'all'
         if (filterTopic && filterTopic !== 'all') {
             console.log('Adding category filter:', filterTopic);
-            // Handle "News & Media" special case
-            const categoryValue = filterTopic === "News" ? "News & Media" : filterTopic;
-            constraints.push(where("category", "==", categoryValue));
+            constraints.push(where("category", "==", filterTopic));
         }
 
         // Add country filter if not 'all'
@@ -154,13 +139,20 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         });
 
         // Show no results message if needed
-        if (groups.length === 0 && !loadMore) {
-            groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+        if (groups.length === 0) {
+            if (!loadMore) {
+                groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+            }
+            isLastPage = true;
+            updateLoadMoreButton(0);
             return;
         }
 
         // Store the last document for pagination
         lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        // Check if this is the last page
+        isLastPage = groups.length < POSTS_PER_PAGE;
 
         // Apply search filter if needed
         const searchTerm = searchInput?.value.toLowerCase();
@@ -177,21 +169,29 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             groupContainer.appendChild(card);
         });
 
+        // Update load more button visibility
+        updateLoadMoreButton(groups.length);
+
         console.log(`Rendered ${groups.length} groups`);
 
     } catch (error) {
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
+        updateLoadMoreButton(0);
     }
 }
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Debug check for data structure
-    debugCollection();
-
     // Initial load
     loadGroups();
+
+    // Load More button click handler
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            loadGroups(currentTopic, currentCountry, true);
+        });
+    }
 
     // Category buttons (top section)
     document.querySelectorAll('.category-btn').forEach(btn => {
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', () => {
-        document.querySelectorAll('.dropdown').classList.remove('active');
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
     });
 
     // Search input listener
