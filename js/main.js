@@ -102,15 +102,21 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         let baseQuery = collection(db, "groups");
         let constraints = [];
 
-        // Add filters
-        if (filterTopic !== 'all') {
-            constraints.push(where("category", "==", filterTopic));
+        // Add category filter if not 'all'
+        if (filterTopic && filterTopic !== 'all') {
+            console.log('Adding category filter:', filterTopic);
+            // Handle "News & Media" special case
+            const categoryValue = filterTopic === "News" ? "News & Media" : filterTopic;
+            constraints.push(where("category", "==", categoryValue));
         }
-        if (filterCountry !== 'all') {
+
+        // Add country filter if not 'all'
+        if (filterCountry && filterCountry !== 'all') {
+            console.log('Adding country filter:', filterCountry);
             constraints.push(where("country", "==", filterCountry));
         }
 
-        // Add ordering
+        // Always add ordering
         constraints.push(orderBy("timestamp", "desc"));
 
         // Create query with filters and ordering
@@ -124,6 +130,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         }
 
         // Execute query
+        console.log('Executing query with constraints:', constraints);
         const querySnapshot = await getDocs(groupsQuery);
         
         // Clear container if not loading more
@@ -131,24 +138,29 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             groupContainer.innerHTML = '';
         }
 
-        // Process results
-        if (querySnapshot.empty && !loadMore) {
+        // Create array of groups
+        let groups = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            console.log('Document data:', {
+                id: doc.id,
+                category: data.category,
+                country: data.country
+            });
+            groups.push({
+                id: doc.id,
+                ...data
+            });
+        });
+
+        // Show no results message if needed
+        if (groups.length === 0 && !loadMore) {
             groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
             return;
         }
 
         // Store the last document for pagination
         lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-        // Create array of groups
-        let groups = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            groups.push({
-                id: doc.id,
-                ...data
-            });
-        });
 
         // Apply search filter if needed
         const searchTerm = searchInput?.value.toLowerCase();
@@ -157,12 +169,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 (group.title || '').toLowerCase().includes(searchTerm) ||
                 (group.description || '').toLowerCase().includes(searchTerm)
             );
-        }
-
-        // Show no results message if needed
-        if (groups.length === 0 && !loadMore) {
-            groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
-            return;
         }
 
         // Render groups
@@ -179,33 +185,6 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
     }
 }
 
-// Helper function for time formatting
-function timeAgo(date) {
-    try {
-        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-        
-        let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + ' years ago';
-        
-        interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + ' months ago';
-        
-        interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + ' days ago';
-        
-        interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + ' hours ago';
-        
-        interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + ' minutes ago';
-        
-        return Math.floor(seconds) + ' seconds ago';
-    } catch (error) {
-        console.error('Error calculating time ago:', error);
-        return 'Recently added';
-    }
-}
-
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Debug check for data structure
@@ -219,8 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             const category = btn.dataset.category;
             console.log('Category button clicked:', category);
+            
+            // Update UI
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            
+            // Update state and load groups
             currentTopic = category;
             loadGroups(category, currentCountry);
             
@@ -238,63 +221,91 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Dropdown functionality
-    const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach(dropdown => {
-        const btn = dropdown.querySelector('.dropdown-btn');
-        const menu = dropdown.querySelector('.dropdown-menu');
+    // Topic filter dropdown
+    const topicFilters = document.querySelector('#topicFilters');
+    if (topicFilters) {
+        topicFilters.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.dataset.category;
+                console.log('Topic filter clicked:', category);
+                
+                // Update UI
+                topicFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update dropdown button text
+                const dropdownBtn = btn.closest('.dropdown').querySelector('.dropdown-btn');
+                if (dropdownBtn) {
+                    dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
+                }
+                
+                // Update state and load groups
+                currentTopic = category;
+                loadGroups(category, currentCountry);
+                
+                // Close dropdown
+                btn.closest('.dropdown').classList.remove('active');
+                
+                // Update category buttons to match
+                const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
+                if (categoryBtn) {
+                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                    categoryBtn.classList.add('active');
+                }
+            });
+        });
+    }
 
+    // Country filter dropdown
+    const countryFilters = document.querySelector('#countryFilters');
+    if (countryFilters) {
+        countryFilters.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const country = btn.dataset.country;
+                console.log('Country filter clicked:', country);
+                
+                // Update UI
+                countryFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update dropdown button text
+                const dropdownBtn = btn.closest('.dropdown').querySelector('.dropdown-btn');
+                if (dropdownBtn) {
+                    dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
+                }
+                
+                // Update state and load groups
+                currentCountry = country;
+                loadGroups(currentTopic, country);
+                
+                // Close dropdown
+                btn.closest('.dropdown').classList.remove('active');
+            });
+        });
+    }
+
+    // Dropdown toggle functionality
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+        const btn = dropdown.querySelector('.dropdown-btn');
+        
         // Toggle dropdown
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            dropdowns.forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('active');
-                }
-            });
-            dropdown.classList.toggle('active');
+            const wasActive = dropdown.classList.contains('active');
+            
+            // Close all dropdowns
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+            
+            // Toggle this dropdown
+            if (!wasActive) {
+                dropdown.classList.add('active');
+            }
         });
-
-        // Handle filter selection
-        if (menu.id === 'topicFilters') {
-            menu.querySelectorAll('.filter-btn').forEach(item => {
-                item.addEventListener('click', () => {
-                    const category = item.dataset.category;
-                    console.log('Topic filter clicked:', category);
-                    menu.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    item.classList.add('active');
-                    currentTopic = category;
-                    loadGroups(category, currentCountry);
-                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`;
-                    dropdown.classList.remove('active');
-
-                    // Update category buttons to match
-                    const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
-                    if (categoryBtn) {
-                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                        categoryBtn.classList.add('active');
-                    }
-                });
-            });
-        } else if (menu.id === 'countryFilters') {
-            menu.querySelectorAll('.filter-btn').forEach(item => {
-                item.addEventListener('click', () => {
-                    const country = item.dataset.country;
-                    console.log('Country filter clicked:', country);
-                    menu.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    item.classList.add('active');
-                    currentCountry = country;
-                    loadGroups(currentTopic, country);
-                    btn.innerHTML = `${item.textContent} <i class="fas fa-chevron-down"></i>`;
-                    dropdown.classList.remove('active');
-                });
-            });
-        }
     });
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', () => {
-        dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
+        document.querySelectorAll('.dropdown').classList.remove('active');
     });
 
     // Search input listener
@@ -502,3 +513,30 @@ form?.addEventListener('submit', async (e) => {
         submitBtn.disabled = false;
     }
 });
+
+// Helper function for time formatting
+function timeAgo(date) {
+    try {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + ' years ago';
+        
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + ' months ago';
+        
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + ' days ago';
+        
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + ' hours ago';
+        
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + ' minutes ago';
+        
+        return Math.floor(seconds) + ' seconds ago';
+    } catch (error) {
+        console.error('Error calculating time ago:', error);
+        return 'Recently added';
+    }
+}
