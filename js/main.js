@@ -34,10 +34,16 @@ function createGroupCard(group) {
     // Use a default image if none is provided
     const defaultImage = '/favicon-96x96.png';
     const imageUrl = group.image || defaultImage;
+    
+    // Prevent Whatsapp image errors from showing in console
+    if (imageUrl && imageUrl.includes('whatsapp.net')) {
+        // Use default image instead of WhatsApp images that might cause 403 errors
+        imageUrl = defaultImage;
+    }
 
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.src='${defaultImage}'">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}'; console.log('Using default image');">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -176,8 +182,8 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
                 lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
             }
 
-            // Check if this is the last page
-            isLastPage = limitedGroups.length < POSTS_PER_PAGE || groups.length <= POSTS_PER_PAGE;
+            // Check if this is the last page but always show the button initially
+            isLastPage = false; // Always show load more button
 
             // Apply search filter if needed
             const searchTerm = searchInput?.value.toLowerCase();
