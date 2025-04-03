@@ -32,7 +32,7 @@ function createGroupCard(group) {
     }
 
     // Use a default image if none is provided
-    const defaultImage = 'favicon-96x96.png';
+    const defaultImage = '/favicon-96x96.png';
     const imageUrl = group.image || defaultImage;
 
     card.innerHTML = `
@@ -103,8 +103,13 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             baseQuery = baseQuery.where("country", "==", filterCountry);
         }
 
-        // Always add ordering
-        baseQuery = baseQuery.orderBy("timestamp", "desc");
+        // Always add ordering - only use orderBy if no filters are used, or if the Firebase index exists
+        try {
+            baseQuery = baseQuery.orderBy("timestamp", "desc");
+        } catch (error) {
+            console.log('Warning: Timestamp ordering skipped due to missing index:', error);
+            // Fallback to no ordering if index doesn't exist
+        }
 
         // Add pagination
         if (lastDoc && loadMore) {
@@ -191,8 +196,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const navLinks = document.querySelector('.nav-links');
 
         if (navToggle && navLinks) {
-            navToggle.addEventListener('click', () => {
+            navToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
                 navLinks.classList.toggle('active');
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (navLinks.classList.contains('active') && 
+                    !navLinks.contains(e.target) && 
+                    e.target !== navToggle) {
+                    navLinks.classList.remove('active');
+                }
             });
         }
 
