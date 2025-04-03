@@ -190,9 +190,10 @@ body {
 /* Improved Form Styles */
 .submit-section {
     background: var(--white);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: var(--radius);
-    margin: 2rem auto;
+    margin: auto;
+    margin-top: 1rem;
     max-width: 800px;
     box-shadow: var(--shadow);
     transition: var(--transition);
