@@ -33,7 +33,7 @@ function createGroupCard(group) {
 
     // Use a default image if none is provided
     const defaultImage = '/favicon-96x96.png';
-    const imageUrl = group.image || defaultImage;
+    let imageUrl = group.image || defaultImage;
     
     // Prevent Whatsapp image errors from showing in console
     if (imageUrl && imageUrl.includes('whatsapp.net')) {
