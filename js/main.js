@@ -35,12 +35,10 @@ function createGroupCard(group) {
     const defaultImage = '/favicon-96x96.png';
     let imageUrl = group.image || defaultImage;
     
-    // No filtering, show original images
-    
-    // Create card with lazy loading for images
+    // Create card with immediate image loading to ensure images display
     card.innerHTML = `
         <div class="card-image">
-            <img class="lazy-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}';">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}';">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -253,21 +251,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadMoreBtn.classList.add('loading');
                 loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Loading...';
                 
-                // Add a short pulse animation on click
+                // Add a click animation
                 loadMoreBtn.style.transform = 'scale(0.95)';
                 
-                // Slight delay to show animation before loading content
+                // Load content with minimal delay
                 setTimeout(() => {
-                    // Return to normal size with a transition
-                    loadMoreBtn.style.transform = 'scale(1)';
                     loadGroups(currentTopic, currentCountry, true);
                     
                     // Reset button after loading
                     setTimeout(() => {
+                        loadMoreBtn.style.transform = 'scale(1)';
                         loadMoreBtn.classList.remove('loading');
                         loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Load More';
-                    }, 500);
-                }, 800);
+                    }, 300);
+                }, 300);
             });
         }
 
