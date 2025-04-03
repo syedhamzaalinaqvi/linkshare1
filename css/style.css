@@ -404,7 +404,18 @@ input:focus, textarea:focus, select:focus {
 }
 
 .group-card .card-footer {
-    margin-top: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: var(--gray);
+    position: relative;
+    background: var(--white);
+    padding: 0.5rem 1.5rem;
+    z-index: 2;
+    margin-top: -2.5rem;
 }
 
 .group-card:hover {
@@ -494,29 +505,6 @@ input:focus, textarea:focus, select:focus {
     display: block;
 }
 
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 0.5rem;
-    border-top: 1px solid #eee;
-    font-size: 0.9rem;
-    color: var(--gray);
-    position: relative;
-    background: var(--white);
-    padding: 0.5rem 1.5rem;
-    z-index: 2;
-}
-
-.views-count {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.views-count i {
-    color: var(--primary-color);
-}
 
 /* chatgpt modified Filter Section */
 /* General Styles */
@@ -814,17 +802,17 @@ input:focus, textarea:focus, select:focus {
     .nav-toggle {
         padding: 8px;
     }
-    
+
     .nav-links.active {
         width: 300px;
         left: auto;
         right: 0;
     }
-    
+
     .nav-links li {
         margin: 8px 0;
     }
-    
+
     .nav-links a, .nav-links .dropbtn {
         padding: 12px;
         font-size: 1.1rem;
@@ -2606,3 +2594,22 @@ select:focus {
     margin: 2rem auto;
     padding: 0 1rem;
 }
+
+/* Add Group Page Styles */
+.add-group-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* Adjust as needed */
+    padding: 2rem;
+}
+
+.add-group-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the content */
+    max-width: 800px; /* Adjust as needed */
+    width: 100%;
+}
+
+/* Style the form elements as needed */
