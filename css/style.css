@@ -202,6 +202,14 @@ body {
     align-items: center;
 }
 
+/* Center the form in the add-group page */
+.group-form {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
 .submit-section:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
@@ -385,6 +393,20 @@ input:focus, textarea:focus, select:focus {
     overflow: visible;
 }
 
+/* Make sure that the layout is properly structured */
+.group-card > * {
+    position: relative;
+}
+
+.group-card .card-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.group-card .card-footer {
+    margin-top: 0.5rem;
+}
+
 .group-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
@@ -464,7 +486,7 @@ input:focus, textarea:focus, select:focus {
 .card-actions {
     margin-top: auto;
     width: 100%;
-    padding-bottom: 1rem;
+    padding: 0 1.5rem 1rem 1.5rem;
     position: relative;
     z-index: 2;
     bottom: 0;
