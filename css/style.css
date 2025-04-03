@@ -661,19 +661,26 @@ input:focus, textarea:focus, select:focus {
 
     .nav-links {
         display: none;
-        position: absolute;
-        top: 100%;
+        position: fixed;
+        top: 0;
         left: 0;
         right: 0;
+        bottom: 0;
         background: var(--white);
         flex-direction: column;
-        padding: 1rem;
+        padding: 4rem 1rem 1rem;
         box-shadow: var(--shadow);
-        z-index: 1000;
+        z-index: 999;
+        overflow-y: auto;
     }
 
     .nav-links.active {
         display: flex;
+    }
+    
+    .nav-toggle {
+        z-index: 1000;
+        position: relative;
     }
     
     .nav-dropdown-content {

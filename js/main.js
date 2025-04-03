@@ -90,32 +90,32 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
 
         // Create base query
         let baseQuery = window.db.collection("groups");
-
-        // Add filters
-        if (filterTopic && filterTopic !== 'all') {
-            console.log('Adding category filter:', filterTopic);
-            baseQuery = baseQuery.where("category", "==", filterTopic);
-        }
-
-        // Add country filter if not 'all'
-        if (filterCountry && filterCountry !== 'all') {
-            console.log('Adding country filter:', filterCountry);
-            baseQuery = baseQuery.where("country", "==", filterCountry);
-        }
-
-        // Always add ordering - only use orderBy if no filters are used, or if the Firebase index exists
-        try {
+        
+        // For queries with filters, we'll use a different approach to avoid index issues
+        const hasTopicFilter = filterTopic && filterTopic !== 'all';
+        const hasCountryFilter = filterCountry && filterCountry !== 'all';
+        
+        // First get all groups and apply filter in memory if using advanced filtering
+        if ((hasTopicFilter && hasCountryFilter) || 
+            (hasTopicFilter && !hasCountryFilter) || 
+            (!hasTopicFilter && hasCountryFilter)) {
+            // Fetch all groups with a limit and apply filters in memory
             baseQuery = baseQuery.orderBy("timestamp", "desc");
-        } catch (error) {
-            console.log('Warning: Timestamp ordering skipped due to missing index:', error);
-            // Fallback to no ordering if index doesn't exist
-        }
-
-        // Add pagination
-        if (lastDoc && loadMore) {
-            baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE);
+            
+            if (lastDoc && loadMore) {
+                baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE * 3); // Get more to ensure we have enough after filtering
+            } else {
+                baseQuery = baseQuery.limit(POSTS_PER_PAGE * 3); // Get more to ensure we have enough after filtering
+            }
         } else {
-            baseQuery = baseQuery.limit(POSTS_PER_PAGE);
+            // No filters, just apply ordering and pagination
+            baseQuery = baseQuery.orderBy("timestamp", "desc");
+            
+            if (lastDoc && loadMore) {
+                baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE);
+            } else {
+                baseQuery = baseQuery.limit(POSTS_PER_PAGE);
+            }
         }
 
         // Execute query
@@ -139,9 +139,30 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
                     ...data
                 });
             });
+            
+            // Apply filters in memory since we've already fetched the data
+            const hasTopicFilter = filterTopic && filterTopic !== 'all';
+            const hasCountryFilter = filterCountry && filterCountry !== 'all';
+            
+            // Apply category filter if needed
+            if (hasTopicFilter) {
+                groups = groups.filter(group => 
+                    group.category === filterTopic
+                );
+            }
+            
+            // Apply country filter if needed
+            if (hasCountryFilter) {
+                groups = groups.filter(group => 
+                    group.country === filterCountry
+                );
+            }
+            
+            // Limit the results to POSTS_PER_PAGE
+            const limitedGroups = groups.slice(0, POSTS_PER_PAGE);
 
             // Show no results message if needed
-            if (groups.length === 0) {
+            if (limitedGroups.length === 0) {
                 if (!loadMore) {
                     groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
                 }
@@ -151,18 +172,22 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             }
 
             // Store the last document for pagination
-            lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+            if (querySnapshot.docs.length > 0) {
+                lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+            }
 
             // Check if this is the last page
-            isLastPage = groups.length < POSTS_PER_PAGE;
+            isLastPage = limitedGroups.length < POSTS_PER_PAGE || groups.length <= POSTS_PER_PAGE;
 
             // Apply search filter if needed
             const searchTerm = searchInput?.value.toLowerCase();
             if (searchTerm) {
-                groups = groups.filter(group => 
+                groups = limitedGroups.filter(group => 
                     (group.title || '').toLowerCase().includes(searchTerm) ||
                     (group.description || '').toLowerCase().includes(searchTerm)
                 );
+            } else {
+                groups = limitedGroups;
             }
 
             // Render groups
