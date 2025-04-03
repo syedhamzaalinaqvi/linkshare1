@@ -50,7 +50,7 @@ function createGroupCard(group) {
         </div>
         <h3>${group.title || 'Untitled Group'}</h3>
         <p>${group.description || 'No description available'}</p>
-        <div class="card-actions">
+        <div class="card-actions" style="position: absolute; bottom: 60px; left: 0; right: 0; padding: 0 1.5rem;">
             <a href="${group.link}" target="_blank" rel="noopener noreferrer" class="join-btn" onclick="updateGroupViews('${group.id}')">
                 <i class="fab fa-whatsapp"></i> Join Group
             </a>

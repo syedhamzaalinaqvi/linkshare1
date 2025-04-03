@@ -196,6 +196,10 @@ body {
     max-width: 800px;
     box-shadow: var(--shadow);
     transition: var(--transition);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .submit-section:hover {
@@ -206,6 +210,9 @@ body {
 .group-form {
     display: grid;
     gap: 1.5rem;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
 }
 
 .form-group {
@@ -460,6 +467,9 @@ input:focus, textarea:focus, select:focus {
     padding-bottom: 1rem;
     position: relative;
     z-index: 2;
+    bottom: 0;
+    visibility: visible;
+    display: block;
 }
 
 .card-footer {
