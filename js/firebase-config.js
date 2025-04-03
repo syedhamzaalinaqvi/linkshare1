@@ -10,34 +10,59 @@ const firebaseConfig = {
     measurementId: "G-5VEQPNG163"
 };
 
-// Initialize Firebase - use CDN approach for browser compatibility
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-import { getFirestore, collection, getDocs, query, orderBy, where, startAfter, limit, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-let db;
-
-try {
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    db = getFirestore(app);
-    
-    console.log("Firebase initialized successfully");
-} catch (error) {
-    console.error("Error initializing Firebase:", error);
-}
-
-// Make db available globally
-window.db = db;
-window.collection = collection;
-window.getDocs = getDocs;
-window.query = query;
-window.orderBy = orderBy;
-window.where = where;
-window.startAfter = startAfter;
-window.limit = limit;
-window.doc = doc;
-window.updateDoc = updateDoc;
-window.increment = increment;
-window.addDoc = addDoc;
-window.serverTimestamp = serverTimestamp;
+// Initialize Firebase using regular script tags instead of modules
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics();
+        const db = firebase.firestore();
+        
+        // Make db and Firebase functions available globally
+        window.db = db;
+        window.collection = firebase.firestore.collection;
+        window.getDocs = (query) => query.get();
+        window.query = (ref, ...constraints) => {
+            let q = ref;
+            constraints.forEach(constraint => {
+                if (constraint.type === 'where') {
+                    q = q.where(constraint._field.segments[0], constraint._op, constraint._value);
+                } else if (constraint.type === 'orderBy') {
+                    q = q.orderBy(constraint._field.segments[0], constraint._direction);
+                } else if (constraint.type === 'startAfter') {
+                    q = q.startAfter(constraint._value);
+                } else if (constraint.type === 'limit') {
+                    q = q.limit(constraint._value);
+                }
+            });
+            return q;
+        };
+        window.orderBy = (field, direction) => ({
+            _field: { segments: [field], offset: 0, len: 1 },
+            _direction: direction,
+            type: 'orderBy'
+        });
+        window.where = (field, op, value) => ({
+            _field: { segments: [field], offset: 0, len: 1 },
+            _op: op,
+            _value: value,
+            type: 'where'
+        });
+        window.startAfter = (doc) => ({
+            _value: doc,
+            type: 'startAfter'
+        });
+        window.limit = (value) => ({
+            _value: value,
+            type: 'limit'
+        });
+        window.doc = (db, path, id) => db.collection(path).doc(id);
+        window.updateDoc = (ref, data) => ref.update(data);
+        window.increment = (value) => firebase.firestore.FieldValue.increment(value);
+        window.addDoc = (collectionRef, data) => collectionRef.add(data);
+        window.serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
+        
+        console.log("Firebase initialized successfully");
+    } catch (error) {
+        console.error("Error initializing Firebase:", error);
+    }
+});

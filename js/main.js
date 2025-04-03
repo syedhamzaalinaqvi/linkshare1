@@ -76,7 +76,7 @@ function updateLoadMoreButton(totalGroups) {
 }
 
 // Function to load groups
-async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
+function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
 
     try {
@@ -88,11 +88,10 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             isLastPage = false;
         }
 
-        // Create base query using global functions
-        let baseQuery = collection(window.db, "groups");
-        let constraints = [];
-
-        // Add category filter if not 'all'
+        // Create base query
+        let baseQuery = window.db.collection("groups");
+        
+        // Add filters
         if (filterTopic && filterTopic !== 'all') {
             console.log('Adding category filter:', filterTopic);
             // Handle special cases with spaces
@@ -102,7 +101,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 "Jobs": "Jobs & Career"
             };
             const categoryValue = categoryMap[filterTopic] || filterTopic;
-            constraints.push(where("category", "==", categoryValue));
+            baseQuery = baseQuery.where("category", "==", categoryValue);
         }
 
         // Add country filter if not 'all'
@@ -114,45 +113,40 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
                 "USA": "United States"
             };
             const countryValue = countryMap[filterCountry] || filterCountry;
-            constraints.push(where("country", "==", countryValue));
+            baseQuery = baseQuery.where("country", "==", countryValue);
         }
 
         // Always add ordering
-        constraints.push(orderBy("timestamp", "desc"));
-
-        // Create query with filters and ordering
-        let groupsQuery = query(baseQuery, ...constraints);
+        baseQuery = baseQuery.orderBy("timestamp", "desc");
 
         // Add pagination
         if (lastDoc && loadMore) {
-            groupsQuery = query(groupsQuery, startAfter(lastDoc), limit(POSTS_PER_PAGE));
+            baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE);
         } else {
-            groupsQuery = query(groupsQuery, limit(POSTS_PER_PAGE));
+            baseQuery = baseQuery.limit(POSTS_PER_PAGE);
         }
 
         // Execute query
-        console.log('Executing query with constraints:', constraints);
-        const querySnapshot = await getDocs(groupsQuery);
+        baseQuery.get().then(querySnapshot => {
+            // Clear container if not loading more
+            if (!loadMore) {
+                groupContainer.innerHTML = '';
+            }
 
-        // Clear container if not loading more
-        if (!loadMore) {
-            groupContainer.innerHTML = '';
-        }
-
-        // Create array of groups
-        let groups = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            console.log('Document data:', {
-                id: doc.id,
-                category: data.category,
-                country: data.country
+            // Create array of groups
+            let groups = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                console.log('Document data:', {
+                    id: doc.id,
+                    category: data.category,
+                    country: data.country
+                });
+                groups.push({
+                    id: doc.id,
+                    ...data
+                });
             });
-            groups.push({
-                id: doc.id,
-                ...data
-            });
-        });
 
         // Show no results message if needed
         if (groups.length === 0) {
@@ -199,25 +193,27 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize mobile menu
-    const navToggle = document.querySelector('.nav-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    // Wait for Firebase to initialize
+    setTimeout(() => {
+        // Initialize mobile menu
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
 
-    if (navToggle && navLinks) {
-        navToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    }
+        if (navToggle && navLinks) {
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        }
 
-    // Initial load
-    loadGroups();
+        // Initial load
+        loadGroups();
 
-    // Load More button click handler
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-            loadGroups(currentTopic, currentCountry, true);
-        });
-    }
+        // Load More button click handler
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                loadGroups(currentTopic, currentCountry, true);
+            });
+        }
 
     // Category buttons (top section)
     document.querySelectorAll('.category-btn').forEach(btn => {
