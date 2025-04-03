@@ -17,7 +17,7 @@ function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
     card.setAttribute('data-group-id', group.id);
-    
+
     // Handle timestamp display safely
     let timeDisplay = 'Recently added';
     try {
@@ -33,11 +33,11 @@ function createGroupCard(group) {
     } catch (error) {
         console.error('Error formatting timestamp:', error);
     }
-    
+
     // Use a default image if none is provided
     const defaultImage = 'images/default-group.png';
     const imageUrl = group.image || defaultImage;
-    
+
     card.innerHTML = `
         <div class="card-image">
             <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.src='${defaultImage}'">
@@ -84,7 +84,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
     try {
         console.log('Loading groups with filters:', { filterTopic, filterCountry });
-        
+
         if (!loadMore) {
             groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
             lastDoc = null;
@@ -136,7 +136,7 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
         // Execute query
         console.log('Executing query with constraints:', constraints);
         const querySnapshot = await getDocs(groupsQuery);
-        
+
         // Clear container if not loading more
         if (!loadMore) {
             groupContainer.innerHTML = '';
@@ -217,15 +217,15 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             const category = btn.dataset.category;
             console.log('Category button clicked:', category);
-            
+
             // Update UI
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
+
             // Update state and load groups
             currentTopic = category;
             loadGroups(category, currentCountry);
-            
+
             // Update dropdown to match selected category
             const dropdownBtn = document.querySelector('#topicFilters').closest('.dropdown').querySelector('.dropdown-btn');
             if (dropdownBtn) {
@@ -247,24 +247,24 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 const category = btn.dataset.category;
                 console.log('Topic filter clicked:', category);
-                
+
                 // Update UI
                 topicFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 // Update dropdown button text
                 const dropdownBtn = btn.closest('.dropdown').querySelector('.dropdown-btn');
                 if (dropdownBtn) {
                     dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
                 }
-                
+
                 // Update state and load groups
                 currentTopic = category;
                 loadGroups(category, currentCountry);
-                
+
                 // Close dropdown
                 btn.closest('.dropdown').classList.remove('active');
-                
+
                 // Update category buttons to match
                 const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
                 if (categoryBtn) {
@@ -282,21 +282,21 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 const country = btn.dataset.country;
                 console.log('Country filter clicked:', country);
-                
+
                 // Update UI
                 countryFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                
+
                 // Update dropdown button text
                 const dropdownBtn = btn.closest('.dropdown').querySelector('.dropdown-btn');
                 if (dropdownBtn) {
                     dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
                 }
-                
+
                 // Update state and load groups
                 currentCountry = country;
                 loadGroups(currentTopic, country);
-                
+
                 // Close dropdown
                 btn.closest('.dropdown').classList.remove('active');
             });
@@ -306,15 +306,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dropdown toggle functionality
     document.querySelectorAll('.dropdown').forEach(dropdown => {
         const btn = dropdown.querySelector('.dropdown-btn');
-        
+
         // Toggle dropdown
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const wasActive = dropdown.classList.contains('active');
-            
+
             // Close all dropdowns
             document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
-            
+
             // Toggle this dropdown
             if (!wasActive) {
                 dropdown.classList.add('active');
@@ -388,7 +388,7 @@ function debounce(func, wait) {
 // Setup lazy loading for images
 function setupLazyLoading() {
     const lazyImages = document.querySelectorAll('.lazy-image');
-    
+
     const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -537,25 +537,41 @@ form?.addEventListener('submit', async (e) => {
 function timeAgo(date) {
     try {
         const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-        
+
         let interval = seconds / 31536000;
         if (interval > 1) return Math.floor(interval) + ' years ago';
-        
+
         interval = seconds / 2592000;
         if (interval > 1) return Math.floor(interval) + ' months ago';
-        
+
         interval = seconds / 86400;
         if (interval > 1) return Math.floor(interval) + ' days ago';
-        
+
         interval = seconds / 3600;
         if (interval > 1) return Math.floor(interval) + ' hours ago';
-        
+
         interval = seconds / 60;
         if (interval > 1) return Math.floor(interval) + ' minutes ago';
-        
+
         return Math.floor(seconds) + ' seconds ago';
     } catch (error) {
         console.error('Error calculating time ago:', error);
         return 'Recently added';
     }
 }
+
+// Function to update group views
+async function updateGroupViews(groupId) {
+    try {
+        const groupRef = doc(db, "groups", groupId);
+        await updateDoc(groupRef, {
+            views: increment(1)
+        });
+        console.log('Group views updated');
+    } catch (error) {
+        console.error('Error updating group views:', error);
+    }
+}
+
+// Make updateGroupViews available globally
+window.updateGroupViews = updateGroupViews;

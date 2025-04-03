@@ -633,6 +633,13 @@ input:focus, textarea:focus, select:focus {
 @media (max-width: 768px) {
     .nav-toggle {
         display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        cursor: pointer;
+        z-index: 1001;
+        padding: 0.5rem;
     }
 
     .nav-links {
@@ -645,10 +652,23 @@ input:focus, textarea:focus, select:focus {
         flex-direction: column;
         padding: 1rem;
         box-shadow: var(--shadow);
+        z-index: 1000;
     }
 
     .nav-links.active {
         display: flex;
+    }
+    
+    .nav-dropdown-content {
+        position: static;
+        box-shadow: none;
+        padding-left: 1rem;
+        width: 100%;
+        display: none;
+    }
+    
+    .nav-dropdown.active .nav-dropdown-content {
+        display: block;
     }
 
     .submit-section {
@@ -1687,7 +1707,17 @@ select:focus {
 
 /* Modal Styles */
 .modal-overlay {
-    display: flex; /* Changed from 'none' to 'flex' */
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    padding: 1rem;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
