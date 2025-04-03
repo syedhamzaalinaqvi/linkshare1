@@ -35,8 +35,14 @@ function createGroupCard(group) {
     const defaultImage = '/favicon-96x96.png';
     let imageUrl = group.image || defaultImage;
     
-    // Only replace WhatsApp images that cause 403 errors, but keep other valid images
-    if (imageUrl && imageUrl.includes('whatsapp.net') && imageUrl.includes('403')) {
+    // Replace problematic images that might cause 403/404 errors
+    // Check for common patterns in problematic image URLs
+    if (imageUrl && (
+        imageUrl.includes('whatsapp.net') || 
+        imageUrl.includes('_n.jpg') ||
+        imageUrl.includes('fbcdn') || 
+        imageUrl.includes('fbsbx')
+    )) {
         imageUrl = defaultImage;
     }
 
@@ -594,9 +600,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Make sure we properly capture the image from OpenGraph data
                 let imageUrl = null;
                 if (ogData && ogData.image) {
-                    // Filter out problematic WhatsApp images that cause 403 errors
-                    if (!ogData.image.includes('whatsapp.net')) {
+                    // Filter out problematic images that cause 403/404 errors
+                    const problematicPatterns = ['whatsapp.net', '_n.jpg', 'fbcdn', 'fbsbx'];
+                    const hasProblematicPattern = problematicPatterns.some(pattern => 
+                        ogData.image.includes(pattern)
+                    );
+                    
+                    if (!hasProblematicPattern) {
                         imageUrl = ogData.image;
+                    } else {
+                        console.log('Filtered out problematic image URL:', ogData.image);
                     }
                 }
 
