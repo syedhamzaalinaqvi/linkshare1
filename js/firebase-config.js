@@ -1,4 +1,3 @@
-
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAOUI5JCbOa3ZnsZ_wXRFjv3-QfY0L8v-0",
@@ -16,51 +15,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const app = firebase.initializeApp(firebaseConfig);
         const analytics = firebase.analytics();
         const db = firebase.firestore();
-        
+
         // Make db and Firebase functions available globally
         window.db = db;
-        window.collection = firebase.firestore.collection;
+        window.collection = (path) => db.collection(path);
         window.getDocs = (query) => query.get();
-        window.query = (ref, ...constraints) => {
-            let q = ref;
-            constraints.forEach(constraint => {
-                if (constraint.type === 'where') {
-                    q = q.where(constraint._field.segments[0], constraint._op, constraint._value);
-                } else if (constraint.type === 'orderBy') {
-                    q = q.orderBy(constraint._field.segments[0], constraint._direction);
-                } else if (constraint.type === 'startAfter') {
-                    q = q.startAfter(constraint._value);
-                } else if (constraint.type === 'limit') {
-                    q = q.limit(constraint._value);
-                }
-            });
-            return q;
-        };
-        window.orderBy = (field, direction) => ({
-            _field: { segments: [field], offset: 0, len: 1 },
-            _direction: direction,
-            type: 'orderBy'
-        });
-        window.where = (field, op, value) => ({
-            _field: { segments: [field], offset: 0, len: 1 },
-            _op: op,
-            _value: value,
-            type: 'where'
-        });
-        window.startAfter = (doc) => ({
-            _value: doc,
-            type: 'startAfter'
-        });
-        window.limit = (value) => ({
-            _value: value,
-            type: 'limit'
-        });
-        window.doc = (db, path, id) => db.collection(path).doc(id);
+        window.query = db;
+        window.orderBy = (field, direction) => ({field, direction});
+        window.where = (field, op, value) => ({field, op, value});
+        window.startAfter = (doc) => ({doc});
+        window.limit = (value) => ({value});
+        window.doc = (collectionPath, id) => db.collection(collectionPath).doc(id);
         window.updateDoc = (ref, data) => ref.update(data);
         window.increment = (value) => firebase.firestore.FieldValue.increment(value);
         window.addDoc = (collectionRef, data) => collectionRef.add(data);
         window.serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
-        
+
         console.log("Firebase initialized successfully");
     } catch (error) {
         console.error("Error initializing Firebase:", error);

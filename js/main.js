@@ -90,30 +90,17 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
 
         // Create base query
         let baseQuery = window.db.collection("groups");
-        
+
         // Add filters
         if (filterTopic && filterTopic !== 'all') {
             console.log('Adding category filter:', filterTopic);
-            // Handle special cases with spaces
-            const categoryMap = {
-                "News": "News & Media",
-                "Movies": "Movies & TV Shows",
-                "Jobs": "Jobs & Career"
-            };
-            const categoryValue = categoryMap[filterTopic] || filterTopic;
-            baseQuery = baseQuery.where("category", "==", categoryValue);
+            baseQuery = baseQuery.where("category", "==", filterTopic);
         }
 
         // Add country filter if not 'all'
         if (filterCountry && filterCountry !== 'all') {
             console.log('Adding country filter:', filterCountry);
-            // Handle special cases for countries
-            const countryMap = {
-                "UK": "United Kingdom",
-                "USA": "United States"
-            };
-            const countryValue = countryMap[filterCountry] || filterCountry;
-            baseQuery = baseQuery.where("country", "==", countryValue);
+            baseQuery = baseQuery.where("country", "==", filterCountry);
         }
 
         // Always add ordering
@@ -148,42 +135,46 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
                 });
             });
 
-        // Show no results message if needed
-        if (groups.length === 0) {
-            if (!loadMore) {
-                groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+            // Show no results message if needed
+            if (groups.length === 0) {
+                if (!loadMore) {
+                    groupContainer.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+                }
+                isLastPage = true;
+                updateLoadMoreButton(0);
+                return;
             }
-            isLastPage = true;
+
+            // Store the last document for pagination
+            lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+            // Check if this is the last page
+            isLastPage = groups.length < POSTS_PER_PAGE;
+
+            // Apply search filter if needed
+            const searchTerm = searchInput?.value.toLowerCase();
+            if (searchTerm) {
+                groups = groups.filter(group => 
+                    (group.title || '').toLowerCase().includes(searchTerm) ||
+                    (group.description || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Render groups
+            groups.forEach(group => {
+                const card = createGroupCard(group);
+                groupContainer.appendChild(card);
+            });
+
+            // Update load more button visibility
+            updateLoadMoreButton(groups.length);
+
+            console.log(`Rendered ${groups.length} groups`);
+        }).catch(error => {
+            console.error('Error loading groups:', error);
+            groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
             updateLoadMoreButton(0);
-            return;
-        }
-
-        // Store the last document for pagination
-        lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-
-        // Check if this is the last page
-        isLastPage = groups.length < POSTS_PER_PAGE;
-
-        // Apply search filter if needed
-        const searchTerm = searchInput?.value.toLowerCase();
-        if (searchTerm) {
-            groups = groups.filter(group => 
-                (group.title || '').toLowerCase().includes(searchTerm) ||
-                (group.description || '').toLowerCase().includes(searchTerm)
-            );
-        }
-
-        // Render groups
-        groups.forEach(group => {
-            const card = createGroupCard(group);
-            groupContainer.appendChild(card);
         });
-
-        // Update load more button visibility
-        updateLoadMoreButton(groups.length);
-
-        console.log(`Rendered ${groups.length} groups`);
-
     } catch (error) {
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
@@ -215,131 +206,132 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-    // Category buttons (top section)
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const category = btn.dataset.category;
-            console.log('Category button clicked:', category);
-
-            // Update UI
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Update state and load groups
-            currentTopic = category;
-            loadGroups(category, currentCountry);
-
-            // Update dropdown to match selected category
-            const dropdownBtn = document.querySelector('#topicFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
-            if (dropdownBtn) {
-                dropdownBtn.innerHTML = `${btn.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
-                // Also update the dropdown menu selection
-                const dropdownItem = document.querySelector(`#topicFilters .filter-btn[data-category="${category}"]`);
-                if (dropdownItem) {
-                    document.querySelectorAll('#topicFilters .filter-btn').forEach(b => b.classList.remove('active'));
-                    dropdownItem.classList.add('active');
-                }
-            }
-        });
-    });
-
-    // Topic filter dropdown
-    const topicFilters = document.querySelector('#topicFilters');
-    if (topicFilters) {
-        topicFilters.querySelectorAll('.filter-btn').forEach(btn => {
+        // Category buttons (top section)
+        document.querySelectorAll('.category-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const category = btn.dataset.category;
-                console.log('Topic filter clicked:', category);
+                console.log('Category button clicked:', category);
 
                 // Update UI
-                topicFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                // Update dropdown button text
-                const dropdownBtn = btn.closest('.dropdown')?.querySelector('.dropdown-btn');
-                if (dropdownBtn) {
-                    dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
-                }
 
                 // Update state and load groups
                 currentTopic = category;
                 loadGroups(category, currentCountry);
 
-                // Close dropdown
-                btn.closest('.dropdown')?.classList.remove('active');
-
-                // Update category buttons to match
-                const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
-                if (categoryBtn) {
-                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                    categoryBtn.classList.add('active');
-                }
-            });
-        });
-    }
-
-    // Country filter dropdown
-    const countryFilters = document.querySelector('#countryFilters');
-    if (countryFilters) {
-        countryFilters.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const country = btn.dataset.country;
-                console.log('Country filter clicked:', country);
-
-                // Update UI
-                countryFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Update dropdown button text
-                const dropdownBtn = btn.closest('.dropdown')?.querySelector('.dropdown-btn');
+                // Update dropdown to match selected category
+                const dropdownBtn = document.querySelector('#topicFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
                 if (dropdownBtn) {
-                    dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
+                    dropdownBtn.innerHTML = `${btn.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
+                    // Also update the dropdown menu selection
+                    const dropdownItem = document.querySelector(`#topicFilters .filter-btn[data-category="${category}"]`);
+                    if (dropdownItem) {
+                        document.querySelectorAll('#topicFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                        dropdownItem.classList.add('active');
+                    }
                 }
-
-                // Update state and load groups
-                currentCountry = country;
-                loadGroups(currentTopic, country);
-
-                // Close dropdown
-                btn.closest('.dropdown')?.classList.remove('active');
             });
         });
-    }
 
-    // Dropdown toggle functionality
-    document.querySelectorAll('.dropdown').forEach(dropdown => {
-        const btn = dropdown.querySelector('.dropdown-btn');
-        if (!btn) return;
+        // Topic filter dropdown
+        const topicFilters = document.querySelector('#topicFilters');
+        if (topicFilters) {
+            topicFilters.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.dataset.category;
+                    console.log('Topic filter clicked:', category);
 
-        // Toggle dropdown
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const wasActive = dropdown.classList.contains('active');
+                    // Update UI
+                    topicFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
 
-            // Close all dropdowns
-            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+                    // Update dropdown button text
+                    const dropdownBtn = btn.closest('.dropdown')?.querySelector('.dropdown-btn');
+                    if (dropdownBtn) {
+                        dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
+                    }
 
-            // Toggle this dropdown
-            if (!wasActive) {
-                dropdown.classList.add('active');
-            }
+                    // Update state and load groups
+                    currentTopic = category;
+                    loadGroups(category, currentCountry);
+
+                    // Close dropdown
+                    btn.closest('.dropdown')?.classList.remove('active');
+
+                    // Update category buttons to match
+                    const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
+                    if (categoryBtn) {
+                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                        categoryBtn.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Country filter dropdown
+        const countryFilters = document.querySelector('#countryFilters');
+        if (countryFilters) {
+            countryFilters.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const country = btn.dataset.country;
+                    console.log('Country filter clicked:', country);
+
+                    // Update UI
+                    countryFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Update dropdown button text
+                    const dropdownBtn = btn.closest('.dropdown')?.querySelector('.dropdown-btn');
+                    if (dropdownBtn) {
+                        dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
+                    }
+
+                    // Update state and load groups
+                    currentCountry = country;
+                    loadGroups(currentTopic, country);
+
+                    // Close dropdown
+                    btn.closest('.dropdown')?.classList.remove('active');
+                });
+            });
+        }
+
+        // Dropdown toggle functionality
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const btn = dropdown.querySelector('.dropdown-btn');
+            if (!btn) return;
+
+            // Toggle dropdown
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasActive = dropdown.classList.contains('active');
+
+                // Close all dropdowns
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+
+                // Toggle this dropdown
+                if (!wasActive) {
+                    dropdown.classList.add('active');
+                }
+            });
         });
-    });
 
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
-    });
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+        });
 
-    // Search input listener
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce(() => {
-            loadGroups(currentTopic, currentCountry);
-        }, 300));
-    }
+        // Search input listener
+        if (searchInput) {
+            searchInput.addEventListener('input', debounce(() => {
+                loadGroups(currentTopic, currentCountry);
+            }, 300));
+        }
 
-    // Setup lazy loading
-    setupLazyLoading();
+        // Setup lazy loading
+        setupLazyLoading();
+    }, 1000); // Give Firebase time to initialize
 });
 
 // Helper Functions
@@ -482,11 +474,11 @@ function timeAgo(date) {
 }
 
 // Function to update group views
-async function updateGroupViews(groupId) {
+function updateGroupViews(groupId) {
     try {
-        const groupRef = doc(window.db, "groups", groupId);
-        await updateDoc(groupRef, {
-            views: increment(1)
+        const groupRef = window.db.collection("groups").doc(groupId);
+        groupRef.update({
+            views: firebase.firestore.FieldValue.increment(1)
         });
         console.log('Group views updated');
     } catch (error) {
@@ -551,14 +543,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     country: form.groupCountry.value,
                     description: form.groupDescription.value.trim(),
                     image: ogData?.image || null,
-                    timestamp: serverTimestamp()
+                    timestamp: window.serverTimestamp()
                 };
 
                 if (!isValidWhatsAppLink(groupData.link)) {
                     throw new Error('Please enter a valid WhatsApp group link');
                 }
 
-                await addDoc(collection(window.db, "groups"), groupData);
+                await window.addDoc(window.collection("groups"), groupData);
                 showNotification('Group added successfully!', 'success');
                 form.reset();
                 document.getElementById('preview').innerHTML = '';
