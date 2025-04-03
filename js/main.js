@@ -85,7 +85,11 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
         console.log('Loading groups with filters:', { filterTopic, filterCountry });
 
         if (!loadMore) {
-            groupContainer.innerHTML = '<div class="loading">Loading groups...</div>';
+            // Display skeleton loading cards
+            groupContainer.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                groupContainer.innerHTML += createLoadingSkeleton();
+            }
             lastDoc = null;
             isLastPage = false;
         }
@@ -243,8 +247,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Load More button click handler
         if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', () => {
-                loadGroups(currentTopic, currentCountry, true);
+            loadMoreBtn.addEventListener('click', (e) => {
+                // Add loading class for animation
+                loadMoreBtn.classList.add('loading');
+                loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Loading...';
+                
+                // Slight delay to show animation before loading content
+                setTimeout(() => {
+                    loadGroups(currentTopic, currentCountry, true);
+                    
+                    // Reset button after loading
+                    setTimeout(() => {
+                        loadMoreBtn.classList.remove('loading');
+                        loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Load More';
+                    }, 500);
+                }, 800);
             });
         }
 
@@ -377,15 +394,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Helper Functions
-function createLoadingState() {
+function createLoadingSkeleton() {
     return `
         <div class="loading-skeleton">
-            <div class="skeleton-image"></div>
+            <div class="skeleton-image pulse"></div>
             <div class="skeleton-content">
-                <div class="skeleton-title"></div>
-                <div class="skeleton-badges"></div>
-                <div class="skeleton-description"></div>
-                <div class="skeleton-button"></div>
+                <div class="skeleton-badges">
+                    <div class="skeleton-badge pulse"></div>
+                    <div class="skeleton-badge pulse"></div>
+                </div>
+                <div class="skeleton-title pulse"></div>
+                <div class="skeleton-description pulse"></div>
+                <div class="skeleton-description pulse"></div>
+                <div class="skeleton-button pulse"></div>
+            </div>
+            <div class="skeleton-footer">
+                <div class="skeleton-stat pulse"></div>
+                <div class="skeleton-stat pulse"></div>
             </div>
         </div>
     `;
