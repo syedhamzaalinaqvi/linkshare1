@@ -1726,6 +1726,18 @@ select:focus {
     z-index: 1000;
 }
 
+/* Loading spinner for forms */
+.loading-spinner {
+    display: none;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .scroll-to-top.visible {
     display: flex;
 }
