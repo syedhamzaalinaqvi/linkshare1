@@ -14,6 +14,10 @@ function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
     card.setAttribute('data-group-id', group.id);
+    // Force grid layout to apply properly with specific styling
+    card.style.height = "450px";
+    card.style.display = "flex";
+    card.style.flexDirection = "column";
 
     // Handle timestamp display safely
     let timeDisplay = 'Recently added';

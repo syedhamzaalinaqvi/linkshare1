@@ -320,11 +320,30 @@ input:focus, textarea:focus, select:focus {
 
 
 .groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
     gap: 2rem;
     padding: 1rem 0;
     width: 100%;
+}
+
+/* Force grid layout at different screen sizes */
+@media (min-width: 768px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .groups-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .groups-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
 }
 
 @media (min-width: 768px) {
