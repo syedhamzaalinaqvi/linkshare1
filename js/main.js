@@ -35,15 +35,14 @@ function createGroupCard(group) {
     const defaultImage = '/favicon-96x96.png';
     let imageUrl = group.image || defaultImage;
     
-    // Prevent Whatsapp image errors from showing in console
-    if (imageUrl && imageUrl.includes('whatsapp.net')) {
-        // Use default image instead of WhatsApp images that might cause 403 errors
+    // Only replace WhatsApp images that cause 403 errors, but keep other valid images
+    if (imageUrl && imageUrl.includes('whatsapp.net') && imageUrl.includes('403')) {
         imageUrl = defaultImage;
     }
 
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}'; console.log('Using default image');">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}'; console.log('Using default image for: ' + this.src);">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -475,20 +474,30 @@ async function fetchOpenGraph(url) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data.contents, "text/html");
 
-        // Extract Open Graph metadata
+        // Extract Open Graph metadata with fallbacks
         const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
                        doc.querySelector('title')?.textContent || 
-                       "No Title Found";
-        const ogImage = doc.querySelector('meta[property="og:image"]')?.content || 
-                       "https://via.placeholder.com/150";
+                       "WhatsApp Group";
+                       
+        // Try multiple image sources for better success rate
+        let ogImage = doc.querySelector('meta[property="og:image"]')?.content;
+        if (!ogImage || ogImage.includes('whatsapp.net')) {
+            // Try alternative image sources if the og:image is missing or is a WhatsApp image
+            ogImage = doc.querySelector('meta[property="og:image:url"]')?.content ||
+                     doc.querySelector('meta[name="twitter:image"]')?.content ||
+                     doc.querySelector('link[rel="image_src"]')?.href ||
+                     "/favicon-96x96.png";
+        }
+        
         const ogDescription = doc.querySelector('meta[property="og:description"]')?.content || 
                              doc.querySelector('meta[name="description"]')?.content || 
-                             "No Description Available";
+                             "Join this active WhatsApp group!";
 
+        console.log("Fetched OpenGraph data:", { title: ogTitle, image: ogImage });
         return { title: ogTitle, image: ogImage, description: ogDescription };
     } catch (error) {
         console.error("Error fetching Open Graph data:", error);
-        return null;
+        return { title: "WhatsApp Group", image: "/favicon-96x96.png", description: "Join this active WhatsApp group!" };
     }
 }
 
@@ -582,13 +591,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const link = form.groupLink.value.trim();
                 const ogData = await fetchOpenGraph(link);
 
+                // Make sure we properly capture the image from OpenGraph data
+                let imageUrl = null;
+                if (ogData && ogData.image) {
+                    // Filter out problematic WhatsApp images that cause 403 errors
+                    if (!ogData.image.includes('whatsapp.net')) {
+                        imageUrl = ogData.image;
+                    }
+                }
+
                 const groupData = {
                     title: form.groupTitle.value.trim(),
                     link: link,
                     category: form.groupCategory.value,
                     country: form.groupCountry.value,
                     description: form.groupDescription.value.trim(),
-                    image: ogData?.image || null,
+                    image: imageUrl,
                     timestamp: window.serverTimestamp()
                 };
 
