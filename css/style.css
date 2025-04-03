@@ -1693,6 +1693,55 @@ select:focus {
         height: 40px;
         font-size: 1.1rem;
     }
+    
+    .nav-toggle {
+        display: block;
+        cursor: pointer;
+        padding: 10px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--primary-color);
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 60px;
+        left: -100%;
+        width: 80%;
+        height: calc(100vh - 60px);
+        background: white;
+        flex-direction: column;
+        padding: 20px;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        z-index: 999;
+    }
+    
+    .nav-links.active {
+        left: 0;
+    }
+    
+    .nav-links li {
+        margin: 10px 0;
+    }
+    
+    .nav-dropdown {
+        position: relative;
+    }
+    
+    .nav-dropdown-content {
+        position: static;
+        display: none;
+        width: 100%;
+        box-shadow: none;
+        padding-left: 20px;
+    }
+    
+    .nav-dropdown:hover .nav-dropdown-content,
+    .nav-dropdown:focus-within .nav-dropdown-content {
+        display: block;
+    }
 }
 
 @media (max-width: 480px) {

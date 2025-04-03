@@ -1,6 +1,3 @@
-import { db } from './firebase-config.js';
-import { collection, getDocs, query, orderBy, where, startAfter, limit, doc, updateDoc, increment, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
-
 // Global variables
 const POSTS_PER_PAGE = 12;
 let lastDoc = null;
@@ -91,8 +88,8 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
             isLastPage = false;
         }
 
-        // Create base query
-        let baseQuery = collection(db, "groups");
+        // Create base query using global functions
+        let baseQuery = collection(window.db, "groups");
         let constraints = [];
 
         // Add category filter if not 'all'
@@ -202,6 +199,16 @@ async function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore =
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize mobile menu
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (navToggle && navLinks) {
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+
     // Initial load
     loadGroups();
 
@@ -227,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadGroups(category, currentCountry);
 
             // Update dropdown to match selected category
-            const dropdownBtn = document.querySelector('#topicFilters').closest('.dropdown').querySelector('.dropdown-btn');
+            const dropdownBtn = document.querySelector('#topicFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
             if (dropdownBtn) {
                 dropdownBtn.innerHTML = `${btn.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
                 // Also update the dropdown menu selection
@@ -253,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.add('active');
 
                 // Update dropdown button text
-                const dropdownBtn = btn.closest('.dropdown').querySelector('.dropdown-btn');
+                const dropdownBtn = btn.closest('.dropdown')?.querySelector('.dropdown-btn');
                 if (dropdownBtn) {
                     dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
                 }
@@ -263,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadGroups(category, currentCountry);
 
                 // Close dropdown
-                btn.closest('.dropdown').classList.remove('active');
+                btn.closest('.dropdown')?.classList.remove('active');
 
                 // Update category buttons to match
                 const categoryBtn = document.querySelector(`.category-btn[data-category="${category}"]`);
@@ -288,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.add('active');
 
                 // Update dropdown button text
-                const dropdownBtn = btn.closest('.dropdown').querySelector('.dropdown-btn');
+                const dropdownBtn = btn.closest('.dropdown')?.querySelector('.dropdown-btn');
                 if (dropdownBtn) {
                     dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
                 }
@@ -298,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadGroups(currentTopic, country);
 
                 // Close dropdown
-                btn.closest('.dropdown').classList.remove('active');
+                btn.closest('.dropdown')?.classList.remove('active');
             });
         });
     }
@@ -306,6 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dropdown toggle functionality
     document.querySelectorAll('.dropdown').forEach(dropdown => {
         const btn = dropdown.querySelector('.dropdown-btn');
+        if (!btn) return;
 
         // Toggle dropdown
         btn.addEventListener('click', (e) => {
@@ -334,27 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300));
     }
 
-    // Topic filter listeners
-    document.querySelectorAll('.category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentTopic = btn.dataset.category;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Country filter listeners
-    document.querySelectorAll('.country-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCountry = btn.dataset.country;
-            loadGroups(currentTopic, currentCountry);
-        });
-    });
-
-    // Initialize lazy loading
+    // Setup lazy loading
     setupLazyLoading();
 });
 
@@ -389,36 +377,46 @@ function debounce(func, wait) {
 function setupLazyLoading() {
     const lazyImages = document.querySelectorAll('.lazy-image');
 
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.remove('lazy-image');
-                observer.unobserve(img);
-            }
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy-image');
+                    observer.unobserve(img);
+                }
+            });
         });
-    });
 
-    lazyImages.forEach(img => imageObserver.observe(img));
+        lazyImages.forEach(img => imageObserver.observe(img));
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        lazyImages.forEach(img => {
+            img.src = img.dataset.src;
+            img.classList.remove('lazy-image');
+        });
+    }
 }
 
 // Add error handling function
 function showErrorState(message) {
+    if (groupContainer) {
         groupContainer.innerHTML = `
         <div class="error-state" role="alert">
-                <i class="fas fa-exclamation-circle"></i>
+            <i class="fas fa-exclamation-circle"></i>
             <p>${message}</p>
             <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
                 <i class="fas fa-redo"></i> Try Again
             </button>
-            </div>
+        </div>
         `;
     }
+}
 
 // Utility Functions
 function isValidWhatsAppLink(link) {
-    return link.includes('chat.whatsapp.com/');
+    return link && link.includes('chat.whatsapp.com/');
 }
 
 function showNotification(message, type) {
@@ -460,79 +458,6 @@ async function fetchOpenGraph(url) {
     }
 }
 
-// Update the form event listener to include preview functionality
-document.getElementById('groupLink')?.addEventListener('input', async function() {
-    const url = this.value.trim();
-    const previewDiv = document.getElementById('preview');
-
-    if (!previewDiv) return;
-
-    if (url.includes('chat.whatsapp.com/')) {
-        previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
-
-        const ogData = await fetchOpenGraph(url);
-        if (ogData) {
-            previewDiv.innerHTML = `
-                <div class="link-preview">
-                    <img src="${ogData.image}" alt="Preview" onerror="this.src='https://via.placeholder.com/150'">
-                    <div class="link-preview-content">
-                        <h3>${ogData.title}</h3>
-                        <p>${ogData.description}</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
-        }
-    } else {
-        previewDiv.innerHTML = '';
-    }
-});
-
-// Form Submission
-form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const submitBtn = form.querySelector('.submit-btn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const spinner = submitBtn.querySelector('.loading-spinner');
-
-    try {
-        btnText.style.display = 'none';
-        spinner.style.display = 'inline-block';
-        submitBtn.disabled = true;
-
-        const link = form.groupLink.value.trim();
-        const ogData = await fetchOpenGraph(link);
-
-        const groupData = {
-            title: form.groupTitle.value.trim(),
-            link: link,
-            category: form.groupCategory.value,
-            country: form.groupCountry.value,
-            description: form.groupDescription.value.trim(),
-            image: ogData?.image || null,
-            timestamp: serverTimestamp()
-        };
-
-        if (!isValidWhatsAppLink(groupData.link)) {
-            throw new Error('Please enter a valid WhatsApp group link');
-        }
-
-        await addDoc(collection(db, "groups"), groupData);
-        showNotification('Group added successfully!', 'success');
-        form.reset();
-        document.getElementById('preview').innerHTML = '';
-        loadGroups(currentTopic, currentCountry);
-
-    } catch (error) {
-        showNotification(error.message, 'error');
-    } finally {
-        btnText.style.display = 'block';
-        spinner.style.display = 'none';
-        submitBtn.disabled = false;
-    }
-});
-
 // Helper function for time formatting
 function timeAgo(date) {
     try {
@@ -563,7 +488,7 @@ function timeAgo(date) {
 // Function to update group views
 async function updateGroupViews(groupId) {
     try {
-        const groupRef = doc(db, "groups", groupId);
+        const groupRef = doc(window.db, "groups", groupId);
         await updateDoc(groupRef, {
             views: increment(1)
         });
@@ -572,6 +497,86 @@ async function updateGroupViews(groupId) {
         console.error('Error updating group views:', error);
     }
 }
+
+// Initialize form event listeners if on the add-group page
+document.addEventListener('DOMContentLoaded', () => {
+    const groupLinkInput = document.getElementById('groupLink');
+    if (groupLinkInput) {
+        groupLinkInput.addEventListener('input', async function() {
+            const url = this.value.trim();
+            const previewDiv = document.getElementById('preview');
+
+            if (!previewDiv) return;
+
+            if (url.includes('chat.whatsapp.com/')) {
+                previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
+
+                const ogData = await fetchOpenGraph(url);
+                if (ogData) {
+                    previewDiv.innerHTML = `
+                        <div class="link-preview">
+                            <img src="${ogData.image}" alt="Preview" onerror="this.src='https://via.placeholder.com/150'">
+                            <div class="link-preview-content">
+                                <h3>${ogData.title}</h3>
+                                <p>${ogData.description}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
+                }
+            } else {
+                previewDiv.innerHTML = '';
+            }
+        });
+    }
+
+    // Form Submission handler
+    const form = document.getElementById('groupForm');
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = form.querySelector('.submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('.loading-spinner');
+
+            try {
+                btnText.style.display = 'none';
+                spinner.style.display = 'inline-block';
+                submitBtn.disabled = true;
+
+                const link = form.groupLink.value.trim();
+                const ogData = await fetchOpenGraph(link);
+
+                const groupData = {
+                    title: form.groupTitle.value.trim(),
+                    link: link,
+                    category: form.groupCategory.value,
+                    country: form.groupCountry.value,
+                    description: form.groupDescription.value.trim(),
+                    image: ogData?.image || null,
+                    timestamp: serverTimestamp()
+                };
+
+                if (!isValidWhatsAppLink(groupData.link)) {
+                    throw new Error('Please enter a valid WhatsApp group link');
+                }
+
+                await addDoc(collection(window.db, "groups"), groupData);
+                showNotification('Group added successfully!', 'success');
+                form.reset();
+                document.getElementById('preview').innerHTML = '';
+
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                btnText.style.display = 'block';
+                spinner.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});
 
 // Make updateGroupViews available globally
 window.updateGroupViews = updateGroupViews;
