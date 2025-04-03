@@ -34,11 +34,11 @@ function createGroupCard(group) {
     // Use a default image if none is provided
     const defaultImage = '/favicon-96x96.png';
     let imageUrl = group.image || defaultImage;
-    
+
     // Create card with immediate image loading to ensure images display
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}';">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" loading="lazy" onerror="this.onerror=null; this.src='${defaultImage}';">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -95,18 +95,18 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
 
         // Create base query
         let baseQuery = window.db.collection("groups");
-        
+
         // For queries with filters, we'll use a different approach to avoid index issues
         const hasTopicFilter = filterTopic && filterTopic !== 'all';
         const hasCountryFilter = filterCountry && filterCountry !== 'all';
-        
+
         // First get all groups and apply filter in memory if using advanced filtering
         if ((hasTopicFilter && hasCountryFilter) || 
             (hasTopicFilter && !hasCountryFilter) || 
             (!hasTopicFilter && hasCountryFilter)) {
             // Fetch all groups with a limit and apply filters in memory
             baseQuery = baseQuery.orderBy("timestamp", "desc");
-            
+
             if (lastDoc && loadMore) {
                 baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE * 3); // Get more to ensure we have enough after filtering
             } else {
@@ -115,7 +115,7 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
         } else {
             // No filters, just apply ordering and pagination
             baseQuery = baseQuery.orderBy("timestamp", "desc");
-            
+
             if (lastDoc && loadMore) {
                 baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE);
             } else {
@@ -144,25 +144,25 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
                     ...data
                 });
             });
-            
+
             // Apply filters in memory since we've already fetched the data
             const hasTopicFilter = filterTopic && filterTopic !== 'all';
             const hasCountryFilter = filterCountry && filterCountry !== 'all';
-            
+
             // Apply category filter if needed
             if (hasTopicFilter) {
                 groups = groups.filter(group => 
                     group.category === filterTopic
                 );
             }
-            
+
             // Apply country filter if needed
             if (hasCountryFilter) {
                 groups = groups.filter(group => 
                     group.country === filterCountry
                 );
             }
-            
+
             // Limit the results to POSTS_PER_PAGE
             const limitedGroups = groups.slice(0, POSTS_PER_PAGE);
 
@@ -182,7 +182,7 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             }
 
             // Check if this is the last page but always show the button initially
-            isLastPage = false; // Always show load more button
+            isLastPage = groups.length < POSTS_PER_PAGE; // More accurate last page check
 
             // Apply search filter if needed
             const searchTerm = searchInput?.value.toLowerCase();
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 navLinks.classList.toggle('active');
             });
-            
+
             // Close menu when clicking outside
             document.addEventListener('click', (e) => {
                 if (navLinks.classList.contains('active') && 
@@ -250,14 +250,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Add loading class for animation
                 loadMoreBtn.classList.add('loading');
                 loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Loading...';
-                
+
                 // Add a click animation
                 loadMoreBtn.style.transform = 'scale(0.95)';
-                
+
                 // Load content with minimal delay
                 setTimeout(() => {
                     loadGroups(currentTopic, currentCountry, true);
-                    
+
                     // Reset button after loading
                     setTimeout(() => {
                         loadMoreBtn.style.transform = 'scale(1)';
@@ -503,7 +503,7 @@ async function fetchOpenGraph(url) {
         const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
                        doc.querySelector('title')?.textContent || 
                        "WhatsApp Group";
-                       
+
         // Try multiple image sources for better success rate
         let ogImage = doc.querySelector('meta[property="og:image"]')?.content;
         if (!ogImage || ogImage.includes('whatsapp.net')) {
@@ -513,7 +513,7 @@ async function fetchOpenGraph(url) {
                      doc.querySelector('link[rel="image_src"]')?.href ||
                      "/favicon-96x96.png";
         }
-        
+
         const ogDescription = doc.querySelector('meta[property="og:description"]')?.content || 
                              doc.querySelector('meta[name="description"]')?.content || 
                              "Join this active WhatsApp group!";
