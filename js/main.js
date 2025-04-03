@@ -32,7 +32,7 @@ function createGroupCard(group) {
     }
 
     // Use a default image if none is provided
-    const defaultImage = 'images/default-group.png';
+    const defaultImage = 'favicon-96x96.png';
     const imageUrl = group.image || defaultImage;
 
     card.innerHTML = `

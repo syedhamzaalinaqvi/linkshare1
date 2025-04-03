@@ -555,8 +555,11 @@ input:focus, textarea:focus, select:focus {
 
 /* Load More Button */
 .load-more-container {
-    text-align: center;
-    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+    width: 100%;
 }
 
 .load-more-btn {
@@ -570,7 +573,21 @@ input:focus, textarea:focus, select:focus {
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    min-width: 200px;
+    max-width: 90%;
+}
+
+@media (max-width: 768px) {
+    .load-more-container {
+        margin: 1.5rem auto;
+    }
+    
+    .load-more-btn {
+        width: 80%;
+        padding: 0.7rem 1.5rem;
+    }
 }
 
 .load-more-btn:hover {
