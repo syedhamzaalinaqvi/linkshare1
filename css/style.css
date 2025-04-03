@@ -618,14 +618,11 @@ input:focus, textarea:focus, select:focus {
     }
 }
 
-.load-more-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
-}
-
+/* Remove hover animation, only keep active state animations */
 .load-more-btn:active {
     transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.2);
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
 }
 
 .load-more-btn:active::before {
@@ -735,6 +732,26 @@ input:focus, textarea:focus, select:focus {
     .nav-dropdown.active .nav-dropdown-content {
         display: block;
     }
+    
+    /* Improved styling for tablets between 768px and 868px */
+    .nav-links li {
+        margin: 8px 0;
+        width: 100%;
+    }
+    
+    .nav-links a {
+        font-size: 1.1rem;
+        padding: 12px 16px;
+        display: block;
+        width: 100%;
+    }
+    
+    .nav-dropdown .dropbtn {
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+    }
+}
 
     .submit-section {
         margin: 1rem;

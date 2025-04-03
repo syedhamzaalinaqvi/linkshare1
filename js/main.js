@@ -9,7 +9,7 @@ let currentTopic = 'all';
 let currentCountry = 'all';
 let form = document.querySelector('#addGroupForm');
 
-// Function to create a group card
+// Function to create a group card with lazy loading
 function createGroupCard(group) {
     const card = document.createElement('div');
     card.className = 'group-card';
@@ -37,9 +37,10 @@ function createGroupCard(group) {
     
     // No filtering, show original images
     
+    // Create card with lazy loading for images
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}';">
+            <img class="lazy-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}';">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -245,15 +246,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initial load
         loadGroups();
 
-        // Load More button click handler
+        // Load More button click handler with enhanced animation
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', (e) => {
                 // Add loading class for animation
                 loadMoreBtn.classList.add('loading');
                 loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Loading...';
                 
+                // Add a short pulse animation on click
+                loadMoreBtn.style.transform = 'scale(0.95)';
+                
                 // Slight delay to show animation before loading content
                 setTimeout(() => {
+                    // Return to normal size with a transition
+                    loadMoreBtn.style.transform = 'scale(1)';
                     loadGroups(currentTopic, currentCountry, true);
                     
                     // Reset button after loading
