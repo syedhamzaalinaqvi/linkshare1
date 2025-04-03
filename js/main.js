@@ -35,14 +35,17 @@ function createGroupCard(group) {
     const defaultImage = '/favicon-96x96.png';
     let imageUrl = group.image || defaultImage;
     
-    // Only replace WhatsApp images that cause 403 errors
-    if (imageUrl && imageUrl.includes('whatsapp.net')) {
+    // Only filter out problematic image sources that commonly cause errors
+    if (imageUrl && (
+        imageUrl.includes('whatsapp.net') ||
+        imageUrl.includes('fbcdn.net/unsafe')
+    )) {
         imageUrl = defaultImage;
     }
 
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}';">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" onerror="this.onerror=null; this.src='${defaultImage}'; console.log('Image failed to load, using default for:', this.alt);">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -594,11 +597,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Make sure we properly capture the image from OpenGraph data
                 let imageUrl = null;
                 if (ogData && ogData.image) {
-                    // Only filter out WhatsApp images that cause 403 errors
-                    if (!ogData.image.includes('whatsapp.net')) {
+                    // Only filter out known problematic image URLs
+                    const isProblematicImage = 
+                        ogData.image.includes('whatsapp.net') ||
+                        ogData.image.includes('fbcdn.net/unsafe');
+                    
+                    if (!isProblematicImage) {
                         imageUrl = ogData.image;
+                        console.log('Using feature image:', ogData.image);
                     } else {
-                        console.log('Filtered out problematic WhatsApp image URL:', ogData.image);
+                        console.log('Filtered out problematic image URL:', ogData.image);
                     }
                 }
 
