@@ -842,7 +842,8 @@ select:focus {
 }
 
 .submit-section {
-    margin: 1rem;
+    margin: auto;
+    margin-top: 1rem;
     padding: 1.5rem;
 }
 
