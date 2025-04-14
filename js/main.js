@@ -648,7 +648,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const groupLinkInput = document.getElementById('groupLink');
     if (groupLinkInput) {
         groupLinkInput.addEventListener('input', debounce(async function() {
-            const url = this.value.trim();
+            const url = this.value ? this.value.trim() : '';
             const previewDiv = document.getElementById('preview');
 
             if (!previewDiv) return;
