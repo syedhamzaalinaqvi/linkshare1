@@ -555,61 +555,72 @@ function showNotification(message, type) {
     }, 3000);
 }
 
-// Adding the OpenGraph preview functionality to the existing code
-async function fetchOpenGraph(url) {
-    try {
-        // Check if it's a WhatsApp URL
-        const isWhatsAppUrl = url.includes('chat.whatsapp.com/');
-        
-        if (isWhatsAppUrl) {
-            // For WhatsApp links, always use our reliable fallback
-            console.log('Processing WhatsApp link with reliable fallback method');
-            
-            // Extract group ID from WhatsApp link
-            const groupId = url.split('chat.whatsapp.com/')[1];
-            
-            if (!groupId) {
-                return null;
-            }
-            
-            // Create a fallback object with default values
-            return {
-                title: 'WhatsApp Group',
-                description: 'Join this WhatsApp group',
-                // Use a reliable WhatsApp logo that won't be blocked by CORS
-                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
-                url: url
-            };
-        }
-        
-        // Only proceed with regular fetching for non-WhatsApp URLs
-        // (not currently used in this application)
-        console.log('Using fallback for non-WhatsApp link');
-        return {
-            title: 'Group Link',
-            description: 'Click to join this group',
-            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
-            url: url
-        };
-    } catch (error) {
-        console.error('Error fetching OpenGraph data:', error);
-        
-        // Return a fallback object
-        return {
-            title: 'WhatsApp Group',
-            description: 'Join this WhatsApp group',
-            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
-            url: url
-        };
+// Function to display WhatsApp link preview without relying on external fetching
+function showWhatsAppLinkPreview(url, previewContainer) {
+    // Extract the invite code from the WhatsApp URL
+    const inviteCode = url.split('chat.whatsapp.com/')[1]?.trim();
+    
+    if (!inviteCode) {
+        previewContainer.innerHTML = '<p class="error">Invalid WhatsApp group invite link</p>';
+        return;
+    }
+    
+    // Use a reliable WhatsApp logo
+    const whatsAppLogo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+    
+    // Create a visually appealing preview
+    previewContainer.innerHTML = `
+        <div class="link-preview">
+            <div class="preview-header">
+                <img src="${whatsAppLogo}" alt="WhatsApp Logo" class="preview-logo">
+                <div class="preview-title">
+                    <strong>WhatsApp Group Invite</strong>
+                    <small>chat.whatsapp.com/${inviteCode.substring(0, 10)}${inviteCode.length > 10 ? '...' : ''}</small>
+                </div>
+            </div>
+            <div class="preview-content">
+                <p>Click to join this WhatsApp group</p>
+                <div class="preview-invite">
+                    <span class="invite-code">${inviteCode.substring(0, 6)}...${inviteCode.substring(inviteCode.length - 4)}</span>
+                </div>
+            </div>
+            <div class="preview-footer">
+                <span class="preview-status">✓ Valid WhatsApp invite link</span>
+            </div>
+        </div>
+    `;
+    
+    // Add some inline styles for immediate visual feedback if the existing CSS doesn't have these classes
+    const previewElement = previewContainer.querySelector('.link-preview');
+    if (previewElement) {
+        previewElement.style.border = '1px solid #25D366';
+        previewElement.style.borderRadius = '8px';
+        previewElement.style.padding = '12px';
+        previewElement.style.backgroundColor = '#f5f5f5';
+        previewElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+    }
+    
+    const logoElement = previewContainer.querySelector('.preview-logo');
+    if (logoElement) {
+        logoElement.style.width = '48px';
+        logoElement.style.height = '48px';
+        logoElement.style.marginRight = '12px';
+    }
+    
+    const headerElement = previewContainer.querySelector('.preview-header');
+    if (headerElement) {
+        headerElement.style.display = 'flex';
+        headerElement.style.alignItems = 'center';
+        headerElement.style.marginBottom = '12px';
     }
 }
 
-// Handle WhatsApp link input and preview
+// Handle WhatsApp link input and preview - THIS MUST WORK IMMEDIATELY
 const groupLinkInput = document.getElementById('groupLink');
 if (groupLinkInput) {
-    groupLinkInput.addEventListener('input', debounce(async function() {
-        console.log('Input event triggered for link field');
-        const url = this.value ? this.value.trim() : '';
+    // Function to handle input
+    function handleLinkInput() {
+        const url = groupLinkInput.value ? groupLinkInput.value.trim() : '';
         const previewDiv = document.getElementById('preview');
 
         if (!previewDiv) return;
@@ -621,25 +632,25 @@ if (groupLinkInput) {
         }
 
         if (url.includes('chat.whatsapp.com/')) {
-            // Show loading indicator
-            previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
-            
-            console.log('Valid WhatsApp link found: ' + url);
-
-            // Use our reliable fallback method
-            previewDiv.innerHTML = `
-                <div class="link-preview">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
-                    <div class="link-preview-content">
-                        <h3>WhatsApp Group</h3>
-                        <p>Join this WhatsApp group</p>
-                    </div>
-                </div>
-            `;
+            console.log('Valid WhatsApp link detected, showing preview');
+            // Show preview immediately without any async operations
+            showWhatsAppLinkPreview(url, previewDiv);
         } else {
             previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
         }
-    }, 200)); // Reduced debounce time for better responsiveness
+    }
+
+    // Handle both input event and paste event for immediate response
+    groupLinkInput.addEventListener('input', handleLinkInput);
+    
+    // Special handling for paste events for even faster response
+    groupLinkInput.addEventListener('paste', (e) => {
+        // Short timeout to let the paste complete
+        setTimeout(handleLinkInput, 10);
+    });
+    
+    // Initial check in case the field already has a value
+    handleLinkInput();
 }
 
 // Form Submission handler
@@ -653,6 +664,35 @@ if (form) {
     const newSubmitBtn = newForm.querySelector('.submit-btn');
     const newBtnText = newSubmitBtn?.querySelector('.btn-text');
     const newSpinner = newSubmitBtn?.querySelector('.loading-spinner');
+    
+    // We need to reattach the link preview handler to the new input field
+    const newLinkInput = newForm.querySelector('#groupLink');
+    if (newLinkInput) {
+        function handleNewLinkInput() {
+            const url = newLinkInput.value ? newLinkInput.value.trim() : '';
+            const previewDiv = document.getElementById('preview');
+    
+            if (!previewDiv) return;
+    
+            if (!url) {
+                previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+                return;
+            }
+    
+            if (url.includes('chat.whatsapp.com/')) {
+                console.log('Valid WhatsApp link detected in new form, showing preview');
+                showWhatsAppLinkPreview(url, previewDiv);
+            } else {
+                previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
+            }
+        }
+    
+        newLinkInput.addEventListener('input', handleNewLinkInput);
+        newLinkInput.addEventListener('paste', () => setTimeout(handleNewLinkInput, 10));
+        
+        // Initial check
+        setTimeout(handleNewLinkInput, 50);
+    }
     
     // Track if submission is in progress
     let isSubmitting = false;
@@ -725,7 +765,7 @@ if (form) {
             showNotification('Group added successfully!', 'success');
             newForm.reset();
             
-            // Fix the syntax error by using a more compatible approach
+            // Reset the preview
             const previewElement = document.getElementById('preview');
             if (previewElement) {
                 previewElement.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
