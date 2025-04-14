@@ -529,38 +529,76 @@ function showNotification(message, type) {
 // Adding the OpenGraph preview functionality to the existing code
 async function fetchOpenGraph(url) {
     try {
-        // Using allorigins.win as CORS proxy
-        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        const data = await response.json();
-
-        // Parse HTML response
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, "text/html");
-
-        // Extract Open Graph metadata with fallbacks
-        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
-                       doc.querySelector('title')?.textContent || 
-                       "WhatsApp Group";
-
-        // Try multiple image sources for better success rate
-        let ogImage = doc.querySelector('meta[property="og:image"]')?.content;
-        if (!ogImage || ogImage.includes('whatsapp.net')) {
-            // Try alternative image sources if the og:image is missing or is a WhatsApp image
-            ogImage = doc.querySelector('meta[property="og:image:url"]')?.content ||
-                     doc.querySelector('meta[name="twitter:image"]')?.content ||
-                     doc.querySelector('link[rel="image_src"]')?.href ||
-                     "/favicon-96x96.png";
+        // Check if it's a WhatsApp URL
+        const isWhatsAppUrl = url.includes('chat.whatsapp.com/');
+        
+        if (isWhatsAppUrl) {
+            // For WhatsApp links, we'll use a fallback approach since their OG data often has CORS issues
+            console.log('Processing WhatsApp link with fallback method');
+            
+            // Extract group ID from WhatsApp link
+            const groupId = url.split('chat.whatsapp.com/')[1];
+            
+            if (!groupId) {
+                return null;
+            }
+            
+            // Create a fallback object with default values
+            return {
+                title: 'WhatsApp Group',
+                description: 'Join this WhatsApp group',
+                // Use a reliable WhatsApp logo that won't be blocked by CORS
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
+                url: url
+            };
         }
-
+        
+        // For non-WhatsApp URLs, try to fetch OG data (may still have CORS issues)
+        console.log('Fetching OpenGraph data for: ', url);
+        
+        // Use a CORS proxy for better results (you can replace with your own if needed)
+        const corsProxy = 'https://corsproxy.io/?';
+        const response = await fetch(corsProxy + encodeURIComponent(url));
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch URL: ${response.status}`);
+        }
+        
+        const html = await response.text();
+        
+        // Parse the HTML to extract OpenGraph tags
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        
+        // Extract OpenGraph data
+        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
+                        doc.querySelector('title')?.textContent || 
+                        'No Title Available';
+                        
         const ogDescription = doc.querySelector('meta[property="og:description"]')?.content || 
                              doc.querySelector('meta[name="description"]')?.content || 
-                             "Join this active WhatsApp group!";
-
-        console.log("Fetched OpenGraph data:", { title: ogTitle, image: ogImage });
-        return { title: ogTitle, image: ogImage, description: ogDescription };
+                             'No description available';
+                             
+        const ogImage = doc.querySelector('meta[property="og:image"]')?.content || 
+                       doc.querySelector('meta[property="og:image:url"]')?.content || 
+                       'https://via.placeholder.com/600x400?text=No+Image';
+        
+        return {
+            title: ogTitle,
+            description: ogDescription,
+            image: ogImage,
+            url: url
+        };
     } catch (error) {
-        console.error("Error fetching Open Graph data:", error);
-        return { title: "WhatsApp Group", image: "/favicon-96x96.png", description: "Join this active WhatsApp group!" };
+        console.error('Error fetching OpenGraph data:', error);
+        
+        // Return a fallback object
+        return {
+            title: 'Link Preview',
+            description: 'No preview available for this link.',
+            image: 'https://via.placeholder.com/600x400?text=Preview+Not+Available',
+            url: url
+        };
     }
 }
 
@@ -606,35 +644,66 @@ function updateGroupViews(groupId) {
 
 // Initialize form event listeners if on the add-group page
 document.addEventListener('DOMContentLoaded', () => {
+    // Handle WhatsApp link input and preview
     const groupLinkInput = document.getElementById('groupLink');
     if (groupLinkInput) {
-        groupLinkInput.addEventListener('input', async function() {
+        groupLinkInput.addEventListener('input', debounce(async function() {
             const url = this.value.trim();
             const previewDiv = document.getElementById('preview');
 
             if (!previewDiv) return;
 
+            // Clear the preview if empty
+            if (!url) {
+                previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+                return;
+            }
+
             if (url.includes('chat.whatsapp.com/')) {
+                // Show loading indicator
                 previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
 
-                const ogData = await fetchOpenGraph(url);
-                if (ogData) {
-                    previewDiv.innerHTML = `
-                        <div class="link-preview">
-                            <img src="${ogData.image}" alt="Preview" onerror="this.src='https://via.placeholder.com/150'">
-                            <div class="link-preview-content">
-                                <h3>${ogData.title}</h3>
-                                <p>${ogData.description}</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
+                try {
+                    const ogData = await fetchOpenGraph(url);
+                    if (ogData) {
+                        // Create an image object to pre-load the image and check if it loads
+                        const img = new Image();
+                        img.onload = function() {
+                            // Image loaded successfully
+                            previewDiv.innerHTML = `
+                                <div class="link-preview">
+                                    <img src="${ogData.image}" alt="Preview">
+                                    <div class="link-preview-content">
+                                        <h3>${ogData.title}</h3>
+                                        <p>${ogData.description}</p>
+                                    </div>
+                                </div>
+                            `;
+                        };
+                        img.onerror = function() {
+                            // Image failed to load, use fallback
+                            previewDiv.innerHTML = `
+                                <div class="link-preview">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
+                                    <div class="link-preview-content">
+                                        <h3>${ogData.title}</h3>
+                                        <p>${ogData.description}</p>
+                                    </div>
+                                </div>
+                            `;
+                        };
+                        img.src = ogData.image;
+                    } else {
+                        previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading preview:', error);
                     previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
                 }
             } else {
-                previewDiv.innerHTML = '';
+                previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
             }
-        });
+        }, 500));
     }
 
     // Form Submission handler
@@ -664,24 +733,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const ogData = await fetchOpenGraph(link);
 
-                // Make sure we properly capture the image from OpenGraph data
+                // We'll test if the image is accessible
                 let imageUrl = null;
                 if (ogData && ogData.image) {
-                    // Use the image directly without filtering
                     imageUrl = ogData.image;
-                    console.log('Using image from OpenGraph:', ogData.image);
+                    
+                    // If it's not our fallback image, test if it's accessible
+                    if (!imageUrl.includes('wikimedia.org') && !imageUrl.includes('placeholder.com')) {
+                        try {
+                            // Test if the image can be loaded
+                            await new Promise((resolve, reject) => {
+                                const img = new Image();
+                                img.onload = resolve;
+                                img.onerror = reject;
+                                img.src = imageUrl;
+                                // Set a timeout to abort if image loading takes too long
+                                setTimeout(reject, 3000);
+                            });
+                            console.log('Image successfully loaded:', imageUrl);
+                        } catch (error) {
+                            console.warn('Image failed to load, using fallback:', error);
+                            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+                        }
+                    }
+                } else {
+                    // Use default WhatsApp logo if no image was found
+                    imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
                 }
 
+                // Prepare group data
                 const groupData = {
-                    title: form.groupTitle.value.trim(),
+                    title: form.groupTitle.value.trim() || 'WhatsApp Group',
                     link: link,
                     category: form.groupCategory.value,
                     country: form.groupCountry.value,
-                    description: form.groupDescription.value.trim(),
+                    description: form.groupDescription.value.trim() || 'Join this WhatsApp group',
                     image: imageUrl,
                     timestamp: window.serverTimestamp(),
                     views: 0 // Initialize views counter
                 };
+
+                console.log('Submitting group with image:', imageUrl);
 
                 // Now add the document
                 const docRef = await window.db.collection("groups").add(groupData);
@@ -690,7 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Show success message
                 showNotification('Group added successfully!', 'success');
                 form.reset();
-                document.getElementById('preview').innerHTML = '';
+                document.getElementById('preview').innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
 
             } catch (error) {
                 console.error("Form submission error:", error);
