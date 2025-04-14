@@ -608,6 +608,7 @@ async function fetchOpenGraph(url) {
 const groupLinkInput = document.getElementById('groupLink');
 if (groupLinkInput) {
     groupLinkInput.addEventListener('input', debounce(async function() {
+        console.log('Input event triggered for link field');
         const url = this.value ? this.value.trim() : '';
         const previewDiv = document.getElementById('preview');
 
@@ -622,36 +623,51 @@ if (groupLinkInput) {
         if (url.includes('chat.whatsapp.com/')) {
             // Show loading indicator
             previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
+            
+            console.log('Valid WhatsApp link found: ' + url);
 
-            try {
-                // Use our reliable fallback method
-                previewDiv.innerHTML = `
-                    <div class="link-preview">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
-                        <div class="link-preview-content">
-                            <h3>WhatsApp Group</h3>
-                            <p>Join this WhatsApp group</p>
-                        </div>
+            // Use our reliable fallback method
+            previewDiv.innerHTML = `
+                <div class="link-preview">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
+                    <div class="link-preview-content">
+                        <h3>WhatsApp Group</h3>
+                        <p>Join this WhatsApp group</p>
                     </div>
-                `;
-            } catch (error) {
-                console.error('Error loading preview:', error);
-                previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
-            }
+                </div>
+            `;
         } else {
             previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
         }
-    }, 500));
+    }, 200)); // Reduced debounce time for better responsiveness
 }
 
 // Form Submission handler
 const form = document.getElementById('groupForm');
 if (form) {
-    form.addEventListener('submit', async (e) => {
+    // Remove any existing listeners to prevent duplicate submissions
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    
+    // Re-get necessary elements from our new form
+    const newSubmitBtn = newForm.querySelector('.submit-btn');
+    const newBtnText = newSubmitBtn?.querySelector('.btn-text');
+    const newSpinner = newSubmitBtn?.querySelector('.loading-spinner');
+    
+    // Track if submission is in progress
+    let isSubmitting = false;
+    
+    newForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const submitBtn = form.querySelector('.submit-btn');
-        const btnText = submitBtn.querySelector('.btn-text');
-        const spinner = submitBtn.querySelector('.loading-spinner');
+        
+        // Prevent double submissions
+        if (isSubmitting) {
+            console.log('Submission already in progress, ignoring duplicate');
+            return;
+        }
+        
+        console.log('Form submission started');
+        isSubmitting = true;
 
         try {
             // Check if Firebase is initialized
@@ -659,11 +675,26 @@ if (form) {
                 throw new Error("Database connection not ready. Please refresh the page and try again.");
             }
             
-            btnText.style.display = 'none';
-            spinner.style.display = 'inline-block';
-            submitBtn.disabled = true;
+            if (newBtnText && newSpinner) {
+                newBtnText.style.display = 'none';
+                newSpinner.style.display = 'inline-block';
+            }
+            newSubmitBtn.disabled = true;
 
-            const link = form.groupLink.value.trim();
+            // Get form values from our new form
+            const titleInput = newForm.querySelector('#groupTitle');
+            const linkInput = newForm.querySelector('#groupLink');
+            const categoryInput = newForm.querySelector('#groupCategory');
+            const countryInput = newForm.querySelector('#groupCountry');
+            const descriptionInput = newForm.querySelector('#groupDescription');
+            
+            const link = linkInput?.value?.trim() || '';
+            const title = titleInput?.value?.trim() || 'WhatsApp Group';
+            const category = categoryInput?.value || '';
+            const country = countryInput?.value || '';
+            const description = descriptionInput?.value?.trim() || 'Join this WhatsApp group';
+            
+            console.log('Form data collected:', { title, link, category, country });
             
             if (!isValidWhatsAppLink(link)) {
                 throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
@@ -674,17 +705,17 @@ if (form) {
 
             // Prepare group data with reliable image
             const groupData = {
-                title: form.groupTitle.value.trim() || 'WhatsApp Group',
+                title: title,
                 link: link,
-                category: form.groupCategory.value,
-                country: form.groupCountry.value,
-                description: form.groupDescription.value.trim() || 'Join this WhatsApp group',
+                category: category,
+                country: country,
+                description: description,
                 image: imageUrl,
                 timestamp: window.serverTimestamp(),
                 views: 0 // Initialize views counter
             };
 
-            console.log('Submitting group with reliable image:', imageUrl);
+            console.log('Adding group to database:', groupData);
 
             // Now add the document
             const docRef = await window.db.collection("groups").add(groupData);
@@ -692,16 +723,21 @@ if (form) {
             
             // Show success message
             showNotification('Group added successfully!', 'success');
-            form.reset();
-            document.getElementById('preview').innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+            newForm.reset();
+            document.getElementById('preview')?.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
 
         } catch (error) {
             console.error("Form submission error:", error);
             showNotification(error.message, 'error');
         } finally {
-            btnText.style.display = 'block';
-            spinner.style.display = 'none';
-            submitBtn.disabled = false;
+            if (newBtnText && newSpinner) {
+                newBtnText.style.display = 'block';
+                newSpinner.style.display = 'none';
+            }
+            if (newSubmitBtn) {
+                newSubmitBtn.disabled = false;
+            }
+            isSubmitting = false;
         }
     });
 }
@@ -745,111 +781,6 @@ function updateGroupViews(groupId) {
         console.error('Error updating group views:', error);
     }
 }
-
-// Initialize form event listeners if on the add-group page
-document.addEventListener('DOMContentLoaded', () => {
-    // Handle WhatsApp link input and preview
-    const groupLinkInput = document.getElementById('groupLink');
-    if (groupLinkInput) {
-        groupLinkInput.addEventListener('input', debounce(async function() {
-            const url = this.value ? this.value.trim() : '';
-            const previewDiv = document.getElementById('preview');
-
-            if (!previewDiv) return;
-
-            // Clear the preview if empty
-            if (!url) {
-                previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
-                return;
-            }
-
-            if (url.includes('chat.whatsapp.com/')) {
-                // Show loading indicator
-                previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
-
-                try {
-                    // Use our reliable fallback method
-                    previewDiv.innerHTML = `
-                        <div class="link-preview">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
-                            <div class="link-preview-content">
-                                <h3>WhatsApp Group</h3>
-                                <p>Join this WhatsApp group</p>
-                            </div>
-                        </div>
-                    `;
-                } catch (error) {
-                    console.error('Error loading preview:', error);
-                    previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
-                }
-            } else {
-                previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
-            }
-        }, 500));
-    }
-
-    // Form Submission handler
-    const form = document.getElementById('groupForm');
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = form.querySelector('.submit-btn');
-            const btnText = submitBtn.querySelector('.btn-text');
-            const spinner = submitBtn.querySelector('.loading-spinner');
-
-            try {
-                // Check if Firebase is initialized
-                if (!window.db || !window.firebaseInitialized) {
-                    throw new Error("Database connection not ready. Please refresh the page and try again.");
-                }
-                
-                btnText.style.display = 'none';
-                spinner.style.display = 'inline-block';
-                submitBtn.disabled = true;
-
-                const link = form.groupLink.value.trim();
-                
-                if (!isValidWhatsAppLink(link)) {
-                    throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
-                }
-                
-                // Always use our reliable WhatsApp image as the feature image
-                const imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-
-                // Prepare group data with reliable image
-                const groupData = {
-                    title: form.groupTitle.value.trim() || 'WhatsApp Group',
-                    link: link,
-                    category: form.groupCategory.value,
-                    country: form.groupCountry.value,
-                    description: form.groupDescription.value.trim() || 'Join this WhatsApp group',
-                    image: imageUrl,
-                    timestamp: window.serverTimestamp(),
-                    views: 0 // Initialize views counter
-                };
-
-                console.log('Submitting group with reliable image:', imageUrl);
-
-                // Now add the document
-                const docRef = await window.db.collection("groups").add(groupData);
-                console.log("Document written with ID: ", docRef.id);
-                
-                // Show success message
-                showNotification('Group added successfully!', 'success');
-                form.reset();
-                document.getElementById('preview').innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
-
-            } catch (error) {
-                console.error("Form submission error:", error);
-                showNotification(error.message, 'error');
-            } finally {
-                btnText.style.display = 'block';
-                spinner.style.display = 'none';
-                submitBtn.disabled = false;
-            }
-        });
-    }
-});
 
 // Make updateGroupViews available globally
 window.updateGroupViews = updateGroupViews;
