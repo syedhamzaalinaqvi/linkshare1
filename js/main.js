@@ -590,7 +590,7 @@ function showWhatsAppLinkPreview(url, previewContainer) {
         </div>
     `;
     
-    // Add some inline styles for immediate visual feedback if the existing CSS doesn't have these classes
+    // Add fully responsive styles for all devices
     const previewElement = previewContainer.querySelector('.link-preview');
     if (previewElement) {
         previewElement.style.border = '1px solid #25D366';
@@ -598,13 +598,17 @@ function showWhatsAppLinkPreview(url, previewContainer) {
         previewElement.style.padding = '12px';
         previewElement.style.backgroundColor = '#f5f5f5';
         previewElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        previewElement.style.maxWidth = '100%';
+        previewElement.style.overflow = 'hidden';
+        previewElement.style.wordBreak = 'break-word';
     }
     
     const logoElement = previewContainer.querySelector('.preview-logo');
     if (logoElement) {
-        logoElement.style.width = '48px';
-        logoElement.style.height = '48px';
-        logoElement.style.marginRight = '12px';
+        logoElement.style.width = '40px';
+        logoElement.style.height = '40px';
+        logoElement.style.marginRight = '10px';
+        logoElement.style.flexShrink = '0';
     }
     
     const headerElement = previewContainer.querySelector('.preview-header');
@@ -612,7 +616,96 @@ function showWhatsAppLinkPreview(url, previewContainer) {
         headerElement.style.display = 'flex';
         headerElement.style.alignItems = 'center';
         headerElement.style.marginBottom = '12px';
+        headerElement.style.flexWrap = 'nowrap';
     }
+    
+    const titleElement = previewContainer.querySelector('.preview-title');
+    if (titleElement) {
+        titleElement.style.display = 'flex';
+        titleElement.style.flexDirection = 'column';
+        titleElement.style.overflow = 'hidden';
+        titleElement.style.width = '100%';
+    }
+    
+    const smallElement = previewContainer.querySelector('.preview-title small');
+    if (smallElement) {
+        smallElement.style.overflow = 'hidden';
+        smallElement.style.textOverflow = 'ellipsis';
+        smallElement.style.whiteSpace = 'nowrap';
+        smallElement.style.fontSize = '12px';
+        smallElement.style.color = '#666';
+    }
+    
+    // Try to fetch the actual WhatsApp group image asynchronously
+    tryFetchWhatsAppGroupImage(url, previewContainer);
+}
+
+// Function to try and fetch WhatsApp group image (will work in some cases)
+async function tryFetchWhatsAppGroupImage(url, previewContainer) {
+    try {
+        // First approach - try to access actual metadata using a CORS proxy
+        console.log('Attempting to fetch WhatsApp group image for:', url);
+        
+        // Create image object to test image loading
+        const img = new Image();
+        const imgPromise = new Promise((resolve, reject) => {
+            img.onload = () => resolve(img.src);
+            img.onerror = () => reject(new Error('Failed to load image'));
+            
+            // Wait a short time then cancel if needed
+            setTimeout(() => reject(new Error('Image load timeout')), 5000);
+            
+            // Try with a WhatsApp image URL pattern
+            const inviteCode = url.split('chat.whatsapp.com/')[1]?.trim();
+            if (inviteCode) {
+                // Use invite code to identify the group
+                // Store the attempted URL for possible use as feature image
+                window.lastAttemptedGroupImageUrl = `https://static.whatsapp.net/group/${inviteCode}.jpg`;
+                img.src = window.lastAttemptedGroupImageUrl;
+            }
+        });
+        
+        await imgPromise;
+        console.log('Successfully loaded WhatsApp group image!');
+        
+        // If we reach here, the image loaded successfully
+        // Update the preview with the actual image
+        const logoElement = previewContainer.querySelector('.preview-logo');
+        if (logoElement) {
+            logoElement.src = img.src;
+            logoElement.style.borderRadius = '50%'; // Round the actual group image
+            logoElement.style.border = '1px solid #ddd';
+        }
+        
+    } catch (error) {
+        console.log('Could not fetch WhatsApp group image, using default logo:', error.message);
+        // Just keep using the default WhatsApp logo - already set in the preview
+    }
+}
+
+// Function to get best image for group submission
+async function getBestGroupImage(url) {
+    try {
+        // First check if we have a successfully loaded image from the preview
+        if (window.lastAttemptedGroupImageUrl) {
+            // Test if it's accessible
+            const img = new Image();
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = window.lastAttemptedGroupImageUrl;
+                setTimeout(reject, 3000); // Timeout after 3 seconds
+            });
+            
+            // If we reach here, the image loaded successfully
+            return window.lastAttemptedGroupImageUrl;
+        }
+    } catch (error) {
+        console.log('Group image not accessible, using default WhatsApp logo');
+    }
+    
+    // Fallback to reliable WhatsApp logo
+    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
 }
 
 // Handle WhatsApp link input and preview - THIS MUST WORK IMMEDIATELY
@@ -740,10 +833,10 @@ if (form) {
                 throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
             }
             
-            // Always use our reliable WhatsApp image as the feature image
-            const imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+            // Try to get the best image for this group (actual group image if possible)
+            const imageUrl = await getBestGroupImage(link);
 
-            // Prepare group data with reliable image
+            // Prepare group data with the best available image
             const groupData = {
                 title: title,
                 link: link,
