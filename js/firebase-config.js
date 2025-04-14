@@ -9,12 +9,42 @@ const firebaseConfig = {
     measurementId: "G-5VEQPNG163"
 };
 
+// Flag to track initialization status
+window.firebaseInitialized = false;
+
 // Initialize Firebase using regular script tags instead of modules
 document.addEventListener('DOMContentLoaded', function() {
     try {
-        const app = firebase.initializeApp(firebaseConfig);
-        const analytics = firebase.analytics();
+        if (typeof firebase === 'undefined') {
+            console.error("Firebase SDK not loaded. Make sure you've included the Firebase scripts.");
+            return;
+        }
+
+        // Only initialize once
+        if (!firebase.apps || !firebase.apps.length) {
+            const app = firebase.initializeApp(firebaseConfig);
+            const analytics = firebase.analytics();
+            console.log("Firebase app initialized");
+        } else {
+            console.log("Firebase already initialized");
+        }
+        
         const db = firebase.firestore();
+        
+        // Test connection to make sure permissions are working
+        db.collection("groups").limit(1).get()
+            .then(() => {
+                console.log("Firestore connection successful - permissions verified");
+            })
+            .catch(error => {
+                console.error("Firestore permission error:", error);
+                // Display error notification if on the main page with groups
+                if (document.querySelector('.groups-grid')) {
+                    document.querySelector('.groups-grid').innerHTML = 
+                        `<div class="error">Firebase database connection error: ${error.message}. 
+                        Please check your network connection and try again.</div>`;
+                }
+            });
 
         // Make db and Firebase functions available globally
         window.db = db;
@@ -30,9 +60,18 @@ document.addEventListener('DOMContentLoaded', function() {
         window.increment = (value) => firebase.firestore.FieldValue.increment(value);
         window.addDoc = (collectionRef, data) => collectionRef.add(data);
         window.serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
-
-        console.log("Firebase initialized successfully");
+        
+        // Set flag to true
+        window.firebaseInitialized = true;
+        
+        console.log("Firebase initialized successfully and global functions set");
     } catch (error) {
         console.error("Error initializing Firebase:", error);
+        // Display error in UI if possible
+        if (document.querySelector('.groups-grid')) {
+            document.querySelector('.groups-grid').innerHTML = 
+                `<div class="error">Error initializing Firebase: ${error.message}. 
+                Please check your network connection and try again.</div>`;
+        }
     }
 });

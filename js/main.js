@@ -84,6 +84,19 @@ function updateLoadMoreButton(totalGroups) {
 function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
 
+    // Check if Firebase is initialized
+    if (!window.db) {
+        console.error("Firebase not initialized yet. Waiting...");
+        // Show loading message
+        groupContainer.innerHTML = '<div class="loading">Connecting to database...</div>';
+        
+        // Try again in 1 second
+        setTimeout(() => {
+            loadGroups(filterTopic, filterCountry, loadMore);
+        }, 1000);
+        return;
+    }
+
     try {
         console.log('Loading groups with filters:', { filterTopic, filterCountry });
 
@@ -211,20 +224,42 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             console.log(`Rendered ${groups.length} groups`);
         }).catch(error => {
             console.error('Error loading groups:', error);
-            groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
+            groupContainer.innerHTML = `<div class="error">
+                <p>Error loading groups: ${error.message}</p>
+                <p>This might be due to Firebase permissions or connectivity issues.</p>
+                <button onclick="location.reload()" class="submit-btn">Retry</button>
+            </div>`;
             updateLoadMoreButton(0);
         });
     } catch (error) {
         console.error('Error loading groups:', error);
-        groupContainer.innerHTML = '<div class="error">Error loading groups. Please try again later.</div>';
+        groupContainer.innerHTML = `<div class="error">
+            <p>Error loading groups: ${error.message}</p>
+            <p>This might be due to Firebase permissions or connectivity issues.</p>
+            <button onclick="location.reload()" class="submit-btn">Retry</button>
+        </div>`;
         updateLoadMoreButton(0);
     }
 }
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Wait for Firebase to initialize
-    setTimeout(() => {
+    // Initialize Firebase event listeners with retry mechanism
+    const checkFirebaseAndInitialize = () => {
+        if (window.firebaseInitialized) {
+            console.log("Firebase is initialized, proceeding with app initialization");
+            initializeApp();
+        } else {
+            console.log("Firebase not initialized yet, waiting...");
+            setTimeout(checkFirebaseAndInitialize, 500);
+        }
+    };
+
+    // Try to initialize after a short delay to give Firebase time
+    setTimeout(checkFirebaseAndInitialize, 100);
+
+    // Main app initialization
+    function initializeApp() {
         // Initialize mobile menu
         const navToggle = document.querySelector('.nav-toggle');
         const navLinks = document.querySelector('.nav-links');
@@ -245,8 +280,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Initial load
-        loadGroups();
+        // Initial load only if we're on the main page with groups
+        if (groupContainer) {
+            loadGroups();
+        }
 
         // Load More button click handler with enhanced animation
         if (loadMoreBtn) {
@@ -397,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Setup lazy loading
         setupLazyLoading();
-    }, 1000); // Give Firebase time to initialize
+    }
 });
 
 // Helper Functions
@@ -613,6 +650,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const spinner = submitBtn.querySelector('.loading-spinner');
 
             try {
+                // Check if Firebase is initialized
+                if (!window.db || !window.firebaseInitialized) {
+                    throw new Error("Database connection not ready. Please refresh the page and try again.");
+                }
+                
                 btnText.style.display = 'none';
                 spinner.style.display = 'inline-block';
                 submitBtn.disabled = true;
@@ -635,19 +677,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     country: form.groupCountry.value,
                     description: form.groupDescription.value.trim(),
                     image: imageUrl,
-                    timestamp: window.serverTimestamp()
+                    timestamp: window.serverTimestamp(),
+                    views: 0 // Initialize views counter
                 };
 
                 if (!isValidWhatsAppLink(groupData.link)) {
                     throw new Error('Please enter a valid WhatsApp group link');
                 }
 
-                await window.addDoc(window.collection("groups"), groupData);
-                showNotification('Group added successfully!', 'success');
-                form.reset();
-                document.getElementById('preview').innerHTML = '';
+                // Log the data we're about to submit
+                console.log("Submitting group data:", groupData);
+                
+                try {
+                    // First try with a test read to verify permissions
+                    await window.db.collection("groups").limit(1).get();
+                    
+                    // Now add the document
+                    const docRef = await window.addDoc(window.collection("groups"), groupData);
+                    console.log("Document written with ID: ", docRef.id);
+                    
+                    showNotification('Group added successfully!', 'success');
+                    form.reset();
+                    document.getElementById('preview').innerHTML = '';
+                } catch (firebaseError) {
+                    console.error("Firebase operation error:", firebaseError);
+                    throw new Error(`Database error: ${firebaseError.message}. This may be due to insufficient permissions or network issues.`);
+                }
 
             } catch (error) {
+                console.error("Form submission error:", error);
                 showNotification(error.message, 'error');
             } finally {
                 btnText.style.display = 'block';
