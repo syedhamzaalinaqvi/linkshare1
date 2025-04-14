@@ -86,7 +86,7 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
 
     // Check if Firebase is initialized
     if (!window.db) {
-        console.error("Firebase not initialized yet. Waiting...");
+        console.log("Firebase not initialized yet. Waiting...");
         // Show loading message
         groupContainer.innerHTML = '<div class="loading">Connecting to database...</div>';
         
@@ -140,8 +140,13 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             }
         }
 
-        // Execute query
-        baseQuery.get().then(querySnapshot => {
+        // Add cache settings to improve performance
+        const queryOptions = {
+            source: 'default' // Use cache if available but verify with server
+        };
+
+        // Execute query with cache options
+        baseQuery.get(queryOptions).then(querySnapshot => {
             // Clear container if not loading more
             if (!loadMore) {
                 groupContainer.innerHTML = '';
@@ -151,11 +156,6 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             let groups = [];
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                console.log('Document data:', {
-                    id: doc.id,
-                    category: data.category,
-                    country: data.country
-                });
                 groups.push({
                     id: doc.id,
                     ...data
@@ -212,11 +212,13 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
                 groups = limitedGroups;
             }
 
-            // Render groups
+            // Render groups efficiently
+            const fragment = document.createDocumentFragment();
             groups.forEach(group => {
                 const card = createGroupCard(group);
-                groupContainer.appendChild(card);
+                fragment.appendChild(card);
             });
+            groupContainer.appendChild(fragment);
 
             // Update load more button visibility
             updateLoadMoreButton(groups.length);
@@ -226,7 +228,6 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             console.error('Error loading groups:', error);
             groupContainer.innerHTML = `<div class="error">
                 <p>Error loading groups: ${error.message}</p>
-                <p>This might be due to Firebase permissions or connectivity issues.</p>
                 <button onclick="location.reload()" class="submit-btn">Retry</button>
             </div>`;
             updateLoadMoreButton(0);
@@ -235,7 +236,6 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
         console.error('Error loading groups:', error);
         groupContainer.innerHTML = `<div class="error">
             <p>Error loading groups: ${error.message}</p>
-            <p>This might be due to Firebase permissions or connectivity issues.</p>
             <button onclick="location.reload()" class="submit-btn">Retry</button>
         </div>`;
         updateLoadMoreButton(0);
@@ -251,11 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
         } else {
             console.log("Firebase not initialized yet, waiting...");
-            setTimeout(checkFirebaseAndInitialize, 500);
+            setTimeout(checkFirebaseAndInitialize, 300);
         }
     };
 
-    // Try to initialize after a short delay to give Firebase time
+    // Start initialization process
     setTimeout(checkFirebaseAndInitialize, 100);
 
     // Main app initialization
@@ -280,10 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Initial load only if we're on the main page with groups
-        if (groupContainer) {
-            loadGroups();
-        }
+        // Initial load will be triggered by firebase-config.js when ready
 
         // Load More button click handler with enhanced animation
         if (loadMoreBtn) {
@@ -660,6 +657,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = true;
 
                 const link = form.groupLink.value.trim();
+                
+                if (!isValidWhatsAppLink(link)) {
+                    throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
+                }
+                
                 const ogData = await fetchOpenGraph(link);
 
                 // Make sure we properly capture the image from OpenGraph data
@@ -681,28 +683,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     views: 0 // Initialize views counter
                 };
 
-                if (!isValidWhatsAppLink(groupData.link)) {
-                    throw new Error('Please enter a valid WhatsApp group link');
-                }
-
-                // Log the data we're about to submit
-                console.log("Submitting group data:", groupData);
+                // Now add the document
+                const docRef = await window.db.collection("groups").add(groupData);
+                console.log("Document written with ID: ", docRef.id);
                 
-                try {
-                    // First try with a test read to verify permissions
-                    await window.db.collection("groups").limit(1).get();
-                    
-                    // Now add the document
-                    const docRef = await window.addDoc(window.collection("groups"), groupData);
-                    console.log("Document written with ID: ", docRef.id);
-                    
-                    showNotification('Group added successfully!', 'success');
-                    form.reset();
-                    document.getElementById('preview').innerHTML = '';
-                } catch (firebaseError) {
-                    console.error("Firebase operation error:", firebaseError);
-                    throw new Error(`Database error: ${firebaseError.message}. This may be due to insufficient permissions or network issues.`);
-                }
+                // Show success message
+                showNotification('Group added successfully!', 'success');
+                form.reset();
+                document.getElementById('preview').innerHTML = '';
 
             } catch (error) {
                 console.error("Form submission error:", error);

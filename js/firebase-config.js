@@ -31,21 +31,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const db = firebase.firestore();
         
-        // Test connection to make sure permissions are working
-        db.collection("groups").limit(1).get()
-            .then(() => {
-                console.log("Firestore connection successful - permissions verified");
-            })
-            .catch(error => {
-                console.error("Firestore permission error:", error);
-                // Display error notification if on the main page with groups
-                if (document.querySelector('.groups-grid')) {
-                    document.querySelector('.groups-grid').innerHTML = 
-                        `<div class="error">Firebase database connection error: ${error.message}. 
-                        Please check your network connection and try again.</div>`;
-                }
-            });
-
+        // Enable better offline support with cache
+        db.enablePersistence({ synchronizeTabs: true })
+          .catch(err => {
+            if (err.code == 'failed-precondition') {
+              console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+            } else if (err.code == 'unimplemented') {
+              console.log('The current browser does not support all of the features required to enable persistence');
+            }
+          });
+        
         // Make db and Firebase functions available globally
         window.db = db;
         window.collection = (path) => db.collection(path);
@@ -65,6 +60,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.firebaseInitialized = true;
         
         console.log("Firebase initialized successfully and global functions set");
+        
+        // If we're on the home page, start loading groups immediately
+        if (document.querySelector('.groups-grid') && typeof loadGroups === 'function') {
+            setTimeout(() => {
+                loadGroups();
+            }, 100);
+        }
     } catch (error) {
         console.error("Error initializing Firebase:", error);
         // Display error in UI if possible
