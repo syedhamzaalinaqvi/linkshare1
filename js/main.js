@@ -7,7 +7,6 @@ const loadMoreBtn = document.querySelector('#loadMoreBtn');
 const searchInput = document.querySelector('#searchGroups');
 let currentTopic = 'all';
 let currentCountry = 'all';
-let form = document.querySelector('#addGroupForm');
 
 // Function to create a group card with lazy loading
 function createGroupCard(group) {
@@ -35,14 +34,44 @@ function createGroupCard(group) {
         console.error('Error formatting timestamp:', error);
     }
 
-    // Use a default image if none is provided
-    const defaultImage = '/favicon-96x96.png';
-    let imageUrl = group.image || defaultImage;
+    // Check if the image URL is likely to cause CORS issues
+    let imageUrl = '/favicon-96x96.png'; // Default fallback
+    
+    // If we have an image, check if it's a problematic source
+    if (group.image) {
+        // Check for common problematic domains that might cause 403 errors
+        const problematicDomains = [
+            'whatsapp.net', 
+            'fbcdn.net', 
+            'facebook.com',
+            'cdninstagram.com',
+            'fbsbx.com'
+        ];
+        
+        const hasProblematicDomain = problematicDomains.some(domain => 
+            group.image.includes(domain)
+        );
+        
+        if (hasProblematicDomain) {
+            // Use reliable WhatsApp logo instead
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+        } else if (group.image.includes('wikipedia.org') || group.image.includes('wikimedia.org')) {
+            // Trusted sources - use directly
+            imageUrl = group.image;
+        } else if (group.image.includes('chat.whatsapp.com')) {
+            // Direct WhatsApp link - use logo
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+        } else {
+            // For other sources, use but with good fallback
+            imageUrl = group.image;
+        }
+    }
 
-    // Create card with immediate image loading to ensure images display
+    // Create card with reliable image loading pattern
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" alt="${group.title || 'Group'}" loading="lazy" onerror="this.onerror=null; this.src='${defaultImage}';">
+            <img src="${imageUrl}" alt="${group.title || 'Group'}" loading="lazy" 
+                 onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';">
         </div>
         <div class="group-badges">
             <span class="category-badge">${group.category || 'Uncategorized'}</span>
@@ -533,8 +562,8 @@ async function fetchOpenGraph(url) {
         const isWhatsAppUrl = url.includes('chat.whatsapp.com/');
         
         if (isWhatsAppUrl) {
-            // For WhatsApp links, we'll use a fallback approach since their OG data often has CORS issues
-            console.log('Processing WhatsApp link with fallback method');
+            // For WhatsApp links, always use our reliable fallback
+            console.log('Processing WhatsApp link with reliable fallback method');
             
             // Extract group ID from WhatsApp link
             const groupId = url.split('chat.whatsapp.com/')[1];
@@ -553,40 +582,13 @@ async function fetchOpenGraph(url) {
             };
         }
         
-        // For non-WhatsApp URLs, try to fetch OG data (may still have CORS issues)
-        console.log('Fetching OpenGraph data for: ', url);
-        
-        // Use a CORS proxy for better results (you can replace with your own if needed)
-        const corsProxy = 'https://corsproxy.io/?';
-        const response = await fetch(corsProxy + encodeURIComponent(url));
-        
-        if (!response.ok) {
-            throw new Error(`Failed to fetch URL: ${response.status}`);
-        }
-        
-        const html = await response.text();
-        
-        // Parse the HTML to extract OpenGraph tags
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Extract OpenGraph data
-        const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || 
-                        doc.querySelector('title')?.textContent || 
-                        'No Title Available';
-                        
-        const ogDescription = doc.querySelector('meta[property="og:description"]')?.content || 
-                             doc.querySelector('meta[name="description"]')?.content || 
-                             'No description available';
-                             
-        const ogImage = doc.querySelector('meta[property="og:image"]')?.content || 
-                       doc.querySelector('meta[property="og:image:url"]')?.content || 
-                       'https://via.placeholder.com/600x400?text=No+Image';
-        
+        // Only proceed with regular fetching for non-WhatsApp URLs
+        // (not currently used in this application)
+        console.log('Using fallback for non-WhatsApp link');
         return {
-            title: ogTitle,
-            description: ogDescription,
-            image: ogImage,
+            title: 'Group Link',
+            description: 'Click to join this group',
+            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
             url: url
         };
     } catch (error) {
@@ -594,12 +596,114 @@ async function fetchOpenGraph(url) {
         
         // Return a fallback object
         return {
-            title: 'Link Preview',
-            description: 'No preview available for this link.',
-            image: 'https://via.placeholder.com/600x400?text=Preview+Not+Available',
+            title: 'WhatsApp Group',
+            description: 'Join this WhatsApp group',
+            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
             url: url
         };
     }
+}
+
+// Handle WhatsApp link input and preview
+const groupLinkInput = document.getElementById('groupLink');
+if (groupLinkInput) {
+    groupLinkInput.addEventListener('input', debounce(async function() {
+        const url = this.value ? this.value.trim() : '';
+        const previewDiv = document.getElementById('preview');
+
+        if (!previewDiv) return;
+
+        // Clear the preview if empty
+        if (!url) {
+            previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+            return;
+        }
+
+        if (url.includes('chat.whatsapp.com/')) {
+            // Show loading indicator
+            previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
+
+            try {
+                // Use our reliable fallback method
+                previewDiv.innerHTML = `
+                    <div class="link-preview">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
+                        <div class="link-preview-content">
+                            <h3>WhatsApp Group</h3>
+                            <p>Join this WhatsApp group</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading preview:', error);
+                previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
+            }
+        } else {
+            previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
+        }
+    }, 500));
+}
+
+// Form Submission handler
+const form = document.getElementById('groupForm');
+if (form) {
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = form.querySelector('.submit-btn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const spinner = submitBtn.querySelector('.loading-spinner');
+
+        try {
+            // Check if Firebase is initialized
+            if (!window.db || !window.firebaseInitialized) {
+                throw new Error("Database connection not ready. Please refresh the page and try again.");
+            }
+            
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            submitBtn.disabled = true;
+
+            const link = form.groupLink.value.trim();
+            
+            if (!isValidWhatsAppLink(link)) {
+                throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
+            }
+            
+            // Always use our reliable WhatsApp image as the feature image
+            const imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+
+            // Prepare group data with reliable image
+            const groupData = {
+                title: form.groupTitle.value.trim() || 'WhatsApp Group',
+                link: link,
+                category: form.groupCategory.value,
+                country: form.groupCountry.value,
+                description: form.groupDescription.value.trim() || 'Join this WhatsApp group',
+                image: imageUrl,
+                timestamp: window.serverTimestamp(),
+                views: 0 // Initialize views counter
+            };
+
+            console.log('Submitting group with reliable image:', imageUrl);
+
+            // Now add the document
+            const docRef = await window.db.collection("groups").add(groupData);
+            console.log("Document written with ID: ", docRef.id);
+            
+            // Show success message
+            showNotification('Group added successfully!', 'success');
+            form.reset();
+            document.getElementById('preview').innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+
+        } catch (error) {
+            console.error("Form submission error:", error);
+            showNotification(error.message, 'error');
+        } finally {
+            btnText.style.display = 'block';
+            spinner.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    });
 }
 
 // Helper function for time formatting
@@ -664,38 +768,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 previewDiv.innerHTML = '<div class="loading">Loading preview...</div>';
 
                 try {
-                    const ogData = await fetchOpenGraph(url);
-                    if (ogData) {
-                        // Create an image object to pre-load the image and check if it loads
-                        const img = new Image();
-                        img.onload = function() {
-                            // Image loaded successfully
-                            previewDiv.innerHTML = `
-                                <div class="link-preview">
-                                    <img src="${ogData.image}" alt="Preview">
-                                    <div class="link-preview-content">
-                                        <h3>${ogData.title}</h3>
-                                        <p>${ogData.description}</p>
-                                    </div>
-                                </div>
-                            `;
-                        };
-                        img.onerror = function() {
-                            // Image failed to load, use fallback
-                            previewDiv.innerHTML = `
-                                <div class="link-preview">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
-                                    <div class="link-preview-content">
-                                        <h3>${ogData.title}</h3>
-                                        <p>${ogData.description}</p>
-                                    </div>
-                                </div>
-                            `;
-                        };
-                        img.src = ogData.image;
-                    } else {
-                        previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
-                    }
+                    // Use our reliable fallback method
+                    previewDiv.innerHTML = `
+                        <div class="link-preview">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp Logo">
+                            <div class="link-preview-content">
+                                <h3>WhatsApp Group</h3>
+                                <p>Join this WhatsApp group</p>
+                            </div>
+                        </div>
+                    `;
                 } catch (error) {
                     console.error('Error loading preview:', error);
                     previewDiv.innerHTML = '<p class="error">Could not load preview</p>';
@@ -731,37 +813,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
                 }
                 
-                const ogData = await fetchOpenGraph(link);
+                // Always use our reliable WhatsApp image as the feature image
+                const imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
 
-                // We'll test if the image is accessible
-                let imageUrl = null;
-                if (ogData && ogData.image) {
-                    imageUrl = ogData.image;
-                    
-                    // If it's not our fallback image, test if it's accessible
-                    if (!imageUrl.includes('wikimedia.org') && !imageUrl.includes('placeholder.com')) {
-                        try {
-                            // Test if the image can be loaded
-                            await new Promise((resolve, reject) => {
-                                const img = new Image();
-                                img.onload = resolve;
-                                img.onerror = reject;
-                                img.src = imageUrl;
-                                // Set a timeout to abort if image loading takes too long
-                                setTimeout(reject, 3000);
-                            });
-                            console.log('Image successfully loaded:', imageUrl);
-                        } catch (error) {
-                            console.warn('Image failed to load, using fallback:', error);
-                            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-                        }
-                    }
-                } else {
-                    // Use default WhatsApp logo if no image was found
-                    imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-                }
-
-                // Prepare group data
+                // Prepare group data with reliable image
                 const groupData = {
                     title: form.groupTitle.value.trim() || 'WhatsApp Group',
                     link: link,
@@ -773,7 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     views: 0 // Initialize views counter
                 };
 
-                console.log('Submitting group with image:', imageUrl);
+                console.log('Submitting group with reliable image:', imageUrl);
 
                 // Now add the document
                 const docRef = await window.db.collection("groups").add(groupData);
