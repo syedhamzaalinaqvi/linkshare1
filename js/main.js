@@ -724,7 +724,12 @@ if (form) {
             // Show success message
             showNotification('Group added successfully!', 'success');
             newForm.reset();
-            document.getElementById('preview')?.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+            
+            // Fix the syntax error by using a more compatible approach
+            const previewElement = document.getElementById('preview');
+            if (previewElement) {
+                previewElement.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+            }
 
         } catch (error) {
             console.error("Form submission error:", error);
