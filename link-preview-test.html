@@ -2,89 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WhatsApp Group Preview</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Preview with Microlink</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    input, button {
-      padding: 10px;
-      width: 100%;
-      margin-bottom: 10px;
-    }
-    #preview {
-      display: none;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 15px;
-      max-width: 500px;
-    }
-    #preview img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .preview { margin-top: 20px; border: 1px solid #ccc; padding: 15px; max-width: 400px; }
+    .preview img { width: 100%; height: auto; }
   </style>
 </head>
 <body>
 
-  <h2>Paste WhatsApp Group Link</h2>
-  
-  <input type="text" id="linkInput" placeholder="Paste link here">
-<button onclick="getOG()">Get Preview</button>
-<div id="preview"></div>
+  <h2>Paste a Link to Preview</h2>
+  <input type="text" id="urlInput" placeholder="Paste WhatsApp group link..." style="width: 300px;">
+  <button onclick="getPreview()">Preview</button>
 
-  <div id="preview">
-    <img id="previewImage" src="" alt="Preview Image">
+  <div id="previewContainer" class="preview" style="display: none;">
+    <img id="previewImage" alt="" />
     <h3 id="previewTitle"></h3>
     <p id="previewDescription"></p>
   </div>
 
   <script>
-    function getOG() {
-      const url = document.getElementById("linkInput").value.trim();
-      const proxy = "https://api.allorigins.win/raw?url=";
-  
-      fetch(proxy + encodeURIComponent(url))
-        .then(res => res.text())
-        .then(html => {
-          const doc = new DOMParser().parseFromString(html, "text/html");
-  
-          const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || "No title";
-          const ogImage = doc.querySelector('meta[property="og:image"]')?.content || "";
-          const ogDesc  = doc.querySelector('meta[property="og:description"]')?.content || "No description";
-  
-          document.getElementById("preview").innerHTML = `
-            <img src="${ogImage}" style="max-width:300px;"><br>
-            <strong>${ogTitle}</strong><br>
-            <p>${ogDesc}</p>
-          `;
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Failed to fetch preview. CORS might be blocking it.");
-        });
-    }
-  </script>
-  <script>
-    /*function showPreview() {
-      const url = document.getElementById("linkInput").value;
-      const previewBox = document.getElementById("preview");
+    async function getPreview() {
+      const url = document.getElementById("urlInput").value.trim();
+      if (!url) return;
 
-      // Only continue if it's a WhatsApp link
-      if (!url.includes("chat.whatsapp.com")) {
-        alert("Please enter a valid WhatsApp group link.");
-        return;
+      try {
+        const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+        const json = await res.json();
+
+        if (json.status === 'success') {
+          const data = json.data;
+          document.getElementById("previewImage").src = data.image?.url || '';
+          document.getElementById("previewTitle").textContent = data.title || 'No title';
+          document.getElementById("previewDescription").textContent = data.description || 'No description';
+          document.getElementById("previewContainer").style.display = 'block';
+        } else {
+          alert('Preview failed. Try another URL.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong!");
       }
-
-      // Simulate open graph preview
-      document.getElementById("previewImage").src = "https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/whatsapp.png";
-      document.getElementById("previewTitle").textContent = "Join our WhatsApp Group!";
-      document.getElementById("previewDescription").textContent = "Click the link to become part of an awesome WhatsApp community.";
-
-      previewBox.style.display = "block";
-    }*/
+    }
   </script>
 
 </body>
