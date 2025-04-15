@@ -524,56 +524,32 @@ function setupLazyLoading() {
     }
 }
 
-// Add error handling function
-function showErrorState(message) {
-    if (groupContainer) {
-        groupContainer.innerHTML = `
-        <div class="error-state" role="alert">
-            <i class="fas fa-exclamation-circle"></i>
-            <p>${message}</p>
-            <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
-                <i class="fas fa-redo"></i> Try Again
-            </button>
-        </div>
-        `;
-    }
-}
+// Global variable to store the current preview data and image URL
+window.previewImageUrl = null;
 
-// Utility Functions
-function isValidWhatsAppLink(link) {
-    return link && link.includes('chat.whatsapp.com/');
-}
-
-function showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
-
-// Function to fetch link preview using Microlink.io API with direct fetch (avoiding CORS issues)
+// Function to fetch link preview using Microlink.io API with direct fetch
 async function fetchLinkPreview(url, previewContainer) {
+    // Reset previous preview data
+    window.previewImageUrl = null;
+    
     if (!url || !url.includes('chat.whatsapp.com/')) {
         previewContainer.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
-        window.lastFetchedPreview = null;
         return null;
     }
 
     try {
         // Show loading indicator
         previewContainer.innerHTML = '<div class="loading">Loading preview...</div>';
-        console.log('Fetching preview for:', url);
+        console.log('[DEBUG] Fetching preview for URL:', url);
 
-        // Use direct fetch to the public API endpoint (not the SDK)
+        // Direct fetch to the public API endpoint
         const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
+        console.log('[DEBUG] Calling Microlink API:', apiUrl);
+        
         const response = await fetch(apiUrl);
         const json = await response.json();
         
-        console.log('Microlink response:', json);
+        console.log('[DEBUG] Microlink response:', json);
         
         if (json.status !== 'success') {
             throw new Error('Failed to fetch link preview');
@@ -582,36 +558,45 @@ async function fetchLinkPreview(url, previewContainer) {
         // Extract data from the response
         const data = json.data;
         
-        // Store the preview data globally for later use
-        window.lastFetchedPreview = data;
-        console.log('Stored preview data globally:', window.lastFetchedPreview);
-        
         // Extract the metadata we need
         const title = data.title || 'WhatsApp Group';
         const description = data.description || 'Join this WhatsApp group';
-        let image = null;
+        let imageUrl = null;
         
-        // Find the best image to use
+        // Find the best image to use in order of preference
         if (data.image && data.image.url) {
-            image = data.image.url;
+            imageUrl = data.image.url;
+            console.log('[DEBUG] Using image URL:', imageUrl);
         } else if (data.logo && data.logo.url) {
-            image = data.logo.url;
+            imageUrl = data.logo.url;
+            console.log('[DEBUG] Using logo URL:', imageUrl);
+        } else if (data.screenshot && data.screenshot.url) {
+            imageUrl = data.screenshot.url;
+            console.log('[DEBUG] Using screenshot URL:', imageUrl);
         } else {
             // Fallback to WhatsApp logo
-            image = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+            imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+            console.log('[DEBUG] No image found, using default WhatsApp logo');
         }
+        
+        // IMPORTANT: Store the image URL in the global variable for form submission
+        window.previewImageUrl = imageUrl;
+        console.log('[DEBUG] Stored preview image URL globally:', window.previewImageUrl);
         
         // Create a visually appealing preview card
         previewContainer.innerHTML = `
             <div class="link-preview">
                 <div class="preview-image">
-                    <img src="${image}" alt="${title}" />
+                    <img src="${imageUrl}" alt="${title}" />
                 </div>
                 <div class="preview-content">
                     <h3>${title}</h3>
                     <p>${description}</p>
                     <div class="preview-url">
                         <span>${url.substring(0, 30)}${url.length > 30 ? '...' : ''}</span>
+                    </div>
+                    <div class="preview-status">
+                        <span style="color: #26a269; font-weight: bold">✓ Image will be used as feature image</span>
                     </div>
                 </div>
             </div>
@@ -650,13 +635,12 @@ async function fetchLinkPreview(url, previewContainer) {
             contentElement.style.padding = '12px';
         }
         
-        // Return the data for use in form submission
         return data;
     } catch (error) {
-        console.error('Error fetching link preview:', error);
+        console.error('[DEBUG] Error fetching link preview:', error);
         
-        // Clear the global preview data
-        window.lastFetchedPreview = null;
+        // Reset preview image URL
+        window.previewImageUrl = null;
         
         // Show error and fallback to a basic preview
         previewContainer.innerHTML = `
@@ -670,6 +654,9 @@ async function fetchLinkPreview(url, previewContainer) {
                     <div class="preview-url">
                         <span>${url.substring(0, 30)}${url.length > 30 ? '...' : ''}</span>
                     </div>
+                    <div class="preview-status">
+                        <span style="color: #c01c28;">⚠️ Failed to load preview image</span>
+                    </div>
                 </div>
             </div>
         `;
@@ -678,31 +665,7 @@ async function fetchLinkPreview(url, previewContainer) {
     }
 }
 
-// Get best image from preview data
-function getBestImageFromPreview(previewData) {
-    if (!previewData) {
-        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-    }
-    
-    // Try to get the best image in order of preference
-    if (previewData.image && previewData.image.url) {
-        return previewData.image.url;
-    }
-    
-    if (previewData.logo && previewData.logo.url) {
-        return previewData.logo.url;
-    }
-    
-    // Check for other image sources
-    if (previewData.screenshot && previewData.screenshot.url) {
-        return previewData.screenshot.url;
-    }
-    
-    // Fallback to WhatsApp logo
-    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-}
-
-// Handle WhatsApp link input and preview - with Microlink integration
+// Handle WhatsApp link input and preview
 const groupLinkInput = document.getElementById('groupLink');
 if (groupLinkInput) {
     // Debounce function to avoid too many API calls
@@ -725,6 +688,7 @@ if (groupLinkInput) {
         // Clear the preview if empty
         if (!url) {
             previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+            window.previewImageUrl = null;
             return;
         }
         
@@ -733,6 +697,7 @@ if (groupLinkInput) {
             await fetchLinkPreview(url, previewDiv);
         } else {
             previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
+            window.previewImageUrl = null;
         }
     }, 500); // Debounce for 500ms to avoid too many API calls
     
@@ -752,7 +717,7 @@ if (groupLinkInput) {
     }
 }
 
-// Form Submission handler with Microlink data
+// Form Submission handler with direct image URL access
 const form = document.getElementById('groupForm');
 if (form) {
     // Clone the form to remove any existing listeners
@@ -775,6 +740,7 @@ if (form) {
             
             if (!url) {
                 previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+                window.previewImageUrl = null;
                 return;
             }
             
@@ -782,6 +748,7 @@ if (form) {
                 await fetchLinkPreview(url, previewDiv);
             } else {
                 previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
+                window.previewImageUrl = null;
             }
         }, 500);
         
@@ -813,7 +780,7 @@ if (form) {
             return;
         }
         
-        console.log('Form submission started');
+        console.log('[DEBUG] Form submission started');
         isSubmitting = true;
         
         try {
@@ -845,45 +812,33 @@ if (form) {
             const country = countryInput?.value || '';
             const description = descriptionInput?.value?.trim() || 'Join this WhatsApp group';
             
-            console.log('Form data collected:', { title, link, category, country });
+            console.log('[DEBUG] Form data collected:', { title, link, category, country });
             
             // Validate the link
             if (!isValidWhatsAppLink(link)) {
                 throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
             }
             
-            // If we don't have preview data yet, try to fetch it now
-            let previewData = window.lastFetchedPreview;
-            if (!previewData) {
-                console.log('No preview data found, fetching now...');
+            // Get the image URL from our global variable
+            let imageUrl = window.previewImageUrl;
+            
+            // If we don't have a preview image URL yet, try to fetch it now
+            if (!imageUrl) {
+                console.log('[DEBUG] No preview image URL found, fetching preview now...');
                 const previewDiv = document.getElementById('preview');
                 if (previewDiv) {
-                    previewData = await fetchLinkPreview(link, previewDiv);
+                    await fetchLinkPreview(link, previewDiv);
+                    imageUrl = window.previewImageUrl;
                 }
             }
             
-            // Get the best image from our preview data
-            let imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'; // Default fallback
-            
-            if (previewData) {
-                console.log('Using preview data:', previewData);
-                
-                // Try to get image in order of preference
-                if (previewData.image && previewData.image.url) {
-                    imageUrl = previewData.image.url;
-                    console.log('Using image URL from preview data:', imageUrl);
-                } else if (previewData.logo && previewData.logo.url) {
-                    imageUrl = previewData.logo.url;
-                    console.log('Using logo URL from preview data:', imageUrl);
-                } else if (previewData.screenshot && previewData.screenshot.url) {
-                    imageUrl = previewData.screenshot.url;
-                    console.log('Using screenshot URL from preview data:', imageUrl);
-                }
-            } else {
-                console.warn('No preview data available, using default WhatsApp logo');
+            // If still no image, use default WhatsApp logo
+            if (!imageUrl) {
+                console.warn('[DEBUG] Still no preview image available, using default WhatsApp logo');
+                imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
             }
             
-            console.log('Final image URL for submission:', imageUrl);
+            console.log('[DEBUG] Final image URL for submission:', imageUrl);
             
             // Prepare data for Firebase
             const groupData = {
@@ -897,18 +852,18 @@ if (form) {
                 views: 0
             };
             
-            console.log('Saving group data to Firebase:', groupData);
+            console.log('[DEBUG] Saving group data to Firebase:', groupData);
             
             // Add to Firebase
             const docRef = await window.db.collection("groups").add(groupData);
-            console.log("Document written with ID:", docRef.id);
+            console.log("[DEBUG] Document written with ID:", docRef.id);
             
             // Show success message
             showNotification('Group added successfully!', 'success');
             
             // Reset form and preview
             newForm.reset();
-            window.lastFetchedPreview = null;
+            window.previewImageUrl = null;
             
             const previewElement = document.getElementById('preview');
             if (previewElement) {
@@ -916,7 +871,7 @@ if (form) {
             }
             
         } catch (error) {
-            console.error("Form submission error:", error);
+            console.error("[DEBUG] Form submission error:", error);
             showNotification(error.message, 'error');
         } finally {
             // Reset UI
@@ -930,6 +885,37 @@ if (form) {
             isSubmitting = false;
         }
     });
+}
+
+// Add error handling function
+function showErrorState(message) {
+    if (groupContainer) {
+        groupContainer.innerHTML = `
+        <div class="error-state" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>${message}</p>
+            <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+        </div>
+        `;
+    }
+}
+
+// Utility Functions
+function isValidWhatsAppLink(link) {
+    return link && link.includes('chat.whatsapp.com/');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
 }
 
 // Helper function for time formatting
