@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WhatsApp Group Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    #preview {
+      display: none;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      max-width: 500px;
+    }
+    #preview img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Paste WhatsApp Group Link</h2>
+  <input type="text" id="linkInput" placeholder="Paste WhatsApp group link here...">
+  <button onclick="showPreview()">Show Preview</button>
+
+  <div id="preview">
+    <img id="previewImage" src="" alt="Preview Image">
+    <h3 id="previewTitle"></h3>
+    <p id="previewDescription"></p>
+  </div>
+
+  <script>
+    function showPreview() {
+      const url = document.getElementById("linkInput").value;
+      const previewBox = document.getElementById("preview");
+
+      // Only continue if it's a WhatsApp link
+      if (!url.includes("chat.whatsapp.com")) {
+        alert("Please enter a valid WhatsApp group link.");
+        return;
+      }
+
+      // Simulate open graph preview
+      document.getElementById("previewImage").src = "https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/whatsapp.png";
+      document.getElementById("previewTitle").textContent = "Join our WhatsApp Group!";
+      document.getElementById("previewDescription").textContent = "Click the link to become part of an awesome WhatsApp community.";
+
+      previewBox.style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
