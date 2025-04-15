@@ -559,6 +559,7 @@ function showNotification(message, type) {
 async function fetchLinkPreview(url, previewContainer) {
     if (!url || !url.includes('chat.whatsapp.com/')) {
         previewContainer.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
+        window.lastFetchedPreview = null;
         return null;
     }
 
@@ -583,6 +584,7 @@ async function fetchLinkPreview(url, previewContainer) {
         
         // Store the preview data globally for later use
         window.lastFetchedPreview = data;
+        console.log('Stored preview data globally:', window.lastFetchedPreview);
         
         // Extract the metadata we need
         const title = data.title || 'WhatsApp Group';
@@ -652,6 +654,9 @@ async function fetchLinkPreview(url, previewContainer) {
         return data;
     } catch (error) {
         console.error('Error fetching link preview:', error);
+        
+        // Clear the global preview data
+        window.lastFetchedPreview = null;
         
         // Show error and fallback to a basic preview
         previewContainer.innerHTML = `
@@ -822,6 +827,7 @@ if (form) {
                 newBtnText.style.display = 'none';
                 newSpinner.style.display = 'inline-block';
             }
+            
             if (newSubmitBtn) {
                 newSubmitBtn.disabled = true;
             }
@@ -846,17 +852,38 @@ if (form) {
                 throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
             }
             
-            // If we don't have preview data yet, try to fetch it
-            if (!window.lastFetchedPreview) {
+            // If we don't have preview data yet, try to fetch it now
+            let previewData = window.lastFetchedPreview;
+            if (!previewData) {
+                console.log('No preview data found, fetching now...');
                 const previewDiv = document.getElementById('preview');
                 if (previewDiv) {
-                    await fetchLinkPreview(link, previewDiv);
+                    previewData = await fetchLinkPreview(link, previewDiv);
                 }
             }
             
             // Get the best image from our preview data
-            const imageUrl = getBestImageFromPreview(window.lastFetchedPreview);
-            console.log('Using image for submission:', imageUrl);
+            let imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'; // Default fallback
+            
+            if (previewData) {
+                console.log('Using preview data:', previewData);
+                
+                // Try to get image in order of preference
+                if (previewData.image && previewData.image.url) {
+                    imageUrl = previewData.image.url;
+                    console.log('Using image URL from preview data:', imageUrl);
+                } else if (previewData.logo && previewData.logo.url) {
+                    imageUrl = previewData.logo.url;
+                    console.log('Using logo URL from preview data:', imageUrl);
+                } else if (previewData.screenshot && previewData.screenshot.url) {
+                    imageUrl = previewData.screenshot.url;
+                    console.log('Using screenshot URL from preview data:', imageUrl);
+                }
+            } else {
+                console.warn('No preview data available, using default WhatsApp logo');
+            }
+            
+            console.log('Final image URL for submission:', imageUrl);
             
             // Prepare data for Firebase
             const groupData = {
@@ -869,6 +896,8 @@ if (form) {
                 timestamp: window.serverTimestamp(),
                 views: 0
             };
+            
+            console.log('Saving group data to Firebase:', groupData);
             
             // Add to Firebase
             const docRef = await window.db.collection("groups").add(groupData);
