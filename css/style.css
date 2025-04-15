@@ -2339,6 +2339,10 @@ select:focus {
     .modal-footer .views-count i {
         font-size: 0.9rem;
     }
+  /*  #player{
+        width: 80%;
+        margin: auto;
+    }*/
 }
 
 @media (max-width: 480px) {
