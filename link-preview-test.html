@@ -30,8 +30,10 @@
 <body>
 
   <h2>Paste WhatsApp Group Link</h2>
-  <input type="text" id="linkInput" placeholder="Paste WhatsApp group link here...">
-  <button onclick="showPreview()">Show Preview</button>
+  
+  <input type="text" id="linkInput" placeholder="Paste link here">
+<button onclick="getOG()">Get Preview</button>
+<div id="preview"></div>
 
   <div id="preview">
     <img id="previewImage" src="" alt="Preview Image">
@@ -40,7 +42,33 @@
   </div>
 
   <script>
-    function showPreview() {
+    function getOG() {
+      const url = document.getElementById("linkInput").value.trim();
+      const proxy = "https://api.allorigins.win/raw?url=";
+  
+      fetch(proxy + encodeURIComponent(url))
+        .then(res => res.text())
+        .then(html => {
+          const doc = new DOMParser().parseFromString(html, "text/html");
+  
+          const ogTitle = doc.querySelector('meta[property="og:title"]')?.content || "No title";
+          const ogImage = doc.querySelector('meta[property="og:image"]')?.content || "";
+          const ogDesc  = doc.querySelector('meta[property="og:description"]')?.content || "No description";
+  
+          document.getElementById("preview").innerHTML = `
+            <img src="${ogImage}" style="max-width:300px;"><br>
+            <strong>${ogTitle}</strong><br>
+            <p>${ogDesc}</p>
+          `;
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Failed to fetch preview. CORS might be blocking it.");
+        });
+    }
+  </script>
+  <script>
+    /*function showPreview() {
       const url = document.getElementById("linkInput").value;
       const previewBox = document.getElementById("preview");
 
@@ -56,7 +84,7 @@
       document.getElementById("previewDescription").textContent = "Click the link to become part of an awesome WhatsApp community.";
 
       previewBox.style.display = "block";
-    }
+    }*/
   </script>
 
 </body>
