@@ -555,7 +555,7 @@ function showNotification(message, type) {
     }, 3000);
 }
 
-// Function to fetch link preview using Microlink.io API
+// Function to fetch link preview using Microlink.io API with direct fetch (avoiding CORS issues)
 async function fetchLinkPreview(url, previewContainer) {
     if (!url || !url.includes('chat.whatsapp.com/')) {
         previewContainer.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
@@ -567,26 +567,19 @@ async function fetchLinkPreview(url, previewContainer) {
         previewContainer.innerHTML = '<div class="loading">Loading preview...</div>';
         console.log('Fetching preview for:', url);
 
-        // Use the globally available mql from Microlink CDN
-        if (typeof mql === 'undefined') {
-            throw new Error('Microlink SDK not loaded. Make sure you\'ve included the script in your HTML.');
-        }
-
-        // Call the Microlink API with full metadata
-        const { status, data } = await mql(url, {
-            apiKey: 'free', // Using the free tier - consider upgrading for production
-            video: true,
-            audio: true,
-            meta: true,
-            images: true,
-            prerender: true // For better JavaScript rendering
-        });
-
-        console.log('Microlink response:', status, data);
+        // Use direct fetch to the public API endpoint (not the SDK)
+        const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
+        const response = await fetch(apiUrl);
+        const json = await response.json();
         
-        if (status !== 'success') {
+        console.log('Microlink response:', json);
+        
+        if (json.status !== 'success') {
             throw new Error('Failed to fetch link preview');
         }
+        
+        // Extract data from the response
+        const data = json.data;
         
         // Store the preview data globally for later use
         window.lastFetchedPreview = data;
