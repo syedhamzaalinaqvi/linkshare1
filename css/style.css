@@ -1010,7 +1010,7 @@ select:focus {
 /* Enhanced Link Preview */
 .link-preview {
     margin-top: 1rem;
-    padding: 1.5rem;
+    padding: 0.2rem;
     border: 2px solid var(--primary-color);
     border-radius: var(--radius);
     display: flex;
