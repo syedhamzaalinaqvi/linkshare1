@@ -555,241 +555,257 @@ function showNotification(message, type) {
     }, 3000);
 }
 
-// Function to display WhatsApp link preview without relying on external fetching
-function showWhatsAppLinkPreview(url, previewContainer) {
-    // Extract the invite code from the WhatsApp URL
-    const inviteCode = url.split('chat.whatsapp.com/')[1]?.trim();
-    
-    if (!inviteCode) {
-        previewContainer.innerHTML = '<p class="error">Invalid WhatsApp group invite link</p>';
-        return;
+// Function to fetch link preview using Microlink.io API
+async function fetchLinkPreview(url, previewContainer) {
+    if (!url || !url.includes('chat.whatsapp.com/')) {
+        previewContainer.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
+        return null;
     }
-    
-    // Use a reliable WhatsApp logo
-    const whatsAppLogo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-    
-    // Create a visually appealing preview
-    previewContainer.innerHTML = `
-        <div class="link-preview">
-            <div class="preview-header">
-                <img src="${whatsAppLogo}" alt="WhatsApp Logo" class="preview-logo">
-                <div class="preview-title">
-                    <strong>WhatsApp Group Invite</strong>
-                    <small>chat.whatsapp.com/${inviteCode.substring(0, 10)}${inviteCode.length > 10 ? '...' : ''}</small>
-                </div>
-            </div>
-            <div class="preview-content">
-                <p>Click to join this WhatsApp group</p>
-                <div class="preview-invite">
-                    <span class="invite-code">${inviteCode.substring(0, 6)}...${inviteCode.substring(inviteCode.length - 4)}</span>
-                </div>
-            </div>
-            <div class="preview-footer">
-                <span class="preview-status">✓ Valid WhatsApp invite link</span>
-            </div>
-        </div>
-    `;
-    
-    // Add fully responsive styles for all devices
-    const previewElement = previewContainer.querySelector('.link-preview');
-    if (previewElement) {
-        previewElement.style.border = '1px solid #25D366';
-        previewElement.style.borderRadius = '8px';
-        previewElement.style.padding = '12px';
-        previewElement.style.backgroundColor = '#f5f5f5';
-        previewElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-        previewElement.style.maxWidth = '100%';
-        previewElement.style.overflow = 'hidden';
-        previewElement.style.wordBreak = 'break-word';
-    }
-    
-    const logoElement = previewContainer.querySelector('.preview-logo');
-    if (logoElement) {
-        logoElement.style.width = '40px';
-        logoElement.style.height = '40px';
-        logoElement.style.marginRight = '10px';
-        logoElement.style.flexShrink = '0';
-    }
-    
-    const headerElement = previewContainer.querySelector('.preview-header');
-    if (headerElement) {
-        headerElement.style.display = 'flex';
-        headerElement.style.alignItems = 'center';
-        headerElement.style.marginBottom = '12px';
-        headerElement.style.flexWrap = 'nowrap';
-    }
-    
-    const titleElement = previewContainer.querySelector('.preview-title');
-    if (titleElement) {
-        titleElement.style.display = 'flex';
-        titleElement.style.flexDirection = 'column';
-        titleElement.style.overflow = 'hidden';
-        titleElement.style.width = '100%';
-    }
-    
-    const smallElement = previewContainer.querySelector('.preview-title small');
-    if (smallElement) {
-        smallElement.style.overflow = 'hidden';
-        smallElement.style.textOverflow = 'ellipsis';
-        smallElement.style.whiteSpace = 'nowrap';
-        smallElement.style.fontSize = '12px';
-        smallElement.style.color = '#666';
-    }
-    
-    // Try to fetch the actual WhatsApp group image asynchronously
-    tryFetchWhatsAppGroupImage(url, previewContainer);
-}
 
-// Function to try and fetch WhatsApp group image (will work in some cases)
-async function tryFetchWhatsAppGroupImage(url, previewContainer) {
     try {
-        // First approach - try to access actual metadata using a CORS proxy
-        console.log('Attempting to fetch WhatsApp group image for:', url);
-        
-        // Create image object to test image loading
-        const img = new Image();
-        const imgPromise = new Promise((resolve, reject) => {
-            img.onload = () => resolve(img.src);
-            img.onerror = () => reject(new Error('Failed to load image'));
-            
-            // Wait a short time then cancel if needed
-            setTimeout(() => reject(new Error('Image load timeout')), 5000);
-            
-            // Try with a WhatsApp image URL pattern
-            const inviteCode = url.split('chat.whatsapp.com/')[1]?.trim();
-            if (inviteCode) {
-                // Use invite code to identify the group
-                // Store the attempted URL for possible use as feature image
-                window.lastAttemptedGroupImageUrl = `https://static.whatsapp.net/group/${inviteCode}.jpg`;
-                img.src = window.lastAttemptedGroupImageUrl;
-            }
+        // Show loading indicator
+        previewContainer.innerHTML = '<div class="loading">Loading preview...</div>';
+        console.log('Fetching preview for:', url);
+
+        // Use the globally available mql from Microlink CDN
+        if (typeof mql === 'undefined') {
+            throw new Error('Microlink SDK not loaded. Make sure you\'ve included the script in your HTML.');
+        }
+
+        // Call the Microlink API with full metadata
+        const { status, data } = await mql(url, {
+            apiKey: 'free', // Using the free tier - consider upgrading for production
+            video: true,
+            audio: true,
+            meta: true,
+            images: true,
+            prerender: true // For better JavaScript rendering
         });
+
+        console.log('Microlink response:', status, data);
         
-        await imgPromise;
-        console.log('Successfully loaded WhatsApp group image!');
-        
-        // If we reach here, the image loaded successfully
-        // Update the preview with the actual image
-        const logoElement = previewContainer.querySelector('.preview-logo');
-        if (logoElement) {
-            logoElement.src = img.src;
-            logoElement.style.borderRadius = '50%'; // Round the actual group image
-            logoElement.style.border = '1px solid #ddd';
+        if (status !== 'success') {
+            throw new Error('Failed to fetch link preview');
         }
         
+        // Store the preview data globally for later use
+        window.lastFetchedPreview = data;
+        
+        // Extract the metadata we need
+        const title = data.title || 'WhatsApp Group';
+        const description = data.description || 'Join this WhatsApp group';
+        let image = null;
+        
+        // Find the best image to use
+        if (data.image && data.image.url) {
+            image = data.image.url;
+        } else if (data.logo && data.logo.url) {
+            image = data.logo.url;
+        } else {
+            // Fallback to WhatsApp logo
+            image = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
+        }
+        
+        // Create a visually appealing preview card
+        previewContainer.innerHTML = `
+            <div class="link-preview">
+                <div class="preview-image">
+                    <img src="${image}" alt="${title}" />
+                </div>
+                <div class="preview-content">
+                    <h3>${title}</h3>
+                    <p>${description}</p>
+                    <div class="preview-url">
+                        <span>${url.substring(0, 30)}${url.length > 30 ? '...' : ''}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add responsive styles
+        const previewElement = previewContainer.querySelector('.link-preview');
+        if (previewElement) {
+            previewElement.style.display = 'flex';
+            previewElement.style.flexDirection = 'column';
+            previewElement.style.border = '1px solid #ddd';
+            previewElement.style.borderRadius = '8px';
+            previewElement.style.overflow = 'hidden';
+            previewElement.style.maxWidth = '100%';
+            previewElement.style.backgroundColor = '#fff';
+            previewElement.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        }
+        
+        const imageContainer = previewContainer.querySelector('.preview-image');
+        if (imageContainer) {
+            imageContainer.style.width = '100%';
+            imageContainer.style.height = '180px';
+            imageContainer.style.overflow = 'hidden';
+            imageContainer.style.backgroundColor = '#f5f5f5';
+        }
+        
+        const imageElement = previewContainer.querySelector('.preview-image img');
+        if (imageElement) {
+            imageElement.style.width = '100%';
+            imageElement.style.height = '100%';
+            imageElement.style.objectFit = 'cover';
+        }
+        
+        const contentElement = previewContainer.querySelector('.preview-content');
+        if (contentElement) {
+            contentElement.style.padding = '12px';
+        }
+        
+        // Return the data for use in form submission
+        return data;
     } catch (error) {
-        console.log('Could not fetch WhatsApp group image, using default logo:', error.message);
-        // Just keep using the default WhatsApp logo - already set in the preview
+        console.error('Error fetching link preview:', error);
+        
+        // Show error and fallback to a basic preview
+        previewContainer.innerHTML = `
+            <div class="link-preview">
+                <div class="preview-image">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp" />
+                </div>
+                <div class="preview-content">
+                    <h3>WhatsApp Group</h3>
+                    <p>Join this WhatsApp group</p>
+                    <div class="preview-url">
+                        <span>${url.substring(0, 30)}${url.length > 30 ? '...' : ''}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return null;
     }
 }
 
-// Function to get best image for group submission
-async function getBestGroupImage(url) {
-    try {
-        // First check if we have a successfully loaded image from the preview
-        if (window.lastAttemptedGroupImageUrl) {
-            // Test if it's accessible
-            const img = new Image();
-            await new Promise((resolve, reject) => {
-                img.onload = resolve;
-                img.onerror = reject;
-                img.src = window.lastAttemptedGroupImageUrl;
-                setTimeout(reject, 3000); // Timeout after 3 seconds
-            });
-            
-            // If we reach here, the image loaded successfully
-            return window.lastAttemptedGroupImageUrl;
-        }
-    } catch (error) {
-        console.log('Group image not accessible, using default WhatsApp logo');
+// Get best image from preview data
+function getBestImageFromPreview(previewData) {
+    if (!previewData) {
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
     }
     
-    // Fallback to reliable WhatsApp logo
+    // Try to get the best image in order of preference
+    if (previewData.image && previewData.image.url) {
+        return previewData.image.url;
+    }
+    
+    if (previewData.logo && previewData.logo.url) {
+        return previewData.logo.url;
+    }
+    
+    // Check for other image sources
+    if (previewData.screenshot && previewData.screenshot.url) {
+        return previewData.screenshot.url;
+    }
+    
+    // Fallback to WhatsApp logo
     return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
 }
 
-// Handle WhatsApp link input and preview - THIS MUST WORK IMMEDIATELY
+// Handle WhatsApp link input and preview - with Microlink integration
 const groupLinkInput = document.getElementById('groupLink');
 if (groupLinkInput) {
-    // Function to handle input
-    function handleLinkInput() {
-        const url = groupLinkInput.value ? groupLinkInput.value.trim() : '';
+    // Debounce function to avoid too many API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            const context = this;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+    
+    // Handle input with debounce for API request efficiency
+    const handleLinkInput = debounce(async function() {
+        const url = this.value ? this.value.trim() : '';
         const previewDiv = document.getElementById('preview');
-
+        
         if (!previewDiv) return;
-
+        
         // Clear the preview if empty
         if (!url) {
             previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
             return;
         }
-
+        
+        // Only fetch preview for WhatsApp links
         if (url.includes('chat.whatsapp.com/')) {
-            console.log('Valid WhatsApp link detected, showing preview');
-            // Show preview immediately without any async operations
-            showWhatsAppLinkPreview(url, previewDiv);
+            await fetchLinkPreview(url, previewDiv);
         } else {
             previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
         }
-    }
-
-    // Handle both input event and paste event for immediate response
-    groupLinkInput.addEventListener('input', handleLinkInput);
+    }, 500); // Debounce for 500ms to avoid too many API calls
     
-    // Special handling for paste events for even faster response
-    groupLinkInput.addEventListener('paste', (e) => {
-        // Short timeout to let the paste complete
-        setTimeout(handleLinkInput, 10);
+    // Add input event listeners
+    groupLinkInput.addEventListener('input', handleLinkInput);
+    groupLinkInput.addEventListener('paste', () => {
+        setTimeout(() => {
+            handleLinkInput.call(groupLinkInput);
+        }, 100);
     });
     
-    // Initial check in case the field already has a value
-    handleLinkInput();
+    // Initial check if there's already a value
+    if (groupLinkInput.value) {
+        setTimeout(() => {
+            handleLinkInput.call(groupLinkInput);
+        }, 500);
+    }
 }
 
-// Form Submission handler
+// Form Submission handler with Microlink data
 const form = document.getElementById('groupForm');
 if (form) {
-    // Remove any existing listeners to prevent duplicate submissions
+    // Clone the form to remove any existing listeners
     const newForm = form.cloneNode(true);
     form.parentNode.replaceChild(newForm, form);
     
-    // Re-get necessary elements from our new form
+    // Get necessary elements from the new form
     const newSubmitBtn = newForm.querySelector('.submit-btn');
     const newBtnText = newSubmitBtn?.querySelector('.btn-text');
     const newSpinner = newSubmitBtn?.querySelector('.loading-spinner');
-    
-    // We need to reattach the link preview handler to the new input field
     const newLinkInput = newForm.querySelector('#groupLink');
+    
+    // Re-attach the link preview handler to the new input
     if (newLinkInput) {
-        function handleNewLinkInput() {
-            const url = newLinkInput.value ? newLinkInput.value.trim() : '';
+        const handleNewLinkInput = debounce(async function() {
+            const url = this.value ? this.value.trim() : '';
             const previewDiv = document.getElementById('preview');
-    
+            
             if (!previewDiv) return;
-    
+            
             if (!url) {
                 previewDiv.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
                 return;
             }
-    
+            
             if (url.includes('chat.whatsapp.com/')) {
-                console.log('Valid WhatsApp link detected in new form, showing preview');
-                showWhatsAppLinkPreview(url, previewDiv);
+                await fetchLinkPreview(url, previewDiv);
             } else {
                 previewDiv.innerHTML = '<p class="preview-tip">Enter a valid WhatsApp group link starting with https://chat.whatsapp.com/</p>';
             }
-        }
-    
+        }, 500);
+        
         newLinkInput.addEventListener('input', handleNewLinkInput);
-        newLinkInput.addEventListener('paste', () => setTimeout(handleNewLinkInput, 10));
+        newLinkInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                handleNewLinkInput.call(newLinkInput);
+            }, 100);
+        });
         
         // Initial check
-        setTimeout(handleNewLinkInput, 50);
+        if (newLinkInput.value) {
+            setTimeout(() => {
+                handleNewLinkInput.call(newLinkInput);
+            }, 500);
+        }
     }
     
-    // Track if submission is in progress
+    // Track if form submission is in progress
     let isSubmitting = false;
     
+    // Form submission handler
     newForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -801,20 +817,23 @@ if (form) {
         
         console.log('Form submission started');
         isSubmitting = true;
-
+        
         try {
             // Check if Firebase is initialized
             if (!window.db || !window.firebaseInitialized) {
                 throw new Error("Database connection not ready. Please refresh the page and try again.");
             }
             
+            // Update UI to show loading
             if (newBtnText && newSpinner) {
                 newBtnText.style.display = 'none';
                 newSpinner.style.display = 'inline-block';
             }
-            newSubmitBtn.disabled = true;
-
-            // Get form values from our new form
+            if (newSubmitBtn) {
+                newSubmitBtn.disabled = true;
+            }
+            
+            // Get form values
             const titleInput = newForm.querySelector('#groupTitle');
             const linkInput = newForm.querySelector('#groupLink');
             const categoryInput = newForm.querySelector('#groupCategory');
@@ -829,14 +848,24 @@ if (form) {
             
             console.log('Form data collected:', { title, link, category, country });
             
+            // Validate the link
             if (!isValidWhatsAppLink(link)) {
                 throw new Error('Please enter a valid WhatsApp group link starting with https://chat.whatsapp.com/');
             }
             
-            // Try to get the best image for this group (actual group image if possible)
-            const imageUrl = await getBestGroupImage(link);
-
-            // Prepare group data with the best available image
+            // If we don't have preview data yet, try to fetch it
+            if (!window.lastFetchedPreview) {
+                const previewDiv = document.getElementById('preview');
+                if (previewDiv) {
+                    await fetchLinkPreview(link, previewDiv);
+                }
+            }
+            
+            // Get the best image from our preview data
+            const imageUrl = getBestImageFromPreview(window.lastFetchedPreview);
+            console.log('Using image for submission:', imageUrl);
+            
+            // Prepare data for Firebase
             const groupData = {
                 title: title,
                 link: link,
@@ -845,29 +874,30 @@ if (form) {
                 description: description,
                 image: imageUrl,
                 timestamp: window.serverTimestamp(),
-                views: 0 // Initialize views counter
+                views: 0
             };
-
-            console.log('Adding group to database:', groupData);
-
-            // Now add the document
+            
+            // Add to Firebase
             const docRef = await window.db.collection("groups").add(groupData);
-            console.log("Document written with ID: ", docRef.id);
+            console.log("Document written with ID:", docRef.id);
             
             // Show success message
             showNotification('Group added successfully!', 'success');
-            newForm.reset();
             
-            // Reset the preview
+            // Reset form and preview
+            newForm.reset();
+            window.lastFetchedPreview = null;
+            
             const previewElement = document.getElementById('preview');
             if (previewElement) {
                 previewElement.innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
             }
-
+            
         } catch (error) {
             console.error("Form submission error:", error);
             showNotification(error.message, 'error');
         } finally {
+            // Reset UI
             if (newBtnText && newSpinner) {
                 newBtnText.style.display = 'block';
                 newSpinner.style.display = 'none';
