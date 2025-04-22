@@ -232,6 +232,147 @@
         </section>
     </main>
 
+
+<style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f2f2f2, #e0e0e0);
+      margin: 0;
+      padding: 2rem;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #222;
+    }
+    #inputText {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
+      margin-bottom: 20px;
+    }
+    .output-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .style-box {
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .style-box strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .copy-btn:hover {
+      background-color: #218838;
+    }
+  </style>
+
+  <h1>🖋️ Stylish & Colorful Text Generator 🔥</h1>
+  <input type="text" id="inputText" placeholder="Type something cool...">
+
+  <div class="output-container" id="output"></div>
+
+  <script>
+    const styles = {
+	blank: s => s.replace(/./g, '​'),  // Adds the "blank" style
+      bold: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D400 - 65 : 0x1D41A - 97))),
+      italic: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D434 - 65 : 0x1D44E - 97))),
+      monospace: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D670 - 65 : 0x1D68A - 97))),
+      bubble: s => s.replace(/[a-z]/gi, c => "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ"[c.toLowerCase().charCodeAt(0) - 97] || c),
+      tiny: s => s.replace(/[a-z]/gi, c => ({a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ғ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',q:'ǫ',r:'ʀ',s:'s',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',x:'x',y:'ʏ',z:'ᴢ'})[c.toLowerCase()] || c),
+      upside: s => s.split('').reverse().map(c => ({a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'ʃ',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z'})[c.toLowerCase()] || c).join(''),
+      circled: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x24D0 : 0x24B6) + (c.toLowerCase().charCodeAt(0) - 97))),
+      reversed: s => [...s].reverse().join(''),
+      spaced: s => s.split('').join(' '),
+      squared: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x1F130 : 0x1F110) + (c.toUpperCase().charCodeAt(0) - 65))),
+      slashy: s => s.split('').join('/'),
+      dotted: s => s.split('').join('・'),
+      hyphenated: s => s.split('').join('-'),
+      starry: s => s.split('').join('★'),
+      mirrored: s => [...s].map(c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20)).join(''),
+      fancyItalic: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D434 - 65 : 0x1D44E - 97))),
+      parenthesis: s => s.split('').map(c => `(${c})`).join(''),
+      bracketed: s => s.split('').map(c => `[${c}]`).join(''),
+      underlined: s => s.split('').join('̲'),
+      doubleUnderline: s => s.split('').join('̳'),
+      hearted: s => s.split('').join('❤'),
+      rainbow: s => s.split('').map((c, i) => `<span style="color:hsl(${i*30},100%,50%)">${c}</span>`).join(''),
+      randomCaps: s => s.split('').map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join(''),
+      fire: s => s.split('').join('🔥'),
+      ice: s => s.split('').join('❄'),
+      emoji: s => s.replace(/[a-z]/gi, c => ({a:'🍎',b:'🍌',c:'🌶',d:'🐬',e:'🦅',f:'🐸',g:'🍇',h:'🏠',i:'🍦',j:'🕹',k:'🔑',l:'🦁',m:'🌝',n:'🎶',o:'🐙',p:'🥞',q:'👸',r:'🌈',s:'🐍',t:'🌴',u:'☂',v:'🎻',w:'🍉',x:'❌',y:'🛳',z:'⚡'})[c.toLowerCase()] || c),
+      sparkle: s => s.split('').join('✨'),
+      ghost: s => s.split('').join('👻'),
+      magic: s => s.split('').join('🪄'),
+      wave: s => s.split('').join('🌊'),
+      blue: s => `<span style='color:blue'>${s}</span>`,
+      red: s => `<span style='color:red'>${s}</span>`,
+      green: s => `<span style='color:green'>${s}</span>`,
+      yellow: s => `<span style='color:yellow'>${s}</span>`,
+      brown: s => `<span style='color:brown'>${s}</span>`,
+      pink: s => `<span style='color:pink'>${s}</span>`,
+ unicorn: s => s.split('').join('🦄'),
+      glitch: s => s.split('').join('̷'),
+      vaporwave: s => s.replace(/[A-Za-z]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFF00 - 0x20)),
+      circledStar: s => s.split('').join('✪'),
+      flowers: s => s.split('').join('🌸'),
+      diamonds: s => s.split('').join('💎'),
+      thunder: s => s.split('').join('⚡'),
+      alien: s => s.split('').join('👽'),
+      skull: s => s.split('').join('💀'),
+      kiss: s => s.split('').join('💋'),
+      clover: s => s.split('').join('🍀'),
+      moon: s => s.split('').join('🌙'),
+      sun: s => s.split('').join('☀'),
+      firework: s => s.split('').join('🎆'),
+      star: s => s.split('').join('⭐'),
+      dizzy: s => s.split('').join('💫'),
+      lol: s => s.split('').join('😂'),
+      angel: s => s.split('').join('😇'),
+      panda: s => s.split('').join('🐼')
+    };
+
+    const input = document.getElementById("inputText");
+    const output = document.getElementById("output");
+
+    input.addEventListener("input", () => {
+      const val = input.value;
+      output.innerHTML = "";
+
+      Object.entries(styles).forEach(([name, styleFn]) => {
+        const styled = styleFn(val);
+        const box = document.createElement("div");
+        box.className = "style-box";
+        box.innerHTML = `
+          <strong>${name.toUpperCase()}</strong>
+          <div>${styled}</div>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText(\`${styled.replace(/<[^>]*>/g, '')}\`)\n.then(() => alert('Copied!'))">Copy</button>
+        `;
+        output.appendChild(box);
+      });
+    });
+  </script>
+
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
