@@ -231,17 +231,22 @@
             </div>
         </section>
 
-
+<div class="stylish-text-container">
   <h1 class="stylish-text-h1">🖋️ Stylish & Colorful Text Generator 🔥</h1>
   <input type="text" id="inputText" placeholder="Type something cool...">
 
   <div class="output-container" id="output"></div>
+</div>
     </main>
 
 
 
 <style>
-
+  .stylish-text-container{
+	display: flex;
+justify-content:center;
+flex-direction:column;
+}
 	.stylish-text-h1 {
       text-align: center;
       font-size: 2rem;
@@ -249,7 +254,8 @@
       color: #222;
     }
     #inputText {
-      width: 100%;
+      width: 80%;
+      margin: auto;
       padding: 12px;
       font-size: 18px;
       border-radius: 10px;
@@ -260,6 +266,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 16px;
+padding:15px;
 
     }
     .style-box {
