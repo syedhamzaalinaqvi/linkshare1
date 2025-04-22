@@ -304,6 +304,8 @@ padding:15px;
     const styles = {
 	/*blank: s => s.replace(/./g, '​'),  // Adds the "blank" style*/
 blank: s => '\u3164\u200E\u200D', // Combo of 3 invisible characters
+blankfull: s => s.replace(/\S/g, 'ㅤ‎‍'), // Each word replaced with invisible char combo
+
 
 
 
