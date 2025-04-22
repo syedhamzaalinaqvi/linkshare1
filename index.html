@@ -306,7 +306,7 @@ padding:15px;
 blank: s => '\u3164\u200E\u200D', // Combo of 3 invisible characters
 Fullblank: s => s.replace(/\S/g, 'ㅤ‎‍'), // Each word replaced with invisible char combo
 
-pseudoColor: s => s.replace(/\S/g, '🟥🟩🟦🟧🟨'), // Adds fake color using emojis
+
 
 
 
@@ -340,6 +340,7 @@ hollowText: s => `<span style="color: White; -webkit-background-clip: text; back
       fire: s => s.split('').join('🔥'),
       ice: s => s.split('').join('❄'),
       emoji: s => s.replace(/[a-z]/gi, c => ({a:'🍎',b:'🍌',c:'🌶',d:'🐬',e:'🦅',f:'🐸',g:'🍇',h:'🏠',i:'🍦',j:'🕹',k:'🔑',l:'🦁',m:'🌝',n:'🎶',o:'🐙',p:'🥞',q:'👸',r:'🌈',s:'🐍',t:'🌴',u:'☂',v:'🎻',w:'🍉',x:'❌',y:'🛳',z:'⚡'})[c.toLowerCase()] || c),
+pseudoColor: s => s.replace(/\S/g, '🟥🟩🟦🟧🟨'), // Adds fake color using emojis
       sparkle: s => s.split('').join('✨'),
       ghost: s => s.split('').join('👻'),
       magic: s => s.split('').join('🪄'),
