@@ -303,7 +303,8 @@ padding:15px;
   <script>
     const styles = {
 	/*blank: s => s.replace(/./g, '​'),  // Adds the "blank" style*/
-	blank: s => '⠀',  // U+2800 Braille blank
+blank: s => '\u3164\u200E\u200D', // Combo of 3 invisible characters
+
 
 
       bold: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D400 - 65 : 0x1D41A - 97))),
