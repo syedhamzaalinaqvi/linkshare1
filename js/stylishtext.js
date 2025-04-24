@@ -1,4 +1,3 @@
-
 //stylish Text Generator tool js ========================
 const inputTextGenerator = document.getElementById("inputTextGenerator");
 const outputTextGenerator = document.getElementById("output");
@@ -155,8 +154,11 @@ function generateStylishText(showAll = false) {
     }
 }
 
-inputTextGenerator.addEventListener("inputTextGenerator", () => generateStylishText(false));
-document.getElementById("generateBtn").addEventListener("click", () => generateStylishText(false));
+// Fix input event listener (remove duplicate "input" text)
+inputTextGenerator.addEventListener("input", () => generateStylishText(false));
+
+// Remove generateBtn event listener since button doesn't exist in HTML
+// document.getElementById("generateBtn").addEventListener("click", () => generateStylishText(false));
 
 // Add CSS styles
 const style = document.createElement('style');
