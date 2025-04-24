@@ -112,7 +112,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-function generateStylishText(showAll = false) {
+function generateStylishText(showAll = false, fullPageUrl = null) {
     const txt = inputTextGenerator.value.trim();
     if (!txt) {
         outputTextGenerator.innerHTML = `
@@ -135,13 +135,23 @@ function generateStylishText(showAll = false) {
         .join('');
 
     if (!showAll && styleEntries.length > 6) {
-        html += `
-            <div style="grid-column: 1 / -1; text-align: center;">
-                <button id="showMoreBtn" class="show-more-btn">
-                    Show More Styles (${styleEntries.length - 6} more)
-                </button>
-            </div>
-        `;
+        if (fullPageUrl) {
+            html += `
+                <div style="grid-column: 1 / -1; text-align: center;">
+                    <a href="${fullPageUrl}" class="show-more-btn" style="text-decoration: none;">
+                        Try More Styles (${styleEntries.length - 6} more) →
+                    </a>
+                </div>
+            `;
+        } else {
+            html += `
+                <div style="grid-column: 1 / -1; text-align: center;">
+                    <button id="showMoreBtn" class="show-more-btn">
+                        Show More Styles (${styleEntries.length - 6} more)
+                    </button>
+                </div>
+            `;
+        }
     }
     
     outputTextGenerator.innerHTML = html;
@@ -154,11 +164,11 @@ function generateStylishText(showAll = false) {
     }
 }
 
-// Fix input event listener (remove duplicate "input" text)
-inputTextGenerator.addEventListener("input", () => generateStylishText(false));
-
-// Remove generateBtn event listener since button doesn't exist in HTML
-// document.getElementById("generateBtn").addEventListener("click", () => generateStylishText(false));
+// Update the event listener to include URL on homepage
+inputTextGenerator.addEventListener("input", () => {
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.html';
+    generateStylishText(false, isHomePage ? '/stylish-text-generator' : null);
+});
 
 // Add CSS styles
 const style = document.createElement('style');
