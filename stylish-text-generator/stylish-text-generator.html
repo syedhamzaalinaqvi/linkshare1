@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
     <meta name="description" content="Stylish Text Generator for LinkShare - Learn Understand How to Generate Stylish Text Name and Share on WhatsApp and Other Social Media using LinkShare LinkShare for WhatsApp group sharing.">
     <meta name="keywords" content="LinkShare Stylish Text Generator, Stylish Name Generator for WhatsApp groups, Cool text Generator, Stylish Message Generator , Stylish text for group sharing">
     <meta name="author" content="LinkShare">
@@ -26,7 +26,7 @@
       padding: 20px;
       background: white;
       border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      /*box-shadow: 0 20px 40px rgba(0,0,0,0.1);*/
       text-align: center;
     }
   
@@ -34,7 +34,7 @@
       font-size: 2.5rem;
       color: #3f3f3f;
       margin-bottom: 25px;
-      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      background: linear-gradient(to right, #128C7E, #25D366);
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -89,7 +89,7 @@
       position: absolute;
       top: 15px;
       right: 15px;
-      background: #007bff;
+      background: linear-gradient(45deg, #128C7E, #25D366);
       color: white;
       border: none;
       border-radius: 6px;
@@ -100,7 +100,7 @@
     }
   
     .copy-btn:hover {
-      background-color: #0056b3;
+      background: linear-gradient(45deg, #25D366, #128C7E);
     }
 
   .generate-btn {
@@ -122,6 +122,129 @@
     background: linear-gradient(135deg, #f857a6, #ff5858);
   }
 
+  .show-more-btn {
+    width: max-content;
+    margin: 20px auto;
+    padding: 10px 25px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #7873f5, #ff6ec4);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+    display: none;
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin: 40px auto;
+    width: fit-content;
+    min-width: 200px;
+    text-align: center;
+}
+
+.show-more-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #6863e5, #ef5eb4);
+}
+
+.page-header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 2.8rem;
+    background: linear-gradient(45deg, #128C7E, #25D366);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 15px;
+}
+
+.input-container {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 40px;
+}
+
+#inputText {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 15px 25px;
+    border-radius: 15px;
+    border: 2px solid transparent;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 0.5px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.show-more-btn {
+    background: linear-gradient(45deg, #128C7E, #25D366);
+    width: auto;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: block;
+    margin: 40px auto;
+}
+
+.show-more-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(45deg, #25D366, #128C7E);
+}
+
+.show-more-btn:active {
+    transform: translateY(1px);
+}
+
+.show-more-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s;
+}
+
+.show-more-btn:active::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+}
+
+.copy-btn {
+    background: linear-gradient(45deg, #128C7E, #25D366);
+    padding: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: linear-gradient(45deg, #25D366, #128C7E);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,65,108,0.3);
+}
+
+.copy-btn:active {
+    transform: translateY(0);
+}
+
 </style>
 
 <body>
@@ -136,10 +259,15 @@
         <ul class="nav-links">
             <li><a href="https://www.linkshare.online/">Home</a></li>
             <li><a href="/add-group">Add Group</a></li>
-            <li><a href="/Psl-live">🔴PSL Live</a></li>
+            <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+                </ul>
+            </li>
             <li class="nav-dropdown">
                 <a href="#" class="dropbtn">Blog ▾</a>
                 <ul class="nav-dropdown-content">
+                    <li><a href="/Psl-live">🔴PSL Live</a></li>
                     <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
                     <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
                     <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
@@ -154,20 +282,22 @@
     </nav>
 
     <div class="main-container">
-        <div class="page-header">
-            <h1>Stylish Text Generator</h1>
-            <p>Generate and Share Stylish Text for WhatsApp and Other Social Media</p>
-        </div>
-        <div class="content-section">
-            <div class="stylish-text-container"></div>
-                <h1 class="stylish-text-h1">🖋️ Stylish & Colorful Text Generator 🔥</h1>
+    <div class="page-header">
+        <h1>Generate Stylish Text</h1>
+        <p>Create and Share Beautiful Text Styles for WhatsApp and Social Media</p>
+    </div>
+    <div class="content-section">
+        <div class="stylish-text-container">
+           <h1> 🖋️ <span class="stylish-text-h1">Stylish Text Generator </span>🔥</h1>
+            <div class="input-container">
                 <input type="text" id="inputText" placeholder="Type something cool...">
-                <button id="generateBtn" class="generate-btn">Generate Stylish Text</button>
-                <p>✨ Transform your text into various styles and colors! ✨</p>
+            </div>
+            
+            <p>✨ Transform your text into various styles and colors! ✨</p>
                 <p>💡 Click on the "Copy" button to copy the text to your clipboard! 💡</p>
                 <p>🎨 Explore different styles like Strikethrough, Fancy Script, Glitch, Small Caps, Bold Box, Symbolic, Crazy Fire, and more! 🎨</p>
                 <div class="output-container" id="output"></div>
-            
+            </div>
 
             <div class="instructions">
                 <h2>How to Use</h2>
@@ -183,10 +313,10 @@
                 <h2>Note</h2>
                 <p>This tool is designed to help you create stylish text for WhatsApp groups and other social media platforms. It is not affiliated with WhatsApp or any other social media service.</p>
                 <p>For any issues or feedback, please contact us through our <a href="/contact">Contact Page</a>.</p>
-            </div>
+            
         </div>
         </div>
-    </div>
+    
 
     <footer class="footer">
         <div class="footer-content">
@@ -215,140 +345,8 @@
     </button>
 
     <script>
-        const input = document.getElementById("inputText");
-        const output = document.getElementById("output");
 
-        // Define character maps
-        const medievalMap = {
-            'a': '𝖆', 'b': '𝖇', 'c': '𝖈', 'd': '𝖉', 'e': '𝖊', 'f': '𝖋', 'g': '𝖌', 'h': '𝖍',
-            'i': '𝖎', 'j': '𝖏', 'k': '𝖐', 'l': '𝖑', 'm': '𝖒', 'n': '𝖓', 'o': '𝖔', 'p': '𝖕',
-            'q': '𝖖', 'r': '𝖗', 's': '𝖘', 't': '𝖙', 'u': '𝖚', 'v': '𝖛', 'w': '𝖜', 'x': '𝖝',
-            'y': '𝖞', 'z': '𝖟'
-        };
-
-        const fancyCharMap = {
-            'a': '𝐚', 'b': '𝐛', 'c': '𝐜', 'd': '𝐝', 'e': '𝐞', 'f': '𝐟', 'g': '𝐠', 'h': '𝐡', 'i': '𝐢',
-            'j': '𝐣', 'k': '𝐤', 'l': '𝐥', 'm': '𝐦', 'n': '𝐧', 'o': '𝐨', 'p': '𝐩', 'q': '𝐪', 'r': '𝐫',
-            's': '𝐬', 't': '𝐭', 'u': '𝐮', 'v': '𝐯', 'w': '𝐰', 'x': '𝐱', 'y': '𝐲', 'z': '𝐳'
-        };
-
-        const bubbleMap = {
-            'a': 'ⓐ', 'b': 'ⓑ', 'c': 'ⓒ', 'd': 'ⓓ', 'e': 'ⓔ', 'f': 'ⓕ', 'g': 'ⓖ', 'h': 'ⓗ',
-            'i': 'ⓘ', 'j': 'ⓙ', 'k': 'ⓚ', 'l': 'ⓛ', 'm': 'ⓜ', 'n': 'ⓝ', 'o': 'ⓞ', 'p': 'ⓟ',
-            'q': 'ⓠ', 'r': 'ⓡ', 's': 'ⓢ', 't': 'ⓣ', 'u': 'ⓤ', 'v': 'ⓥ', 'w': 'ⓦ', 'x': 'ⓧ',
-            'y': 'ⓨ', 'z': 'ⓩ'
-        };
-
-        const styles = {
-            aesthetic: s => s.split('').join(' '),
-            vaporwave: s => s.split('').map(c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20)).join(''),
-            medieval: s => s.replace(/[A-Za-z]/g, c => medievalMap[c.toLowerCase()] || c),
-            bubbles: s => s.replace(/[A-Za-z]/g, c => bubbleMap[c.toLowerCase()] || c),
-            fancy: s => s.replace(/[A-Za-z]/g, c => fancyCharMap[c.toLowerCase()] || c),
-            hearts: s => `❤️${s.split('').join('❤️')}❤️`,
-            sparkles: s => `✨${s.split('').join('✨')}✨`,
-            fire: s => `🔥${s.split('').join('🔥')}🔥`,
-            stars: s => `⭐${s.split('').join('⭐')}⭐`,
-            waves: s => s.split('').map(c => c + '〰️').join(''),
-            reverse: s => s.split('').reverse().join(''),
-            neonGlow: s => `<span style="text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6, 0 0 25px #0073e6">${s}</span>`,
-            glitch: s => s.split('').map(c => `${c}҉`).join(''),
-            gaming1: s => `꧁ ${s} ꧂`,
-            gaming2: s => `▄︻デ ${s} ══━一`,
-            gaming3: s => `★彡 ${s} 彡★`,
-            matrix: s => `█▓▒░⡷⠂${s}⠐⢾░▒▓█`,
-            diamonds: s => `💎${s.split('').join('💎')}💎`,
-            rainbow: s => s.split('').map((c, i) => 
-                `<span style="color: hsl(${Math.floor(i * 360 / s.length)}, 100%, 50%)">${c}</span>`
-            ).join(''),
-            doubleStruck: s => s.replace(/[A-Za-z]/g, c => String.fromCharCode(c.charCodeAt(0) + 120205)),
-            cursive: s => s.replace(/[A-Za-z]/g, c => String.fromCharCode(c.charCodeAt(0) + 119951)),
-            circled: s => s.replace(/[A-Za-z]/g, c => String.fromCharCode((c.toLowerCase().charCodeAt(0) - 97) + 0x24D0)),
-            squares: s => s.replace(/[A-Za-z]/g, c => String.fromCharCode((c.toLowerCase().charCodeAt(0) - 97) + 0x1F130))
-        };
-
-        function generateBox(title, content) {
-            return `
-                <div class="style-box">
-                    <strong>${title}</strong>
-                    <p class="stylized-text">${content}</p>
-                    <button class="copy-btn" onclick="copyToClipboard('${content.replace(/'/g, "\\'")}')">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                </div>
-            `;
-        }
-
-        function copyToClipboard(text) {
-            const plainText = text.replace(/<[^>]*>/g, '');
-            
-            navigator.clipboard.writeText(plainText)
-                .then(() => {
-                    const notification = document.createElement('div');
-                    notification.className = 'copy-notification';
-                    notification.textContent = '✓ Copied!';
-                    document.body.appendChild(notification);
-                    setTimeout(() => notification.remove(), 2000);
-                })
-                .catch(err => {
-                    console.error("Failed to copy:", err);
-                    alert("Failed to copy text");
-                });
-        }
-
-        function generateStylishText() {
-            const txt = input.value.trim();
-            if (!txt) {
-                output.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-circle"></i>
-                        Please enter some text first
-                    </div>
-                `;
-                return;
-            }
-            
-            output.innerHTML = Object.entries(styles)
-                .map(([name, styleFn]) => generateBox(
-                    name.charAt(0).toUpperCase() + name.slice(1),
-                    styleFn(txt)
-                ))
-                .join('');
-        }
-
-        input.addEventListener("input", generateStylishText);
-        document.getElementById("generateBtn").addEventListener("click", generateStylishText);
-
-        // Add CSS styles
-        const style = document.createElement('style');
-        style.textContent = `
-            .copy-notification {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: #4CAF50;
-                color: white;
-                padding: 10px 20px;
-                border-radius: 5px;
-                animation: slideIn 0.3s ease-out;
-            }
-
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            @keyframes slideIn {
-                from { transform: translateX(100%); }
-                to { transform: translateX(0); }
-            }
-
-            .style-box:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-            }
-        `;
-        document.head.appendChild(style);
     </script>
+    <script src="../js/main.js"></script>
 </body>
 </html>
