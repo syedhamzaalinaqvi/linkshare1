@@ -948,8 +948,8 @@ function updateGroupViews(groupId) {
 // Make updateGroupViews available globally
 window.updateGroupViews = updateGroupViews;
 
-//stylish Text Generator tool js 
-const input = document.getElementById("inputText");
+//stylish Text Generator tool js ========================
+const input = document.getElementById("inputTextGenerator");
 const output = document.getElementById("output");
 
 // Define character maps
