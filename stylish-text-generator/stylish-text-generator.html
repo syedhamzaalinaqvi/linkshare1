@@ -245,6 +245,60 @@
     transform: translateY(0);
 }
 
+@media screen and (max-width: 768px) {
+    .stylish-text-h1 {
+        font-size: 1.8rem;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .navbar {
+        padding: 1rem;
+    }
+
+    .nav-links {
+        display: none;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nav-links.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .nav-toggle {
+        display: block;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: left;
+        padding: 10px 20px;
+    }
+
+    .nav-dropdown-content {
+        position: static;
+        display: none;
+        box-shadow: none;
+        padding-left: 20px;
+    }
+
+    .nav-dropdown.active .nav-dropdown-content {
+        display: block;
+    }
+}
+
 </style>
 
 <body>
@@ -289,7 +343,7 @@
     <div class="content-section">
         <div class="stylish-text-container">
            <h1> 🖋️ <span class="stylish-text-h1">Stylish Text Generator </span>🔥</h1>
-            <div class="input-container">
+            <div class="input-container"></div>
                 <input type="text" id="inputTextGenerator" placeholder="Type something cool...">
             </div>
             
@@ -346,5 +400,23 @@
 
     <script src="../js/stylishtext.js"></script>
     <script src="../js/main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        const dropdowns = document.querySelectorAll('.nav-dropdown');
+    
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    
+        dropdowns.forEach(dropdown => {
+            dropdown.addEventListener('click', (e) => {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+            });
+        });
+    });
+    </script>
 </body>
 </html>
