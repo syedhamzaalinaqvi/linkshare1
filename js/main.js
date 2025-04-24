@@ -949,7 +949,7 @@ function updateGroupViews(groupId) {
 window.updateGroupViews = updateGroupViews;
 
 //stylish Text Generator tool js ========================
-const input = document.getElementById("inputTextGenerator");
+const inputTextGenerator = document.getElementById("inputTextGenerator");
 const output = document.getElementById("output");
 
 // Define character maps
@@ -1063,7 +1063,7 @@ document.addEventListener('click', function(e) {
 });
 
 function generateStylishText(showAll = false) {
-    const txt = input.value.trim();
+    const txt = inputTextGenerator.value.trim();
     if (!txt) {
         output.innerHTML = `
             <div class="error-message">
@@ -1104,7 +1104,7 @@ function generateStylishText(showAll = false) {
     }
 }
 
-input.addEventListener("input", () => generateStylishText(false));
+inputTextGenerator.addEventListener("inputTextGenerator", () => generateStylishText(false));
 document.getElementById("generateBtn").addEventListener("click", () => generateStylishText(false));
 
 // Add CSS styles
