@@ -950,7 +950,7 @@ window.updateGroupViews = updateGroupViews;
 
 //stylish Text Generator tool js ========================
 const inputTextGenerator = document.getElementById("inputTextGenerator");
-const output = document.getElementById("output");
+const outputTextGenerator = document.getElementById("output");
 
 // Define character maps
 const medievalMap = {
@@ -1065,7 +1065,7 @@ document.addEventListener('click', function(e) {
 function generateStylishText(showAll = false) {
     const txt = inputTextGenerator.value.trim();
     if (!txt) {
-        output.innerHTML = `
+        outputTextGenerator.innerHTML = `
             <div class="error-message">
                 <i class="fas fa-exclamation-circle"></i>
                 Please enter some text first
@@ -1094,7 +1094,7 @@ function generateStylishText(showAll = false) {
         `;
     }
     
-    output.innerHTML = html;
+    outputTextGenerator.innerHTML = html;
 
     // Add event listener for show more button
     const showMoreBtn = document.getElementById('showMoreBtn');
