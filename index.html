@@ -230,19 +230,10 @@
                 </button>
             </div>
         </section>
-
-<div class="stylish-text-container">
-  <h1 class="stylish-text-h1">🖋️ Stylish & Colorful Text Generator 🔥</h1>
-  <input type="text" id="inputText" placeholder="Type something cool...">
-
-  <div class="output-container" id="output"></div>
-</div>
     </main>
-
-
-
+      
 <style>
-  .stylish-text-container{
+  /*.stylish-text-container{
 	display: flex;
 justify-content:center;
 flex-direction:column;
@@ -276,8 +267,8 @@ padding:15px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       position: relative;
 
- overflow-wrap: break-word; /* ✅ modern, works great */
-  word-break: break-word;    /* ✅ fallback for extra safety */
+ overflow-wrap: break-word;
+  word-break: break-word;    
     }
     .style-box strong {
       display: block;
@@ -296,20 +287,17 @@ padding:15px;
     }
     .copy-btn:hover {
       background-color: #218838;
-    }
+    }*/
   </style>
 
 
   <script>
-    const styles = {
-	/*blank: s => s.replace(/./g, '​'),  // Adds the "blank" style*/
-blank: s => '\u3164\u200E\u200D', // Combo of 3 invisible characters
-Fullblank: s => s.replace(/\S/g, 'ㅤ‎‍'), // Each word replaced with invisible char combo
-
-
-
-
-
+    
+//OLD STYLE WORKING OFFICIAL
+  /*  const styles = {
+	
+      blank: s => '\u3164\u200E\u200D', // Combo of 3 invisible characters
+      Fullblank: s => s.replace(/\S/g, 'ㅤ‎‍'), // Each word replaced with invisible char combo
       bold: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D400 - 65 : 0x1D41A - 97))),
       italic: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D434 - 65 : 0x1D44E - 97))),
       monospace: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D670 - 65 : 0x1D68A - 97))),
@@ -320,8 +308,7 @@ Fullblank: s => s.replace(/\S/g, 'ㅤ‎‍'), // Each word replaced with invisi
       reversed: s => [...s].reverse().join(''),
       rainbow: s => s.split('').map((c, i) => `<span style="color:hsl(${i*30},100%,50%)">${c}</span>`).join(''),
       shadowText: s => `<span style="text-shadow: 3px 3px 5px rgba(0,0,0,0.5);">${s}</span>`,
-hollowText: s => `<span style="color: White; -webkit-background-clip: text; background: linear-gradient(45deg, #ff6ec7, #ff8a00); border: 2px solid #ff00ff; padding: 0 5px;">${s}</span>`,
-
+      hollowText: s => `<span style="color: White; -webkit-background-clip: text; background: linear-gradient(45deg, #ff6ec7, #ff8a00); border: 2px solid #ff00ff; padding: 0 5px;">${s}</span>`,
       spaced: s => s.split('').join(' '),
       squared: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x1F130 : 0x1F110) + (c.toUpperCase().charCodeAt(0) - 65))),
       slashy: s => s.split('').join('/'),
@@ -390,8 +377,394 @@ pseudoColor: s => s.replace(/\S/g, '🟥🟩🟦🟧🟨'), // Adds fake color u
         `;
         output.appendChild(box);
       });
-    });
+    });*/
   </script>
+
+
+  <style>
+    
+    .stylish-text-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+  
+    .stylish-text-h1 {
+      font-size: 2.5rem;
+      color: #3f3f3f;
+      margin-bottom: 25px;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    #inputText {
+      width: 80%;
+      padding: 14px 20px;
+      font-size: 18px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      margin-bottom: 30px;
+      transition: 0.3s;
+    }
+  
+    #inputText:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    }
+  
+    .output-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+  
+    .style-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+      position: relative;
+      transition: transform 0.3s ease;
+      text-align: left;
+      word-break: break-word;
+    }
+  
+    .style-box:hover {
+      transform: translateY(-5px);
+    }
+  
+    .style-box strong {
+      font-size: 1.1rem;
+      color: #555;
+      display: block;
+      margin-bottom: 10px;
+    }
+  
+    .copy-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+  
+    .copy-btn:hover {
+      background-color: #0056b3;
+    }
+
+  .generate-btn {
+    width: max-content;
+    margin: 0 auto 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #ff6ec4, #7873f5);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+  }
+
+  .generate-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #f857a6, #ff5858);
+  }
+
+  </style>
+
+<div class="stylish-text-container">
+    <h1 class="stylish-text-h1">🖋️ Stylish & Colorful Text Generator 🔥</h1>
+    <input type="text" id="inputText" placeholder="Type something cool...">
+    <button id="generateBtn" class="generate-btn">Generate Stylish Text</button>
+    <p>✨ Transform your text into various styles and colors! ✨</p>
+    <p>💡 Click on the "Copy" button to copy the text to your clipboard! 💡</p>
+    <p>🎨 Explore different styles like Strikethrough, Fancy Script, Glitch, Small Caps, Bold Box, Symbolic, Crazy Fire, and more! 🎨</p>
+    <div class="output-container" id="output"></div>
+  </div>
+  
+  <script>
+    
+  const input = document.getElementById("inputText");
+const output = document.getElementById("output");
+
+const styles = {
+	
+    blank: s => '\u3164\u200E\u200D', // Combo of 3 invisible characters
+    Fullblank: s => s.replace(/\S/g, 'ㅤ‎‍'), // Each word replaced with invisible char combo
+    bold: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D400 - 65 : 0x1D41A - 97))),
+    italic: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D434 - 65 : 0x1D44E - 97))),
+    monospace: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D670 - 65 : 0x1D68A - 97))),
+    bubble: s => s.replace(/[a-z]/gi, c => "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ"[c.toLowerCase().charCodeAt(0) - 97] || c),
+    tiny: s => s.replace(/[a-z]/gi, c => ({a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ғ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',q:'ǫ',r:'ʀ',s:'s',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',x:'x',y:'ʏ',z:'ᴢ'})[c.toLowerCase()] || c),
+    upside: s => s.split('').reverse().map(c => ({a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'ʃ',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z'})[c.toLowerCase()] || c).join(''),
+    circled: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x24D0 : 0x24B6) + (c.toLowerCase().charCodeAt(0) - 97))),
+    reversed: s => [...s].reverse().join(''),
+    rainbow: s => s.split('').map((c, i) => `<span style="color:hsl(${i*30},100%,50%)">${c}</span>`).join(''),
+    shadowText: s => `<span style="text-shadow: 3px 3px 5px rgba(0,0,0,0.5);">${s}</span>`,
+    hollowText: s => `<span style="color: White; -webkit-background-clip: text; background: linear-gradient(45deg, #ff6ec7, #ff8a00); border: 2px solid #ff00ff; padding: 0 5px;">${s}</span>`,
+    spaced: s => s.split('').join(' '),
+    squared: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x1F130 : 0x1F110) + (c.toUpperCase().charCodeAt(0) - 65))),
+    slashy: s => s.split('').join('/'),
+    dotted: s => s.split('').join('・'),
+    hyphenated: s => s.split('').join('-'),
+    starry: s => s.split('').join('★'),
+    mirrored: s => [...s].map(c => String.fromCharCode(0xFF00 + c.charCodeAt(0) - 0x20)).join(''),
+    fancyItalic: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D434 - 65 : 0x1D44E - 97))),
+    parenthesis: s => s.split('').map(c => `(${c})`).join(''),
+    bracketed: s => s.split('').map(c => `[${c}]`).join(''),
+    underlined: s => s.split('').join('̲'),
+    doubleUnderline: s => s.split('').join('̳'),
+    hearted: s => s.split('').join('❤'),
+
+    randomCaps: s => s.split('').map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join(''),
+    fire: s => s.split('').join('🔥'),
+    ice: s => s.split('').join('❄'),
+    emoji: s => s.replace(/[a-z]/gi, c => ({a:'🍎',b:'🍌',c:'🌶',d:'🐬',e:'🦅',f:'🐸',g:'🍇',h:'🏠',i:'🍦',j:'🕹',k:'🔑',l:'🦁',m:'🌝',n:'🎶',o:'🐙',p:'🥞',q:'👸',r:'🌈',s:'🐍',t:'🌴',u:'☂',v:'🎻',w:'🍉',x:'❌',y:'🛳',z:'⚡'})[c.toLowerCase()] || c),
+pseudoColor: s => s.replace(/\S/g, '🟥🟩🟦🟧🟨'), // Adds fake color using emojis
+    sparkle: s => s.split('').join('✨'),
+    ghost: s => s.split('').join('👻'),
+    magic: s => s.split('').join('🪄'),
+    wave: s => s.split('').join('🌊'),
+    blue: s => `<span style='color:blue'>${s}</span>`,
+    red: s => `<span style='color:red'>${s}</span>`,
+    green: s => `<span style='color:green'>${s}</span>`,
+    yellow: s => `<span style='color:yellow'>${s}</span>`,
+    brown: s => `<span style='color:brown'>${s}</span>`,
+    pink: s => `<span style='color:pink'>${s}</span>`,
+unicorn: s => s.split('').join('🦄'),
+    glitch: s => s.split('').join('̷'),
+    vaporwave: s => s.replace(/[A-Za-z]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xFF00 - 0x20)),
+    circledStar: s => s.split('').join('✪'),
+    flowers: s => s.split('').join('🌸'),
+    diamonds: s => s.split('').join('💎'),
+    thunder: s => s.split('').join('⚡'),
+    alien: s => s.split('').join('👽'),
+    skull: s => s.split('').join('💀'),
+    kiss: s => s.split('').join('💋'),
+    clover: s => s.split('').join('🍀'),
+    moon: s => s.split('').join('🌙'),
+    sun: s => s.split('').join('☀'),
+    firework: s => s.split('').join('🎆'),
+    star: s => s.split('').join('⭐'),
+    dizzy: s => s.split('').join('💫'),
+    lol: s => s.split('').join('😂'),
+    angel: s => s.split('').join('😇'),
+    panda: s => s.split('').join('🐼')
+  };
+
+  input.addEventListener("input", () => {
+    const val = input.value;
+    output.innerHTML = "";
+
+    Object.entries(styles).forEach(([name, styleFn]) => {
+      const styled = styleFn(val);
+      const box = document.createElement("div");
+      box.className = "style-box";
+      box.innerHTML = `
+        <strong>${name.toUpperCase()}</strong>
+        <div>${styled}</div>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText(\`${styled.replace(/<[^>]*>/g, '')}\`)\n.then(() => alert('Copied!'))">Copy</button>
+      `;
+      output.appendChild(box);
+    });
+  });
+
+document.getElementById("generateBtn").addEventListener("click", () => {
+  const txt = input.value.trim();
+  if (!txt) {
+    output.innerHTML = "<p style='color: red;'>Please enter some text first.</p>";
+    return;
+  }
+
+  output.innerHTML = `
+  ${generateBox("Strikethrough", stylizeStrikethrough(txt))}
+  ${generateBox("Fancy Script", stylizeScript(txt))}
+  ${generateBox("Glitch", stylizeZalgo(txt))}
+  ${generateBox("Small Caps", stylizeSmall(txt))}
+  ${generateBox("Bold Box", stylizeBox(txt))}
+  ${stylizeSymbolic(txt).map((variant, idx) => generateBox(`Symbolic ${idx + 1}`, variant)).join('')}
+
+  ${generateBox("Crazy Fire", `✿.｡.:* ☆:**:. ${stylizeMixed(txt)} .:**:.☆*.:｡.✿`)}
+`;
+
+});
+
+function generateBox(title, content) {
+  const encodedContent = content.replace(/"/g, '&quot;');
+  return `
+    <div class="style-box">
+      <strong>${title}:</strong>
+      <p class="stylized-text">${content}</p>
+      <button class="copy-btn" onclick="copyToClipboard('${encodedContent}')">Copy</button>
+    </div>
+  `;
+}
+
+function stylizeStrikethrough(str) {
+  return str.split('').map(c => c + '\u0336').join('');
+}
+
+function stylizeScript(str) {
+  const a = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const b = "𝒜𝐵𝒞𝒟𝐸𝐹𝒢𝐻𝐼𝒥𝒦𝐿𝑀𝒩𝒪𝒫𝒬𝑅𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵" + 
+            "𝒶𝒷𝒸𝒹𝑒𝒻𝑔𝒽𝒾𝒿𝓀𝓁𝓂𝓃𝑜𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏";
+  return str.split('').map(c => {
+    const i = a.indexOf(c);
+    return i > -1 ? b[i] : c;
+  }).join('');
+}
+
+function stylizeSmall(str) {
+  const a = "abcdefghijklmnopqrstuvwxyz";
+  const b = "ᵃᵇᶜᵈᵉᶠᵍʰᶦʲᵏˡᵐⁿᵒᵖᑫʳˢᵗᵘᵛʷˣʸᶻ";
+  return str.split('').map(c => {
+    const i = a.indexOf(c.toLowerCase());
+    return i > -1 ? b[i] : c;
+  }).join('');
+}
+
+function stylizeBox(str) {
+  const a = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const b = "🄰🄱🄲🄳🄴🄵🄶🄷🄸🄹🄺🄻🄼🄽🄾🄿🅀🅁🅂🅃🅄🅅🅆🅇🅈🅉";
+  return str.toUpperCase().split('').map(c => {
+    const i = a.indexOf(c);
+    return i > -1 ? b[i] : c;
+  }).join('');
+}
+function stylizeSymbolic(str) {
+  const map = {
+    a: ['卂', 'ﾑ', 'ค', 'ꋫ', 'ᗩ'],
+    b: ['乃', 'β', 'Ɓ', 'Ᏸ'],
+    c: ['匚', 'ᑕ', '₵'],
+    d: ['ᗪ', '刀', 'Ð'],
+    e: ['乇', 'Ɇ', 'Ɛ'],
+    f: ['千', 'ｷ', 'Ғ'],
+    g: ['Ꮆ', 'Ǥ', '₲'],
+    h: ['卄', 'ん', 'Һ', 'ꃅ', 'ꑛ'],
+    i: ['丨', 'เ', 'Ꭵ'],
+    j: ['ﾌ', 'ʝ', 'Ј'],
+    k: ['Ҝ', 'к', 'Ҡ'],
+    l: ['ㄥ', 'ᒪ', 'Ⱡ'],
+    m: ['爪', 'ﾶ', '₥', 'ᗰ', 'ꁒ'],
+    n: ['几', 'η', 'и'],
+    o: ['ㄖ', '๏', 'Ө', 'Ꭷ'],
+    p: ['卩', 'ρ', '₱'],
+    q: ['Ɋ', 'զ', 'զ'],
+    r: ['尺', 'я', '®'],
+    s: ['丂', 'ร', '₴'],
+    t: ['ㄒ', 'т', '₮'],
+    u: ['ㄩ', 'ย', 'Ữ'],
+    v: ['ᐯ', 'ν', '۷'],
+    w: ['山', 'ฬ', 'Ꮃ'],
+    x: ['乂', 'א', '✘'],
+    y: ['ㄚ', 'ү', '¥'],
+    z: ['乙', 'ઽ', 'ꂵ', 'Ꮓ']
+  };
+
+  const allVariants = [];
+
+  const strLower = str.toLowerCase();
+  const maxStyles = Math.max(...strLower.split('').map(c => map[c]?.length || 1));
+
+  for (let i = 0; i < maxStyles; i++) {
+    let styled = '';
+    for (let char of strLower) {
+      const variants = map[char];
+      if (variants && variants[i]) {
+        styled += variants[i];
+      } else if (variants) {
+        styled += variants[0]; // fallback if not enough styles
+      } else {
+        styled += char;
+      }
+    }
+    allVariants.push(styled);
+  }
+
+  return allVariants;
+}
+
+function stylizeMixed(str) {
+  return str
+    .split('')
+    .map((char, i) => {
+      if (i % 3 === 0) return char.toUpperCase();
+      if (i % 3 === 1) return stylizeScript(char);
+      return stylizeSmall(char);
+    })
+    .join('');
+}
+
+function stylizeZalgo(text) {
+  const zalgo_up = ["̍","̎","̄","̅","̿","̑","̆","̐","͒","͗","̇"];
+  const zalgo_mid = ["̕","̛","̀","́","͘","̡","̢"];
+  const zalgo_down = ["̖","̗","̘","̙","̜","̝","̞","̟","̠"];
+  return text.split('').map(c => {
+    if (c === ' ') return c;
+    return c +
+      zalgo_up[Math.floor(Math.random()*zalgo_up.length)] +
+      zalgo_mid[Math.floor(Math.random()*zalgo_mid.length)] +
+      zalgo_down[Math.floor(Math.random()*zalgo_down.length)];
+  }).join('');
+}
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Copied to clipboard!");
+  }).catch(err => {
+    alert("Failed to copy: " + err);
+  });
+}
+
+  const styleSelector = document.getElementById("styleSelector");
+
+  input.addEventListener("input", () => {
+    const styleName = styleSelector.value;
+    const text = input.value.trim();
+    output.innerHTML = ""; // Clear previous output
+
+    if (styleName === "glitch") {
+      const glitchVariants = [
+        { label: "Simple Glitch", fn: s => s.split('').join('̷') },
+        { label: "Double Glitch", fn: s => s.split('').join('̷̷') },
+        { label: "Heavy Glitch", fn: s => s.split('').join('̷̷̷') },
+        { label: "Zalgo-ish", fn: s => s.split('').map(c => `${c}̷̽̄̅`).join('') },
+        { label: "Wave + Glitch", fn: s => s.split('').map(c => `${c}̷🌊`).join('') },
+        { label: "Fire + Glitch", fn: s => s.split('').map(c => `${c}̷🔥`).join('') },
+        { label: "Stars + Glitch", fn: s => s.split('').map(c => `${c}̷✨`).join('') },
+      ];
+
+      glitchVariants.forEach(variant => {
+        const div = document.createElement("div");
+        div.innerHTML = `<b>${variant.label}:</b> ${variant.fn(text)}`;
+        div.style.margin = "10px 0";
+        output.appendChild(div);
+      });
+    } else {
+      const styleFn = styles[styleName];
+      output.innerHTML = styleFn ? styleFn(text) : text;
+    }
+  });
+
+  // Trigger once on load to show styles for existing input
+  input.dispatchEvent(new Event("input"));
+
+</script>
+  
+  
 
     <footer class="footer">
         <div class="footer-content">
