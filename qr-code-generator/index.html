@@ -139,6 +139,22 @@
       color: #555;
       text-align: center;
     }
+    #clear-all-btn:hover {
+  background-color: #d44e1f;
+  transform: scale(1.05);
+}
+
+/* Button animation on click */
+#clear-all-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+#clear-all-btn:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
     @media (max-width: 480px) {
       .qr-input, .qr-generate-btn {
         font-size: 14px;
@@ -156,6 +172,10 @@
       color: #075E54;
       font-weight: bold;
     }
+    #clear-all-btn {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
   </style>
 
 <body>
@@ -337,6 +357,9 @@ function clearAllSavedQRCodes() {
 
   // Hide the "recent" section
   document.getElementById("qr-recent").style.display = "none";
+  
+  // Hide the "Clear All" button after click
+  document.getElementById("clear-all-btn").style.display = "none"
 }
 
 </script>
