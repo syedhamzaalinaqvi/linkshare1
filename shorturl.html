@@ -8,7 +8,88 @@
 
         <title>Short Url Generator - LinkShare</title>
     </head>
+    <style>
+               .container {
+            background: white;
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .short-url {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e0ffe0;
+            border: 1px dashed green;
+            text-align: center;
+            word-break: break-all;
+        }
+    </style>
     <body>
         
+<div class="container">
+    <h2>Short URL Generator</h2>
+    <input type="text" id="originalUrl" placeholder="Enter your original URL">
+    <button id="generateBtn">Generate Short URL</button>
+    <div class="short-url" id="shortUrlResult"></div>
+</div>
+
+<!-- Firebase App (already included in your project) -->
+<!-- Your firebase-config.js already initializes firebase -->
+
+<script>
+    // Helper to generate random 6-character short code
+    function generateShortCode(length = 6) {
+        const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', async function() {
+        const originalUrl = document.getElementById('originalUrl').value.trim();
+        if (!originalUrl) {
+            alert("Please enter a URL!");
+            return;
+        }
+
+        const shortCode = generateShortCode(); // generate random code
+        const shortUrl = `https://linkshare.online/s/${shortCode}`; // you can change path
+
+        try {
+            await firebase.firestore().collection('short_urls').doc(shortCode).set({
+                original_url: originalUrl,
+                short_url: shortUrl,
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('shortUrlResult').innerHTML = `
+                <strong>Short URL:</strong> <br>
+                <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+            `;
+            console.log("Short URL saved to database.");
+        } catch (error) {
+            console.error("Error saving short URL:", error);
+            alert("Failed to create short URL. Check console for details.");
+        }
+    });
+</script>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    
+    <!-- Our Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
     </body>
     </html>

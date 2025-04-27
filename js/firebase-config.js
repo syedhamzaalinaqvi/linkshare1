@@ -10,16 +10,16 @@ const linkShareConfig = {
 };
 
 // Firebase configuration for Short URL Generator
-const shortUrlConfig = {
-    apiKey: "YOUR_SHORT_URL_API_KEY", // Replace with your Short URL project's API key
-    authDomain: "shorturl.firebaseapp.com", // Replace with your Short URL project's authDomain
-    projectId: "shorturl", // Replace with your Short URL project's project ID
-    storageBucket: "shorturl.appspot.com", // Replace with your Short URL project's storage bucket
-    messagingSenderId: "YOUR_SENDER_ID", // Replace with your Short URL project's sender ID
-    appId: "YOUR_APP_ID", // Replace with your Short URL project's app ID
-    measurementId: "YOUR_MEASUREMENT_ID" // Replace with your Short URL project's measurement ID
-};
-
+const firebaseConfig = {
+    apiKey: "AIzaSyB1Nejcpv0jubaq85ufjZwll-k62aIjFuQ",
+    authDomain: "short-url-generator-9ab67.firebaseapp.com",
+    databaseURL: "https://short-url-generator-9ab67-default-rtdb.firebaseio.com",
+    projectId: "short-url-generator-9ab67",
+    storageBucket: "short-url-generator-9ab67.firebasestorage.app",
+    messagingSenderId: "375644970022",
+    appId: "1:375644970022:web:be24008ed6f3a57a66dae7",
+    measurementId: "G-1Q7PCGD8TM"
+  };
 // Flag to track initialization status
 window.firebaseInitialized = false;
 
