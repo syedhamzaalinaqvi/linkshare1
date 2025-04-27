@@ -361,6 +361,26 @@
   });
   });
   </script>
+  <!-- Scroll to Top Script -->
+  <script>
+    const scrollToTopBtn = document.querySelector('.scroll-to-top');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
+
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+</script>
+
 <!-- Our Scripts -->
 <script src="js/firebase-config.js"></script>
 <script src="js/main.js"></script>
