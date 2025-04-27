@@ -217,7 +217,7 @@
       <button class="qr-cancel-btn" onclick="clearQR()">×</button>
       <div id="qr-code-box"></div>
     </div>
-    
+
   
     <div class="qr-recent-section" id="qr-recent">
       <div class="qr-recent-title">Recently Generated</div>
@@ -230,72 +230,102 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
-  let activeQRCode;
+  // Load previous QR codes on page load
+window.onload = function() {
+  loadSavedQRCodes();
+};
 
-  function generateQR() {
-    const text = document.getElementById("qr-text").value.trim();
-    const name = document.getElementById("qr-name").value.trim() || "Unnamed QR";
+let activeQRCode;
 
-    if (text === "") {
-      alert("Please enter some text or link!");
-      return;
-    }
+function generateQR() {
+  const text = document.getElementById("qr-text").value.trim();
+  const name = document.getElementById("qr-name").value.trim() || "Unnamed QR";
 
-    if (activeQRCode) {
-      saveOldQR();
-      activeQRCode.clear();
-    } else {
-      activeQRCode = new QRCode(document.getElementById("qr-code-box"), {
-        text: "",
-        width: 200,
-        height: 200,
-        colorDark : "#000000",
-        colorLight : "#ffffff",
-        correctLevel : QRCode.CorrectLevel.H
-      });
-    }
-
-    activeQRCode.makeCode(text);
-    document.getElementById("qr-display").style.display = "flex";
-    document.getElementById("qr-display").style.transform = "scale(0.8)";
-    setTimeout(() => {
-      document.getElementById("qr-display").style.transform = "scale(1)";
-    }, 100);
-
-    document.getElementById("qr-display").dataset.qrName = name;
+  if (text === "") {
+    alert("Please enter some text or link!");
+    return;
   }
 
-  function saveOldQR() {
-    const oldCanvas = document.querySelector("#qr-code-box canvas");
-    if (!oldCanvas) return;
+  if (!activeQRCode) {
+    activeQRCode = new QRCode(document.getElementById("qr-code-box"), {
+      text: "",
+      width: 200,
+      height: 200,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+  } else {
+    activeQRCode.clear();
+  }
 
-    const imgData = oldCanvas.toDataURL("image/png");
-    const name = document.getElementById("qr-display").dataset.qrName || "Unnamed QR";
+  activeQRCode.makeCode(text);
+  document.getElementById("qr-display").style.display = "flex";
+  document.getElementById("qr-display").style.transform = "scale(0.8)";
+  setTimeout(() => {
+    document.getElementById("qr-display").style.transform = "scale(1)";
+  }, 100);
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "qr-recent-item";
+  // Save after slight delay so canvas is ready
+  setTimeout(() => {
+    saveCurrentQR(name);
+  }, 300);
+}
 
-    const img = document.createElement("img");
-    img.src = imgData;
+function saveCurrentQR(name) {
+  const canvas = document.querySelector("#qr-code-box canvas");
+  if (!canvas) return;
 
-    const caption = document.createElement("span");
-    caption.innerText = name;
+  const imgData = canvas.toDataURL("image/png");
 
-    wrapper.appendChild(img);
-    wrapper.appendChild(caption);
+  const qrEntry = {
+    name: name,
+    img: imgData
+  };
 
-    const list = document.getElementById("qr-recent-list");
-    list.prepend(wrapper);
+  let savedQRCodes = JSON.parse(localStorage.getItem("qr-codes")) || [];
+  savedQRCodes.unshift(qrEntry); // Add to start
+  localStorage.setItem("qr-codes", JSON.stringify(savedQRCodes));
 
+  addQRToRecent(qrEntry);
+}
+
+function addQRToRecent(qrEntry) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "qr-recent-item";
+
+  const img = document.createElement("img");
+  img.src = qrEntry.img;
+
+  const caption = document.createElement("span");
+  caption.innerText = qrEntry.name;
+
+  wrapper.appendChild(img);
+  wrapper.appendChild(caption);
+
+  const recentList = document.getElementById("qr-recent-list");
+  recentList.prepend(wrapper);
+
+  document.getElementById("qr-recent").style.display = "block";
+}
+
+function loadSavedQRCodes() {
+  const savedQRCodes = JSON.parse(localStorage.getItem("qr-codes")) || [];
+  if (savedQRCodes.length > 0) {
     document.getElementById("qr-recent").style.display = "block";
+    savedQRCodes.forEach(entry => {
+      addQRToRecent(entry);
+    });
   }
+}
 
-  function clearQR() {
-    if (activeQRCode) {
-      activeQRCode.clear();
-    }
-    document.getElementById("qr-display").style.display = "none";
+function clearQR() {
+  if (activeQRCode) {
+    activeQRCode.clear();
   }
+  document.getElementById("qr-display").style.display = "none";
+}
+
 </script>
 <footer class="footer">
   <div class="footer-content">
