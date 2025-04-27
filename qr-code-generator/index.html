@@ -196,7 +196,14 @@
 </nav>
 
 <div class="main-container">
-
+  <div class="page-header">
+    <h1>QR Code Genrator</h1>
+    <p>Generate QR codes for your links and share them easily!</p>
+    <p>Use the QR code generator to create custom QR codes for your links. Share them on social media, print them, or use them in your marketing materials.</p>
+    <p>Simply enter your link or text, and click "Generate QR Code".</p>
+    <p>Once generated, you can download the QR code image or share it directly.</p>
+</div>
+<div class="content-section">
   <div class="qr-generator-container" id="qr-container">
     <h1 class="qr-generator-title">QR Code Generator</h1>
   
@@ -210,6 +217,7 @@
       <button class="qr-cancel-btn" onclick="clearQR()">×</button>
       <div id="qr-code-box"></div>
     </div>
+    
   
     <div class="qr-recent-section" id="qr-recent">
       <div class="qr-recent-title">Recently Generated</div>
@@ -218,7 +226,7 @@
   
     <footer class="qr-footer">Made with 💚 for LinkShare Users</footer>
   </div>
-  
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
