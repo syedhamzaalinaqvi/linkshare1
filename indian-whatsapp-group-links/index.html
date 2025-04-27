@@ -134,5 +134,65 @@
             <p>&copy; 2024 LinkShare. All rights reserved.</p>
         </div>
     </footer>
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const dropdowns = document.querySelectorAll('.nav-dropdown');
+        
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        
+            dropdowns.forEach(dropdown => {
+                const dropButton = dropdown.querySelector('.dropbtn');
+            dropButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+                
+                // Close other dropdowns
+                dropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+        });
+        </script>
+        <!-- Scroll to Top Script -->
+  <script>
+    const scrollToTopBtn = document.querySelector('.scroll-to-top');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
+
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+</script>
+    <!-- Our Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html> 
