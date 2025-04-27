@@ -223,14 +223,15 @@
       <div class="qr-recent-title">Recently Generated</div>
       <div class="qr-recent-codes" id="qr-recent-list"></div>
     </div>
-  
+    <button id="clear-all-btn" onclick="clearAllSavedQRCodes()">Clear All Saved QR Codes</button>
+
     <footer class="qr-footer">Made with 💚 for LinkShare Users</footer>
   </div>
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
-  // Load previous QR codes on page load
+ // Load previous QR codes on page load
 window.onload = function() {
   loadSavedQRCodes();
 };
@@ -324,6 +325,18 @@ function clearQR() {
     activeQRCode.clear();
   }
   document.getElementById("qr-display").style.display = "none";
+}
+
+function clearAllSavedQRCodes() {
+  // Remove all saved QR codes from localStorage
+  localStorage.removeItem("qr-codes");
+
+  // Remove all items from the recent section
+  const recentList = document.getElementById("qr-recent-list");
+  recentList.innerHTML = ''; // Clear the list
+
+  // Hide the "recent" section
+  document.getElementById("qr-recent").style.display = "none";
 }
 
 </script>
