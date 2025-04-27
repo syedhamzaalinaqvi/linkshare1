@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Stylish Text Generator for LinkShare - Learn Understand How to Generate Stylish Text Name and Share on WhatsApp and Other Social Media using LinkShare LinkShare for WhatsApp group sharing.">
-    <meta name="keywords" content="LinkShare Stylish Text Generator, Stylish Name Generator for WhatsApp groups, Cool text Generator, Stylish Message Generator , Stylish text for group sharing">
+    <meta name="description" content="QR Code Generator for LinkShare - Create and share QR codes easily. Generate QR codes for WhatsApp groups, links, text, and more using LinkShare's free QR code generator tool.">
+    <meta name="keywords" content="LinkShare QR Code Generator, WhatsApp QR Code Generator, Free QR Code Generator, QR Code Maker, QR Code Creator">
     <meta name="author" content="LinkShare">
-    <meta property="og:title" content="Cool Stylish Text Generator for Whatsapp - LinkShare">
-    <meta property="og:description" content="Learn How to Generate Stylish Text Name and Share on WhatsApp and Other Social Media using LinkShare LinkShare for WhatsApp group sharing.">
+    <meta property="og:title" content="Free QR Code Generator - LinkShare">
+    <meta property="og:description" content="Create and share QR codes easily with LinkShare's free QR code generator. Perfect for WhatsApp groups, links, text, and more.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Cool Stylish Text Generator for Whatsapp - LinkShare">
-    <meta name="twitter:description" content="Understand How to Generate Stylish Text Name and Share on WhatsApp and Other Social Media - LinkShare">
+    <meta name="twitter:title" content="Free QR Code Generator - LinkShare">
+    <meta name="twitter:description" content="Generate QR codes instantly for your WhatsApp groups, links, and text. Free QR code generator by LinkShare.">
     <link rel="icon" type="image/x-icon" href="favicon-96x96.png" sizes="96x96">
-    <title>Cool Stylish Text Generator for Whatsapp - LinkShare</title>
+    <title>Free QR Code Generator - LinkShare</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -270,6 +270,7 @@
  // Load previous QR codes on page load
 window.onload = function() {
   loadSavedQRCodes();
+  updateClearAllButtonVisibility();
 };
 
 let activeQRCode;
@@ -309,6 +310,13 @@ function generateQR() {
   }, 300);
 }
 
+// Add this new function to manage button visibility
+function updateClearAllButtonVisibility() {
+  const savedQRCodes = JSON.parse(localStorage.getItem("qr-codes")) || [];
+  const clearAllBtn = document.getElementById("clear-all-btn");
+  clearAllBtn.style.display = savedQRCodes.length > 0 ? "block" : "none";
+}
+
 function saveCurrentQR(name) {
   const canvas = document.querySelector("#qr-code-box canvas");
   if (!canvas) return;
@@ -325,6 +333,7 @@ function saveCurrentQR(name) {
   localStorage.setItem("qr-codes", JSON.stringify(savedQRCodes));
 
   addQRToRecent(qrEntry);
+  updateClearAllButtonVisibility(); // Add this line
 }
 
 function addQRToRecent(qrEntry) {
@@ -354,6 +363,7 @@ function loadSavedQRCodes() {
       addQRToRecent(entry);
     });
   }
+  updateClearAllButtonVisibility(); // Add this line
 }
 
 function clearQR() {
@@ -376,6 +386,7 @@ function clearAllSavedQRCodes() {
   
   // Hide the "Clear All" button after click
   document.getElementById("clear-all-btn").style.display = "none"
+  updateClearAllButtonVisibility(); // Add this line
 }
 
 
