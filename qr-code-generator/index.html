@@ -139,30 +139,37 @@
       color: #555;
       text-align: center;
     }
-    #clear-all-btn:hover {
-      background-color: #128C7E;
+/* Clear All Btn style */
+/* Styling for Clear All Button */
+#clear-all-btn {
+  background: none;
+  color: #ff5722;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: none;  /* Initially hidden */
+  margin-top: 20px;
+  padding: 0;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+#clear-all-btn:hover {
+  color: #d44e1f;
   transform: scale(1.05);
 }
 
-/* Button animation on click */
 #clear-all-btn:active {
-  background-color: #25D366;
-      color: white;
-      border: none;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s;
   transform: scale(0.98);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 #clear-all-btn:disabled {
-  background-color: #bbb;
+  color: #bbb;
   cursor: not-allowed;
+  text-decoration: none;
 }
-
     @media (max-width: 480px) {
       .qr-input, .qr-generate-btn {
         font-size: 14px;
@@ -258,6 +265,7 @@
 </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
 <script>
  // Load previous QR codes on page load
 window.onload = function() {
@@ -369,6 +377,8 @@ function clearAllSavedQRCodes() {
   // Hide the "Clear All" button after click
   document.getElementById("clear-all-btn").style.display = "none"
 }
+
+
 
 </script>
 <footer class="footer">
