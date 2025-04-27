@@ -932,7 +932,7 @@ select:focus {
 
 .loading {
     animation: shimmer 1s linear infinite;
-    background: linear-gradient(to right, #f6f6f6 8%, #f0f0f0 18%, #f6f6f6 33%);
+    background: linear-gradient(to right, #269c02 8%, #07ad07 18%, #07d155 33%);
     background-size: 800px 104px;
     padding: 20px;
     text-align: center;
