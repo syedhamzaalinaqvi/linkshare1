@@ -65,7 +65,7 @@
         const shortUrl = `https://linkshare.online/s/${shortCode}`; // you can change path
 
         try {
-            await firebase.firestore().collection('short_urls').doc(shortCode).set({
+            await shortUrlDb.firestore().collection('short_urls').doc(shortCode).set({
                 original_url: originalUrl,
                 short_url: shortUrl,
                 created_at: firebase.firestore.FieldValue.serverTimestamp()
@@ -84,12 +84,13 @@
 
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
     
     <!-- Our Scripts -->
-    <script src="js/firebase-config.js"></script>
+
+    <script src="js/firebase-shorturl-config.js"></script>
     <script src="js/main.js"></script>
     </body>
     </html>
