@@ -32,36 +32,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Initialize Firebase for LinkShare
-        if (!firebase.apps.length) {
-            const linkShareApp = firebase.initializeApp(linkShareConfig, "linkshareApp");
-            const analytics = firebase.analytics(linkShareApp);
-            console.log("LinkShare Firebase app initialized");
-        } else {
-            console.log("LinkShare Firebase already initialized");
-        }
+        const linkShareApp = firebase.apps.length ? 
+            firebase.app("linkshareApp") : 
+            firebase.initializeApp(linkShareConfig, "linkshareApp");
+        const analytics = firebase.analytics(linkShareApp);
+        console.log("LinkShare Firebase app initialized");
 
         // Initialize Firebase for Short URL Generator
-        const shortUrlApp = firebase.initializeApp(shortUrlConfig, "shortUrlApp");
+        const shortUrlApp = firebase.apps.find(app => app.name === "shortUrlApp") || 
+            firebase.initializeApp(firebaseConfig, "shortUrlApp");
         console.log("Short URL Generator Firebase app initialized");
 
-        // Firestore for LinkShare
+        // Get Firestore instances
         const linkShareDb = linkShareApp.firestore();
-
-        // Firestore for Short URL Generator
         const shortUrlDb = shortUrlApp.firestore();
 
-        // Enable better offline support with cache for both databases
+        // Enable offline persistence
         linkShareDb.enablePersistence({ synchronizeTabs: true })
             .catch(err => handlePersistenceError(err, 'LinkShare'));
         
         shortUrlDb.enablePersistence({ synchronizeTabs: true })
             .catch(err => handlePersistenceError(err, 'Short URL Generator'));
 
-        // Make db and Firebase functions available globally
-        window.db = linkShareDb; // Default is for LinkShare, can be switched based on use
-        window.collection = (path, isShortUrl = false) => {
-            return (isShortUrl ? shortUrlDb : linkShareDb).collection(path);
-        };
+        // Make databases available globally
+        window.linkShareDb = linkShareDb;
+        window.shortUrlDb = shortUrlDb;
+
+        // Set up global functions
+        window.collection = (path, isShortUrl = false) => 
+            (isShortUrl ? shortUrlDb : linkShareDb).collection(path);
         window.getDocs = (query, isShortUrl = false) => query.get();
         window.query = linkShareDb;
         window.orderBy = (field, direction) => ({ field, direction });
@@ -74,10 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addDoc = (collectionRef, data) => collectionRef.add(data);
         window.serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
 
-        // Set flag to true
         window.firebaseInitialized = true;
-
-        console.log("Firebase initialized successfully and global functions set");
+        console.log("Both Firebase apps initialized successfully");
 
         // If we're on the home page, start loading groups immediately
         if (document.querySelector('.groups-grid') && typeof loadGroups === 'function') {
@@ -87,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     } catch (error) {
         console.error("Error initializing Firebase:", error);
-        // Display error in UI if possible
         if (document.querySelector('.groups-grid')) {
             document.querySelector('.groups-grid').innerHTML = 
                 `<div class="error">Error initializing Firebase: ${error.message}. 
