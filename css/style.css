@@ -936,7 +936,7 @@ select:focus {
     background-size: 800px 104px;
     padding: 20px;
     text-align: center;
-    border-radius: 8px;
+    /*border-radius: 8px;*/
 }
 
 .group-card img {
