@@ -20,7 +20,7 @@
 
   <style>
     
-    .container {
+    .qr-generator-container {
       background: #ffffff;
       padding: 30px 20px;
       border-radius: 15px;
@@ -28,23 +28,23 @@
       text-align: center;
       width: 100%;
       max-width: 420px;
-      animation: fadeIn 1s ease-in-out;
+      animation: qrFadeIn 1s ease-in-out;
     }
-    @keyframes fadeIn {
+    @keyframes qrFadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    h1 {
+    .qr-generator-title {
       margin-bottom: 20px;
       font-size: 28px;
       color: #075E54;
     }
-    .input-area {
+    .qr-input-area {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-    input[type="text"] {
+    .qr-input {
       width: 100%;
       padding: 12px 15px;
       font-size: 16px;
@@ -53,7 +53,7 @@
       outline: none;
       margin-bottom: 5px;
     }
-    button {
+    .qr-generate-btn {
       background-color: #25D366;
       color: white;
       border: none;
@@ -63,10 +63,10 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-    button:hover {
+    .qr-generate-btn:hover {
       background-color: #128C7E;
     }
-    .qr-area {
+    .qr-display-area {
       margin-top: 20px;
       position: relative;
       display: flex;
@@ -74,11 +74,12 @@
       align-items: center;
       flex-direction: column;
       transition: all 0.5s ease;
+      display: none;
     }
-    .qr-area canvas {
+    .qr-display-area canvas {
       margin-bottom: 10px;
     }
-    .cancel-btn {
+    .qr-cancel-btn {
       background: none;
       border: none;
       color: #ff4d4d;
@@ -94,21 +95,22 @@
       line-height: 28px;
       text-align: center;
     }
-    .recent-section {
+    .qr-recent-section {
       margin-top: 40px;
       text-align: left;
+      display: none;
     }
-    .recent-title {
+    .qr-recent-title {
       font-size: 18px;
       color: #075E54;
       margin-bottom: 10px;
     }
-    .recent-qrs {
+    .qr-recent-codes {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       gap: 15px;
     }
-    .recent-item {
+    .qr-recent-item {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -116,7 +118,7 @@
       padding: 10px;
       border-radius: 8px;
     }
-    .recent-item img {
+    .qr-recent-item img {
       width: 80px;
       height: 80px;
       object-fit: contain;
@@ -125,70 +127,117 @@
       border-radius: 5px;
       background: white;
     }
-    .recent-item span {
+    .qr-recent-item span {
       font-size: 12px;
       text-align: center;
       color: #333;
       word-break: break-word;
     }
-    footer {
+    .qr-footer {
       margin-top: 40px;
       font-size: 12px;
       color: #555;
       text-align: center;
     }
     @media (max-width: 480px) {
-      input[type="text"], button {
+      .qr-input, .qr-generate-btn {
         font-size: 14px;
         padding: 10px;
       }
-      h1 {
+      .qr-generator-title {
         font-size: 24px;
       }
+    }
+    .qr-footer {
+      margin-top: 20px;
+      font-size: 10px;
+    }
+    .qr-footer span {
+      color: #075E54;
+      font-weight: bold;
     }
   </style>
 
 <body>
+ 
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <a href="https://www.linkshare.online/" class="nav-brand">
+        <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
+        <span class="nav-brand-link-text">LinkShare</span>
+    </a>
 
-<div class="container">
-  <h1>QR Code Generator</h1>
-  <div class="input-area">
-    <input type="text" id="qrName" placeholder="Enter a title or name for your QR (optional)">
-    <input type="text" id="qrText" placeholder="Enter your link or text here">
-    <button onclick="generateQRCode()">Generate QR Code</button>
+    <button class="nav-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <ul class="nav-links">
+        <li><a href="https://www.linkshare.online/">Home</a></li>
+        <li><a href="/add-group">Add Group</a></li>
+        <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
+            <ul class="nav-dropdown-content">
+                <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+                <li><a href="/qr-code-generator" class="active">QR Code Generator</a></li>
+            </ul>
+        </li>
+        <li class="nav-dropdown">
+            <a href="#" class="dropbtn">Blog ▾</a>
+            <ul class="nav-dropdown-content">
+                <li><a href="/Psl-live">🔴PSL Live</a></li>
+                <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
+                <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
+                <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
+                <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+            </ul>
+        </li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/terms">Terms</a></li>
+    </ul>
+</nav>
+
+<div class="main-container">
+
+  <div class="qr-generator-container" id="qr-container">
+    <h1 class="qr-generator-title">QR Code Generator</h1>
+  
+    <div class="qr-input-area">
+      <input type="text" id="qr-name" class="qr-input" placeholder="Enter title or name for QR">
+      <input type="text" id="qr-text" class="qr-input" placeholder="Enter your link or text">
+      <button class="qr-generate-btn" onclick="generateQR()">Generate QR Code</button>
+    </div>
+  
+    <div class="qr-display-area" id="qr-display">
+      <button class="qr-cancel-btn" onclick="clearQR()">×</button>
+      <div id="qr-code-box"></div>
+    </div>
+  
+    <div class="qr-recent-section" id="qr-recent">
+      <div class="qr-recent-title">Recently Generated</div>
+      <div class="qr-recent-codes" id="qr-recent-list"></div>
+    </div>
+  
+    <footer class="qr-footer">Made with 💚 for LinkShare Users</footer>
   </div>
-
-  <div id="qrcodeArea" class="qr-area" style="display:none;">
-    <button class="cancel-btn" onclick="clearQRCode()">×</button>
-    <div id="qrcode"></div>
-  </div>
-
-  <div class="recent-section" id="recentSection" style="display:none;">
-    <div class="recent-title">Recently Generated</div>
-    <div class="recent-qrs" id="recentQRCodes"></div>
-  </div>
-
-  <footer>Made with 💚 for LinkShare Users</footer>
+  
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
-  let qrCode;
+  let activeQRCode;
 
-  function generateQRCode() {
-    const text = document.getElementById("qrText").value.trim();
-    const name = document.getElementById("qrName").value.trim() || "Unnamed QR";
+  function generateQR() {
+    const text = document.getElementById("qr-text").value.trim();
+    const name = document.getElementById("qr-name").value.trim() || "Unnamed QR";
 
     if (text === "") {
       alert("Please enter some text or link!");
       return;
     }
 
-    if (qrCode) {
-      savePreviousQR();
-      qrCode.clear();
+    if (activeQRCode) {
+      saveOldQR();
+      activeQRCode.clear();
     } else {
-      qrCode = new QRCode(document.getElementById("qrcode"), {
+      activeQRCode = new QRCode(document.getElementById("qr-code-box"), {
         text: "",
         width: 200,
         height: 200,
@@ -198,51 +247,113 @@
       });
     }
 
-    qrCode.makeCode(text);
-    document.getElementById("qrcodeArea").style.display = "flex";
-
-    document.getElementById("qrcodeArea").style.transform = "scale(0.8)";
+    activeQRCode.makeCode(text);
+    document.getElementById("qr-display").style.display = "flex";
+    document.getElementById("qr-display").style.transform = "scale(0.8)";
     setTimeout(() => {
-      document.getElementById("qrcodeArea").style.transform = "scale(1)";
+      document.getElementById("qr-display").style.transform = "scale(1)";
     }, 100);
-    
-    // Save name inside attribute
-    document.getElementById("qrcodeArea").dataset.name = name;
+
+    document.getElementById("qr-display").dataset.qrName = name;
   }
 
-  function savePreviousQR() {
-    const oldCanvas = document.querySelector("#qrcode canvas");
+  function saveOldQR() {
+    const oldCanvas = document.querySelector("#qr-code-box canvas");
     if (!oldCanvas) return;
 
     const imgData = oldCanvas.toDataURL("image/png");
-    const qrName = document.getElementById("qrcodeArea").dataset.name || "Unnamed QR";
-
-    const recentQRCodes = document.getElementById("recentQRCodes");
+    const name = document.getElementById("qr-display").dataset.qrName || "Unnamed QR";
 
     const wrapper = document.createElement("div");
-    wrapper.className = "recent-item";
+    wrapper.className = "qr-recent-item";
 
     const img = document.createElement("img");
     img.src = imgData;
 
     const caption = document.createElement("span");
-    caption.innerText = qrName;
+    caption.innerText = name;
 
     wrapper.appendChild(img);
     wrapper.appendChild(caption);
 
-    recentQRCodes.prepend(wrapper);
+    const list = document.getElementById("qr-recent-list");
+    list.prepend(wrapper);
 
-    document.getElementById("recentSection").style.display = "block";
+    document.getElementById("qr-recent").style.display = "block";
   }
 
-  function clearQRCode() {
-    if (qrCode) {
-      qrCode.clear();
+  function clearQR() {
+    if (activeQRCode) {
+      activeQRCode.clear();
     }
-    document.getElementById("qrcodeArea").style.display = "none";
+    document.getElementById("qr-display").style.display = "none";
   }
 </script>
+<footer class="footer">
+  <div class="footer-content">
+      <div class="footer-section">
+          <div class="logo-container">
+              <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+              <h3>LinkShare</h3>
+          </div>
+          <div class="footer-tagline">
+              <p>Share and discover amazing WhatsApp groups links</p>
+          </div>
+      </div>
+      <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/contact">Contact</a>
+      </div>
+  </div>
+  <div class="footer-bottom">
+      <p>&copy; 2025 LinkShare. All rights reserved.</p>
+  </div>
+</footer>
+<button class="scroll-to-top" aria-label="Scroll to top">
+  <i class="fas fa-arrow-up"></i>
+</button>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      const dropdowns = document.querySelectorAll('.nav-dropdown');
+  
+      navToggle.addEventListener('click', () => {
+          navLinks.classList.toggle('active');
+      });
+  
+      dropdowns.forEach(dropdown => {
+          const dropButton = dropdown.querySelector('.dropbtn');
+      dropButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          dropdown.classList.toggle('active');
+          
+          // Close other dropdowns
+          dropdowns.forEach(otherDropdown => {
+              if (otherDropdown !== dropdown) {
+                  otherDropdown.classList.remove('active');
+              }
+          });
+      });
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-dropdown')) {
+          dropdowns.forEach(dropdown => {
+              dropdown.classList.remove('active');
+          });
+      }
+  });
+  });
+  </script>
+<!-- Our Scripts -->
+<script src="js/firebase-config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/stylishtext.js"></script>
+
 
 </body>
 </html>
