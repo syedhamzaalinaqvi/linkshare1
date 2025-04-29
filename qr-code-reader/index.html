@@ -1,137 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner & Reader - WhatsApp Style</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Code Reader - WhatsApp Style</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-    <style>
-        body {
-            background-color: #e5ddd5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #075e54;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #075e54;
-            margin-bottom: 10px;
-        }
-        .section {
-            background: #ffffff;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 0 10px rgba(7, 94, 84, 0.2);
-        }
-        button {
-            background-color: #25d366;
-            border: none;
-            padding: 10px 20px;
-            margin: 10px 5px;
-            border-radius: 25px;
-            font-size: 16px;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        button:hover {
-            background-color: #128c7e;
-        }
-        #reader {
-            width: 300px;
-            margin: 0 auto;
-        }
-        input[type="file"] {
-            padding: 10px;
-            border: 2px dashed #25d366;
-            border-radius: 15px;
-            width: 80%;
-            margin: 10px auto;
-            background: #f8f8f8;
-            cursor: pointer;
-        }
-        #camera-result, #upload-result {
-            margin-top: 10px;
-            font-size: 18px;
-            color: #128c7e;
-            word-break: break-word;
-        }
-    </style>
+  <style>
+    body {
+      background-color: #e5ddd5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #075e54;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #075e54;
+      margin-bottom: 10px;
+    }
+    .qrcodereader_section {
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 0 10px rgba(7, 94, 84, 0.2);
+    }
+    button.qrcodereader_btn {
+      background-color: #25d366;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border-radius: 25px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button.qrcodereader_btn:hover {
+      background-color: #128c7e;
+    }
+    #qrcodereader_camera_wrapper {
+      display: none;
+      margin-top: 10px;
+    }
+    #qrcodereader_camera_view {
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto;
+    }
+    input#qrcodereader_file_input {
+      padding: 10px;
+      border: 2px dashed #25d366;
+      border-radius: 15px;
+      width: 80%;
+      margin: 10px auto;
+      background: #f8f8f8;
+      cursor: pointer;
+    }
+    .qrcodereader_result_box {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #128c7e;
+      word-break: break-word;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.4s ease;
+    }
+    .qrcodereader_result_box.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .qrcodereader_copy_btn {
+      display: inline-block;
+      margin-top: 10px;
+      background: #075e54;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .qrcodereader_toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #25d366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      display: none;
+      z-index: 999;
+    }
+  </style>
 </head>
-
 <body>
 
-    <h1>QR Code Scanner & Reader</h1>
+  <h1>QR Code Scanner & Reader</h1>
 
-    <div class="section">
-        <h2>Scan QR Code using Camera</h2>
-        <div id="reader"></div>
-        <button id="start-scan">Start Camera Scan</button>
-        <button id="stop-scan">Stop Camera Scan</button>
-        <div id="camera-result"></div>
+  <div class="qrcodereader_section">
+    <h2>Scan using Camera</h2>
+    <button class="qrcodereader_btn" id="qrcodereader_start_btn">Start Camera Scan</button>
+    <button class="qrcodereader_btn" id="qrcodereader_stop_btn" style="display:none;">Stop Camera</button>
+
+    <div id="qrcodereader_camera_wrapper">
+      <div id="qrcodereader_camera_view"></div>
     </div>
 
-    <div class="section">
-        <h2>Or Upload QR Code Image</h2>
-        <input type="file" id="qr-image-upload" accept="image/*">
-        <div id="upload-result"></div>
-    </div>
+    <div id="qrcodereader_camera_result" class="qrcodereader_result_box"></div>
+  </div>
 
-    <script>
-        const html5QrCode = new Html5Qrcode("reader");
+  <div class="qrcodereader_section">
+    <h2>Or Upload QR Code Image</h2>
+    <input type="file" id="qrcodereader_file_input" accept="image/*">
+    <div id="qrcodereader_upload_result" class="qrcodereader_result_box"></div>
+  </div>
 
-        // Start Camera
-        document.getElementById('start-scan').addEventListener('click', function() {
-            Html5Qrcode.getCameras().then(devices => {
-                if (devices && devices.length) {
-                    let cameraId = devices[0].id;
-                    html5QrCode.start(
-                        cameraId,
-                        {
-                            fps: 10,
-                            qrbox: 250
-                        },
-                        qrCodeMessage => {
-                            document.getElementById('camera-result').innerText = `QR Code Result: ${qrCodeMessage}`;
-                            html5QrCode.stop();
-                        },
-                        errorMessage => {
-                            // optional: console.log(errorMessage);
-                        }
-                    ).catch(err => {
-                        console.error("Unable to start scanning.", err);
-                    });
-                }
-            }).catch(err => {
-                console.error("Camera not found.", err);
-            });
+  <div class="qrcodereader_toast" id="qrcodereader_toast">Copied to clipboard!</div>
+
+  <script>
+    const qrcodereader_scanner = new Html5Qrcode("qrcodereader_camera_view");
+
+    const showResult = (elementId, text) => {
+      const el = document.getElementById(elementId);
+      const isURL = text.startsWith('http://') || text.startsWith('https://');
+
+      el.innerHTML = `
+        ${isURL ? `<a href="${text}" target="_blank">${text}</a>` : text}
+        <div class="qrcodereader_copy_btn" onclick="copyQRCodeResult('${text}')">Copy</div>
+      `;
+      el.classList.add('show');
+    };
+
+    function copyQRCodeResult(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('qrcodereader_toast');
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 1500);
+      });
+    }
+
+    document.getElementById('qrcodereader_start_btn').addEventListener('click', function () {
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          document.getElementById('qrcodereader_camera_wrapper').style.display = 'block';
+          document.getElementById('qrcodereader_stop_btn').style.display = 'inline-block';
+
+          qrcodereader_scanner.start(
+            devices[0].id,
+            { fps: 10, qrbox: 250 },
+            decodedText => {
+              showResult('qrcodereader_camera_result', decodedText);
+              qrcodereader_scanner.stop();
+              document.getElementById('qrcodereader_stop_btn').style.display = 'none';
+            }
+          ).catch(err => {
+            alert("Unable to start camera: " + err);
+          });
+        }
+      });
+    });
+
+    document.getElementById('qrcodereader_stop_btn').addEventListener('click', function () {
+      qrcodereader_scanner.stop().then(() => {
+        document.getElementById('qrcodereader_camera_wrapper').style.display = 'none';
+        this.style.display = 'none';
+      });
+    });
+
+    document.getElementById('qrcodereader_file_input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      qrcodereader_scanner.scanFile(file, true)
+        .then(decodedText => {
+          showResult('qrcodereader_upload_result', decodedText);
+        })
+        .catch(err => {
+          document.getElementById('qrcodereader_upload_result').innerText = `Error decoding: ${err}`;
         });
-
-        // Stop Camera
-        document.getElementById('stop-scan').addEventListener('click', function() {
-            html5QrCode.stop().then(() => {
-                console.log("Camera stopped.");
-            }).catch(err => {
-                console.error("Error stopping camera.", err);
-            });
-        });
-
-        // Upload QR Image
-        document.getElementById('qr-image-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            html5QrCode.scanFile(file, true)
-                .then(decodedText => {
-                    document.getElementById('upload-result').innerText = `QR Code Result: ${decodedText}`;
-                })
-                .catch(err => {
-                    document.getElementById('upload-result').innerText = `Error decoding QR Code: ${err}`;
-                });
-        });
-    </script>
+    });
+  </script>
 
 </body>
 </html>
