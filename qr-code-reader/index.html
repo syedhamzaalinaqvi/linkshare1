@@ -70,29 +70,69 @@
       opacity: 1;
       transform: scale(1);
     }
+
+
+
+/*updated code*/
+    #qrcodereader_camera_result,
+  #qrcodereader_upload_result {
+    background: #e1ffc7;
+    border-left: 5px solid #25d366;
+    padding: 15px 20px;
+    margin-top: 15px;
+    border-radius: 8px;
+    font-family: sans-serif;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: none;
+    transition: all 0.3s ease-in-out;
+  }
+
+  #qrcodereader_camera_result.show,
+  #qrcodereader_upload_result.show {
+    display: block;
+  }
+
+  .qrcodereader_result_label {
+    font-weight: bold;
+    color: #075e54;
+    margin-bottom: 10px;
+  }
+
+
     .qrcodereader_copy_btn {
-      display: inline-block;
-      margin-top: 10px;
-      background: #075e54;
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .qrcodereader_toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #25d366;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 25px;
-      display: none;
-      z-index: 999;
-    }
+    margin-top: 10px;
+    background: #25d366;
+    color: white;
+    padding: 8px 12px;
+    display: inline-block;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+  }
+
+  .qrcodereader_copy_btn:hover {
+    background: #128c7e;
+  }
+  #qrcodereader_toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #25d366;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
   </style>
+  
+
+
 </head>
 <body>
 
@@ -117,8 +157,8 @@
     <input type="file" id="qrcodereader_file_input" accept="image/*">
     <div id="qrcodereader_upload_result" class="qrcodereader_result_box"></div>
   </div>
-
-  <div class="qrcodereader_toast" id="qrcodereader_toast">Copied to clipboard!</div>
+  <div id="qrcodereader_toast">Copied!</div>
+  
   <script>
     const qrcodereader_scanner = new Html5Qrcode("qrcodereader_camera_view");
   
@@ -127,7 +167,8 @@
       const isURL = text.startsWith('http://') || text.startsWith('https://');
   
       el.innerHTML = `
-        ${isURL ? `<a href="${text}" target="_blank">${text}</a>` : text}
+        <div class="qrcodereader_result_label">Your Result:</div>
+        ${isURL ? `<a href="${text}" target="_blank">${text}</a>` : `<div>${text}</div>`}
         <div class="qrcodereader_copy_btn" onclick="copyQRCodeResult('${text}')">Copy</div>
       `;
       el.classList.add('show');
@@ -198,6 +239,7 @@
         });
     });
   </script>
+  
   
 
 </body>
