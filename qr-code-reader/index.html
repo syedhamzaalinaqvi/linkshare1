@@ -5,15 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QR Code Reader - WhatsApp Style</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
+    <link rel="stylesheet" href="css/style.css" />
 
-  <style>
-    body {
-      background-color: #e5ddd5;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #075e54;
-      text-align: center;
-      padding: 20px;
-    }
+</head>
+
+<style>
+    
     h1 {
       color: #075e54;
       margin-bottom: 10px;
@@ -186,21 +183,54 @@
     z-index: 9999;
     box-shadow: 0 2px 10px rgba(0,0,0,0.15);
   }
-
-
-
-
-
-
-
     </style>
-
-
-</head>
 <body>
-
-  <h1>QR Code Scanner & Reader</h1>
-
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <a href="https://www.linkshare.online/" class="nav-brand">
+            <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
+            <span class="nav-brand-link-text">LinkShare</span>
+        </a>
+    
+        <button class="nav-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links">
+            <li><a href="https://www.linkshare.online/">Home</a></li>
+            <li><a href="/add-group">Add Group</a></li>
+            <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+                    <li><a href="/qr-code-generator" >QR Code Generator</a></li>
+                    <li><a href="/qr-code-reader/" class="active">QR Code Scanner/Reader</a></li>
+                </ul>
+            </li>
+            <li class="nav-dropdown">
+                <a href="#" class="dropbtn">Blog ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/Psl-live">🔴PSL Live</a></li>
+                    <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
+                    <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
+                    <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
+                    <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+                </ul>
+            </li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/terms">Terms</a></li>
+        </ul>
+    </nav>
+    
+    <div class="main-container">
+        <div class="content">
+            <h1>QR Code Scanner & Reader</h1>
+            <p>Scan QR codes using your camera or upload an image.</p>
+        </div>
+  
+  <div class="content-section">
+    <h2>Scan QR Code</h2>
+    <p>Use the camera to scan a QR code or upload an image.</p>
+    <p>Click the button below to start scanning.</p>
   <div class="qrcodereader_section">
     <h2>Scan using Camera</h2>
     <button class="qrcodereader_btn" id="qrcodereader_start_btn">Start Camera Scan</button>
@@ -224,222 +254,96 @@
 
   <div id="qrcodereader_toast">Copied!</div>
   
-
-
-
-
-
-
-<script>
-  
-  const qrcodereader_scanner = new Html5Qrcode("qrcodereader_camera_view");
-  let recentCodes = JSON.parse(localStorage.getItem('qrcodereader_recent_codes')) || [];
-
-  const showResult = (elementId, text) => {
-    const el = document.getElementById(elementId);
-    const isURL = text.startsWith('http://') || text.startsWith('https://');
-
-    el.innerHTML = `
-      <div class="qrcodereader_result_label">Your Result:</div>
-      ${isURL ? `<a href="${text}" target="_blank">${text}</a>` : `<div>${text}</div>`}
-      <div class="qrcodereader_copy_btn" onclick="copyQRCodeResult(this, '${text}')">Copy</div>
-    `;
-    el.classList.add('show');
-
-    addToRecent(text);
-  };
-
-  function copyQRCodeResult(btn, text) {
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = 'Copied';
-      setTimeout(() => btn.textContent = 'Copy', 2000);
-    });
-  }
-
-  function addToRecent(text) {
-    if (recentCodes.includes(text)) return;
-
-    recentCodes.unshift(text);
-    if (recentCodes.length > 5) recentCodes = recentCodes.slice(0, 5);
-
-    localStorage.setItem('qrcodereader_recent_codes', JSON.stringify(recentCodes));
-    renderRecentCodes();
-  }
-
-  function deleteRecentItem(index) {
-    recentCodes.splice(index, 1);
-    localStorage.setItem('qrcodereader_recent_codes', JSON.stringify(recentCodes));
-    renderRecentCodes();
-  }
-
-  function clearAllRecent() {
-    recentCodes = [];
-    localStorage.removeItem('qrcodereader_recent_codes');
-    renderRecentCodes();
-  }
-
-  function renderRecentCodes() {
-    const container = document.getElementById('qrcodereader_recent');
-    container.innerHTML = '';
-    if (recentCodes.length === 0) return;
-
-    container.innerHTML += `<div class="qrcodereader_result_label">Recently Scanned:</div>`;
-    recentCodes.forEach((code, index) => {
-      const isURL = code.startsWith('http://') || code.startsWith('https://');
-      container.innerHTML += `
-        <div class="qrcodereader_recent_item">
-          <span class="qrcodereader_recent_text">
-            ${isURL ? `<a href="${code}" target="_blank">${code}</a>` : `<div>${code}</div>`}
-          </span>
-          <div class="qrcodereader_copy_btn" onclick="copyQRCodeResult(this, '${code}')">Copy</div>
-          <div class="qrcodereader_delete_btn" onclick="deleteRecentItem(${index})">✖</div>
+</div>
+    </div>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script src="js/qrcode-reader.js"></script>
+  <footer class="footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <div class="logo-container">
+                <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+                <h3>LinkShare</h3>
+            </div>
+            <div class="footer-tagline">
+                <p>Share and discover amazing WhatsApp groups links</p>
+            </div>
         </div>
-      `;
-    });
-
-    container.innerHTML += `<button class="qrcodereader_clear_all" onclick="clearAllRecent()">Clear All Recent</button>`;
-  }
-
-  let qrcodereader_currentCamera = "environment";
-
-  function startQrCamera(cameraFacing) {
-    document.getElementById('qrcodereader_camera_wrapper').style.display = 'block';
-    document.getElementById('qrcodereader_stop_btn').style.display = 'inline-block';
-    document.getElementById('qrcodereader_switch_btn').style.display = 'inline-block';
-
-    qrcodereader_scanner.start(
-      { facingMode: cameraFacing },
-      { fps: 10, qrbox: 250 },
-      decodedText => {
-        showResult('qrcodereader_camera_result', decodedText);
-        qrcodereader_scanner.stop();
-        document.getElementById('qrcodereader_stop_btn').style.display = 'none';
-        document.getElementById('qrcodereader_switch_btn').style.display = 'none';
-      }
-    ).catch(err => {
-      alert("Camera error: " + err);
-    });
-  }
-
-  document.getElementById('qrcodereader_start_btn').addEventListener('click', function () {
-    startQrCamera(qrcodereader_currentCamera);
-  });
-
-  document.getElementById('qrcodereader_stop_btn').addEventListener('click', function () {
-    qrcodereader_scanner.stop().then(() => {
-      document.getElementById('qrcodereader_camera_wrapper').style.display = 'none';
-      this.style.display = 'none';
-      document.getElementById('qrcodereader_switch_btn').style.display = 'none';
-    });
-  });
-
-  document.getElementById('qrcodereader_switch_btn').addEventListener('click', function () {
-    qrcodereader_scanner.stop().then(() => {
-      qrcodereader_currentCamera = qrcodereader_currentCamera === "environment" ? "user" : "environment";
-      startQrCamera(qrcodereader_currentCamera);
-    });
-  });
-
-  document.getElementById('qrcodereader_file_input').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    qrcodereader_scanner.scanFile(file, true)
-      .then(decodedText => {
-        showResult('qrcodereader_upload_result', decodedText);
-      })
-      .catch(err => {
-        document.getElementById('qrcodereader_upload_result').innerText = `Error decoding: ${err}`;
-      });
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    renderRecentCodes();
-  });
-
-
-//OLD working Script without recent wrapper
-    /*const qrcodereader_scanner = new Html5Qrcode("qrcodereader_camera_view");
-  
-    const showResult = (elementId, text) => {
-      const el = document.getElementById(elementId);
-      const isURL = text.startsWith('http://') || text.startsWith('https://');
-  
-      el.innerHTML = `
-        <div class="qrcodereader_result_label">Your Result:</div>
-        ${isURL ? `<a href="${text}" target="_blank">${text}</a>` : `<div>${text}</div>`}
-        <div class="qrcodereader_copy_btn" onclick="copyQRCodeResult('${text}')">Copy</div>
-      `;
-      el.classList.add('show');
-    };
-  
-    function copyQRCodeResult(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        const toast = document.getElementById('qrcodereader_toast');
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 1500);
-      });
-    }
-  
-    let qrcodereader_currentCamera = "environment"; // 📷 default to back camera
-  
-    function startQrCamera(cameraFacing) {
-      document.getElementById('qrcodereader_camera_wrapper').style.display = 'block';
-      document.getElementById('qrcodereader_stop_btn').style.display = 'inline-block';
-      document.getElementById('qrcodereader_switch_btn').style.display = 'inline-block';
-  
-      qrcodereader_scanner.start(
-        { facingMode: cameraFacing },
-        { fps: 10, qrbox: 250 },
-        decodedText => {
-          showResult('qrcodereader_camera_result', decodedText);
-          qrcodereader_scanner.stop();
-          document.getElementById('qrcodereader_stop_btn').style.display = 'none';
-          document.getElementById('qrcodereader_switch_btn').style.display = 'none';
-        }
-      ).catch(err => {
-        alert("Camera error: " + err);
-      });
-    }
-  
-    // ▶️ Start camera
-    document.getElementById('qrcodereader_start_btn').addEventListener('click', function () {
-      startQrCamera(qrcodereader_currentCamera);
-    });
-  
-    // ⏹️ Stop camera
-    document.getElementById('qrcodereader_stop_btn').addEventListener('click', function () {
-      qrcodereader_scanner.stop().then(() => {
-        document.getElementById('qrcodereader_camera_wrapper').style.display = 'none';
-        this.style.display = 'none';
-        document.getElementById('qrcodereader_switch_btn').style.display = 'none';
-      });
-    });
-  
-    // 🔁 Switch camera
-    document.getElementById('qrcodereader_switch_btn').addEventListener('click', function () {
-      qrcodereader_scanner.stop().then(() => {
-        qrcodereader_currentCamera = qrcodereader_currentCamera === "environment" ? "user" : "environment";
-        startQrCamera(qrcodereader_currentCamera);
-      });
-    });
-  
-    // 📂 QR from file
-    document.getElementById('qrcodereader_file_input').addEventListener('change', function (e) {
-      const file = e.target.files[0];
-      if (!file) return;
-  
-      qrcodereader_scanner.scanFile(file, true)
-        .then(decodedText => {
-          showResult('qrcodereader_upload_result', decodedText);
-        })
-        .catch(err => {
-          document.getElementById('qrcodereader_upload_result').innerText = `Error decoding: ${err}`;
+        <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/contact">Contact</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 LinkShare. All rights reserved.</p>
+    </div>
+  </footer>
+  <button class="scroll-to-top" aria-label="Scroll to top">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        const dropdowns = document.querySelectorAll('.nav-dropdown');
+    
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
         });
-    });*/
+    
+        dropdowns.forEach(dropdown => {
+            const dropButton = dropdown.querySelector('.dropbtn');
+        dropButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+            
+            // Close other dropdowns
+            dropdowns.forEach(otherDropdown => {
+                if (otherDropdown !== dropdown) {
+                    otherDropdown.classList.remove('active');
+                }
+            });
+        });
+    });
+  
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-dropdown')) {
+            dropdowns.forEach(dropdown => {
+                dropdown.classList.remove('active');
+            });
+        }
+    });
+    });
+    </script>
+    <!-- Scroll to Top Script -->
+    <script>
+      const scrollToTopBtn = document.querySelector('.scroll-to-top');
+      
+      window.addEventListener('scroll', () => {
+          if (window.pageYOffset > 300) {
+              scrollToTopBtn.classList.add('visible');
+          } else {
+              scrollToTopBtn.classList.remove('visible');
+          }
+      });
+  
+      scrollToTopBtn.addEventListener('click', () => {
+          window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+          });
+      });
   </script>
   
+  <!-- Our Scripts -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/stylishtext.js"></script>
   
-
 </body>
 </html>
