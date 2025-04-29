@@ -135,34 +135,43 @@
     justify-content: center;
   }
 
-  .qrcodereader_recent_item {
-    margin-top: 12px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ccc;
-  }
 /*--------newly added*/
-  .qrcodereader_recent_item {
+
+.qrcodereader_recent_item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: flex-start;
   background: #f1f1f1;
   padding: 10px;
   margin-bottom: 5px;
   border-radius: 6px;
-  position: relative;
+  gap: 10px;
 }
+
+.qrcodereader_recent_text {
+  flex: 1;
+  word-break: break-word;
+}
+
 .qrcodereader_copy_btn,
 .qrcodereader_delete_btn {
+  white-space: nowrap;
   cursor: pointer;
   padding: 4px 8px;
-  background: #007bff;
-  color: #fff;
   border-radius: 4px;
-  margin-left: 8px;
   font-size: 12px;
 }
+
+.qrcodereader_copy_btn {
+  background: #007bff;
+  color: #fff;
+}
+
 .qrcodereader_delete_btn {
   background: #dc3545;
+  color: #fff;
+  margin-left: 5px;
+  display: inline-block;
 }
 .qrcodereader_clear_all {
   margin-top: 10px;
