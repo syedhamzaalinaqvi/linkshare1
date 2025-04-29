@@ -198,6 +198,7 @@
 
 
 <script>
+  
   const qrcodereader_scanner = new Html5Qrcode("qrcodereader_camera_view");
   let recentCodes = JSON.parse(localStorage.getItem('qrcodereader_recent_codes')) || [];
 
@@ -232,21 +233,38 @@
     renderRecentCodes();
   }
 
+  function deleteRecentItem(index) {
+    recentCodes.splice(index, 1);
+    localStorage.setItem('qrcodereader_recent_codes', JSON.stringify(recentCodes));
+    renderRecentCodes();
+  }
+
+  function clearAllRecent() {
+    recentCodes = [];
+    localStorage.removeItem('qrcodereader_recent_codes');
+    renderRecentCodes();
+  }
+
   function renderRecentCodes() {
     const container = document.getElementById('qrcodereader_recent');
     container.innerHTML = '';
     if (recentCodes.length === 0) return;
 
     container.innerHTML += `<div class="qrcodereader_result_label">Recently Scanned:</div>`;
-    recentCodes.forEach(code => {
+    recentCodes.forEach((code, index) => {
       const isURL = code.startsWith('http://') || code.startsWith('https://');
       container.innerHTML += `
         <div class="qrcodereader_recent_item">
-          ${isURL ? `<a href="${code}" target="_blank">${code}</a>` : `<div>${code}</div>`}
+          <span class="qrcodereader_recent_text">
+            ${isURL ? `<a href="${code}" target="_blank">${code}</a>` : `<div>${code}</div>`}
+          </span>
           <div class="qrcodereader_copy_btn" onclick="copyQRCodeResult(this, '${code}')">Copy</div>
+          <div class="qrcodereader_delete_btn" onclick="deleteRecentItem(${index})">✖</div>
         </div>
       `;
     });
+
+    container.innerHTML += `<button class="qrcodereader_clear_all" onclick="clearAllRecent()">Clear All Recent</button>`;
   }
 
   let qrcodereader_currentCamera = "environment";
@@ -302,7 +320,6 @@
       });
   });
 
-  // 🔁 Load recent on page load
   document.addEventListener('DOMContentLoaded', () => {
     renderRecentCodes();
   });
