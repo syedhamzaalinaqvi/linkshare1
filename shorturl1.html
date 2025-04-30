@@ -63,7 +63,7 @@
   </div>
 
   <script>
-    // Initialize Firebase immediately
+    // Initialize Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyB1Nejcpv0jubaq85ufjZwll-k62aIjFuQ",
         authDomain: "short-url-generator-9ab67.firebaseapp.com",
@@ -75,43 +75,26 @@
         measurementId: "G-1Q7PCGD8TM"
     };
 
-    // Wait for Firebase to be fully loaded
+    // Initialize Firebase and database reference
+    let database;
+
+    // Initialize Firebase when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // Make database reference global
-        window.db = database;
-        
-        // Check for redirect path
-        checkForRedirect();
-    });
-
-    // Check redirect function
-    function checkForRedirect() {
-        const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
-        if (path && path !== 'shorturl1' && path !== 'index') {
-            window.db.ref('urls').child(path).once('value')
-                .then(snapshot => {
-                    const data = snapshot.val();
-                    if (data && data.original) {
-                        window.location.href = data.original;
-                    } else {
-                        document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
-                    }
-                })
-                .catch(err => {
-                    console.error("Redirect error:", err);
-                    document.body.innerHTML = "<h2>Error loading URL. Please try again.</h2>";
-                });
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            database = firebase.database();
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
         }
-    }
+    });
 
     // URL Generation Function
     async function generateShortUrl() {
         try {
-            if (!window.db) {
+            if (!database) {
                 throw new Error("Database not initialized");
             }
 
@@ -122,14 +105,12 @@
             }
 
             const shortId = generateId(6);
-            const urlData = {
-                original: originalUrl,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
+            const shortUrlRef = database.ref('short_urls/' + shortId);
 
-            // Create reference first, then set data
-            const urlRef = window.db.ref('urls/' + shortId);
-            await urlRef.set(urlData);
+            await shortUrlRef.set({
+                originalUrl: originalUrl,
+                createdAt: Date.now()
+            });
 
             const shortUrl = `${window.location.origin}/${shortId}`;
             document.getElementById("shortUrlResult").innerHTML = `
@@ -141,6 +122,30 @@
         } catch (error) {
             console.error("Error generating short URL:", error);
             alert("Failed to create short URL. Please try again later.");
+        }
+    }
+
+    // Check for redirect
+    if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+        const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
+        if (path) {
+            document.addEventListener('DOMContentLoaded', function() {
+                if (database) {
+                    database.ref('short_urls/' + path).once('value')
+                        .then(snapshot => {
+                            const data = snapshot.val();
+                            if (data && data.originalUrl) {
+                                window.location.href = data.originalUrl;
+                            } else {
+                                document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Redirect error:", err);
+                            document.body.innerHTML = "<h2>Error loading URL. Please try again.</h2>";
+                        });
+                }
+            });
         }
     }
 
