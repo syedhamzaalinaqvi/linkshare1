@@ -75,58 +75,29 @@
         measurementId: "G-1Q7PCGD8TM"
     };
 
-    let db; // Global database reference
+    // Initialize Firebase immediately when scripts are loaded
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    // Initialize Firebase with error handling
-    function initializeFirebase() {
-        try {
-            if (!firebase.apps.length) {
-                const app = firebase.initializeApp(firebaseConfig);
-                db = firebase.database();
-                console.log("Firebase initialized successfully");
-                return true;
-            } else {
-                db = firebase.database();
-                console.log("Firebase already initialized");
-                return true;
-            }
-        } catch (error) {
-            console.error("Firebase initialization failed:", error);
-            return false;
-        }
+    // Check if on redirect path
+    const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
+    if (path && !path.includes('shorturl1')) {
+        const urlRef = database.ref('links/' + path);
+        urlRef.once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+                if (data && data.url) {
+                    window.location.href = data.url;
+                } else {
+                    document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
+                }
+            })
+            .catch(err => console.error("Redirect error:", err));
     }
 
-    // Wait for Firebase SDK to load
-    window.addEventListener('load', function() {
-        if (initializeFirebase()) {
-            checkForRedirect();
-        }
-    });
-
-    function checkForRedirect() {
-        const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
-        if (path && !path.includes('shorturl1')) {
-            db.ref(`links/${path}`).once('value')
-                .then(snapshot => {
-                    const data = snapshot.val();
-                    if (data && data.url) {
-                        window.location.href = data.url;
-                    } else {
-                        document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
-                    }
-                })
-                .catch(err => console.error("Redirect error:", err));
-        }
-    }
-
+    // URL Generation Function
     async function generateShortUrl() {
         try {
-            if (!db) {
-                if (!initializeFirebase()) {
-                    throw new Error("Firebase not initialized");
-                }
-            }
-
             const originalUrl = document.getElementById("originalUrl").value.trim();
             if (!originalUrl || !originalUrl.startsWith("http")) {
                 alert("Please enter a valid URL starting with http or https");
@@ -134,18 +105,14 @@
             }
 
             const shortId = generateId(6);
-            const urlRef = db.ref('links').child(shortId);
-
-            // Create data object
             const urlData = {
                 url: originalUrl,
-                created: firebase.database.ServerValue.TIMESTAMP
+                created: Date.now()
             };
 
-            // Set data with proper error handling
-            await urlRef.set(urlData);
-
+            await database.ref('links/' + shortId).set(urlData);
             const shortUrl = `${window.location.origin}/${shortId}`;
+            
             document.getElementById("shortUrlResult").innerHTML = `
                 <div class="result">
                     Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
