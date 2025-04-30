@@ -75,29 +75,48 @@
         measurementId: "G-1Q7PCGD8TM"
     };
 
-    // Initialize Firebase and database reference
     let database;
 
-    // Initialize Firebase when DOM is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            database = firebase.database();
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-        }
-    });
+    // Initialize Firebase immediately
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+        console.log("Firebase initialized successfully");
+    }
 
-    // URL Generation Function
+    // Check if this is the generator page
+    const currentPath = window.location.pathname;
+    const isGeneratorPage = currentPath.includes('shorturl1.html') || 
+                          currentPath === '/' || 
+                          currentPath === '/index.html';
+
+    // Only check for redirects if we have a path and not on generator page
+    if (!isGeneratorPage) {
+        const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
+        if (path && path.length > 0) {
+            database.ref('short_urls').child(path).once('value')
+                .then(snapshot => {
+                    const data = snapshot.val();
+                    if (data && data.originalUrl) {
+                        window.location.href = data.originalUrl;
+                    } else {
+                        // Only show 404 if we're not on the generator page
+                        if (!document.getElementById('originalUrl')) {
+                            document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error("Redirect error:", err);
+                    if (!document.getElementById('originalUrl')) {
+                        document.body.innerHTML = "<h2>Error loading URL. Please try again.</h2>";
+                    }
+                });
+        }
+    }
+
     async function generateShortUrl() {
         try {
-            if (!database) {
-                throw new Error("Database not initialized");
-            }
-
             const originalUrl = document.getElementById("originalUrl").value.trim();
             if (!originalUrl || !originalUrl.startsWith("http")) {
                 alert("Please enter a valid URL starting with http or https");
@@ -105,14 +124,14 @@
             }
 
             const shortId = generateId(6);
-            const shortUrlRef = database.ref('short_urls/' + shortId);
-
-            await shortUrlRef.set({
+            const urlData = {
                 originalUrl: originalUrl,
-                createdAt: Date.now()
-            });
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            };
 
+            await database.ref('short_urls/' + shortId).set(urlData);
             const shortUrl = `${window.location.origin}/${shortId}`;
+            
             document.getElementById("shortUrlResult").innerHTML = `
                 <div class="result">
                     Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
@@ -122,30 +141,6 @@
         } catch (error) {
             console.error("Error generating short URL:", error);
             alert("Failed to create short URL. Please try again later.");
-        }
-    }
-
-    // Check for redirect
-    if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
-        const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
-        if (path) {
-            document.addEventListener('DOMContentLoaded', function() {
-                if (database) {
-                    database.ref('short_urls/' + path).once('value')
-                        .then(snapshot => {
-                            const data = snapshot.val();
-                            if (data && data.originalUrl) {
-                                window.location.href = data.originalUrl;
-                            } else {
-                                document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Redirect error:", err);
-                            document.body.innerHTML = "<h2>Error loading URL. Please try again.</h2>";
-                        });
-                }
-            });
         }
     }
 
