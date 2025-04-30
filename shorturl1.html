@@ -75,25 +75,13 @@
         measurementId: "G-1Q7PCGD8TM"
     };
 
-    // Initialize Firebase immediately when scripts are loaded
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // Check if on redirect path
-    const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
-    if (path && !path.includes('shorturl1')) {
-        const urlRef = database.ref('links/' + path);
-        urlRef.once('value')
-            .then(snapshot => {
-                const data = snapshot.val();
-                if (data && data.url) {
-                    window.location.href = data.url;
-                } else {
-                    document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
-                }
-            })
-            .catch(err => console.error("Redirect error:", err));
-    }
+    // Initialize Firebase with async initialization
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        window.dbRef = firebase.database();
+        console.log("Firebase initialized successfully");
+    });
 
     // URL Generation Function
     async function generateShortUrl() {
@@ -104,15 +92,23 @@
                 return;
             }
 
+            // Create a reference to 'links' node
             const shortId = generateId(6);
+            const linksRef = window.dbRef.ref('links');
+            
+            // Create new child reference
+            const newUrlRef = linksRef.child(shortId);
+            
+            // Data to save
             const urlData = {
                 url: originalUrl,
-                created: Date.now()
+                created: firebase.database.ServerValue.TIMESTAMP
             };
 
-            await database.ref('links/' + shortId).set(urlData);
+            // Save data
+            await newUrlRef.set(urlData);
+
             const shortUrl = `${window.location.origin}/${shortId}`;
-            
             document.getElementById("shortUrlResult").innerHTML = `
                 <div class="result">
                     Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
@@ -125,6 +121,25 @@
             alert("Failed to create short URL. Please try again later.");
         }
     }
+
+    // Check for redirect after Firebase is initialized
+    setTimeout(() => {
+        if (window.dbRef) {
+            const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
+            if (path && !path.includes('shorturl1')) {
+                window.dbRef.ref('links/' + path).once('value')
+                    .then(snapshot => {
+                        const data = snapshot.val();
+                        if (data && data.url) {
+                            window.location.href = data.url;
+                        } else {
+                            document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
+                        }
+                    })
+                    .catch(err => console.error("Redirect error:", err));
+            }
+        }
+    }, 1000);
 
     // Helper functions
     function generateId(length) {
