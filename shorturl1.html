@@ -75,48 +75,58 @@
         measurementId: "G-1Q7PCGD8TM"
     };
 
-    let database;
+    let db; // Global database reference
 
-    // Initialize Firebase immediately
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-        database = firebase.database();
-        console.log("Firebase initialized successfully");
+    // Initialize Firebase with error handling
+    function initializeFirebase() {
+        try {
+            if (!firebase.apps.length) {
+                const app = firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                console.log("Firebase initialized successfully");
+                return true;
+            } else {
+                db = firebase.database();
+                console.log("Firebase already initialized");
+                return true;
+            }
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            return false;
+        }
     }
 
-    // Check if this is the generator page
-    const currentPath = window.location.pathname;
-    const isGeneratorPage = currentPath.includes('shorturl1.html') || 
-                          currentPath === '/' || 
-                          currentPath === '/index.html';
+    // Wait for Firebase SDK to load
+    window.addEventListener('load', function() {
+        if (initializeFirebase()) {
+            checkForRedirect();
+        }
+    });
 
-    // Only check for redirects if we have a path and not on generator page
-    if (!isGeneratorPage) {
+    function checkForRedirect() {
         const path = window.location.pathname.replace(/^\/+|\.html$/g, '');
-        if (path && path.length > 0) {
-            database.ref('short_urls').child(path).once('value')
+        if (path && !path.includes('shorturl1')) {
+            db.ref(`links/${path}`).once('value')
                 .then(snapshot => {
                     const data = snapshot.val();
-                    if (data && data.originalUrl) {
-                        window.location.href = data.originalUrl;
+                    if (data && data.url) {
+                        window.location.href = data.url;
                     } else {
-                        // Only show 404 if we're not on the generator page
-                        if (!document.getElementById('originalUrl')) {
-                            document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
-                        }
+                        document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
                     }
                 })
-                .catch(err => {
-                    console.error("Redirect error:", err);
-                    if (!document.getElementById('originalUrl')) {
-                        document.body.innerHTML = "<h2>Error loading URL. Please try again.</h2>";
-                    }
-                });
+                .catch(err => console.error("Redirect error:", err));
         }
     }
 
     async function generateShortUrl() {
         try {
+            if (!db) {
+                if (!initializeFirebase()) {
+                    throw new Error("Firebase not initialized");
+                }
+            }
+
             const originalUrl = document.getElementById("originalUrl").value.trim();
             if (!originalUrl || !originalUrl.startsWith("http")) {
                 alert("Please enter a valid URL starting with http or https");
@@ -124,20 +134,25 @@
             }
 
             const shortId = generateId(6);
+            const urlRef = db.ref('links').child(shortId);
+
+            // Create data object
             const urlData = {
-                originalUrl: originalUrl,
-                createdAt: firebase.database.ServerValue.TIMESTAMP
+                url: originalUrl,
+                created: firebase.database.ServerValue.TIMESTAMP
             };
 
-            await database.ref('short_urls/' + shortId).set(urlData);
+            // Set data with proper error handling
+            await urlRef.set(urlData);
+
             const shortUrl = `${window.location.origin}/${shortId}`;
-            
             document.getElementById("shortUrlResult").innerHTML = `
                 <div class="result">
                     Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
                     <button onclick="copyToClipboard('${shortUrl}')" 
                             style="margin-left: 10px; padding: 5px 10px;">Copy</button>
                 </div>`;
+
         } catch (error) {
             console.error("Error generating short URL:", error);
             alert("Failed to create short URL. Please try again later.");
