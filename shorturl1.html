@@ -56,13 +56,12 @@
     <p id="shortUrlResult" style="margin-top: 20px; font-weight: bold;"></p>
   </div>
 
-  <!-- Update Firebase Scripts to use latest version and add error handling -->
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    // Your web app's Firebase configuration
+  <!-- Update Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+  <script>
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB1Nejcpv0jubaq85ufjZwll-k62aIjFuQ",
       authDomain: "short-url-generator-9ab67.firebaseapp.com",
@@ -75,20 +74,14 @@
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Make db accessible globally
-    window.db = db;
-    window.dbRef = ref;
-    window.dbSet = set;
-    window.dbGet = get;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     // Check for redirect
     const path = window.location.pathname.replace(/^\/+/g, '');
     if (path.length > 0 && path !== 'index.html') {
       console.log("Checking redirect for short code:", path);
-      get(ref(db, 'short_urls/' + path))
+      db.ref('short_urls/' + path).once('value')
         .then(snapshot => {
           const data = snapshot.val();
           if (data && data.original) {
@@ -103,10 +96,8 @@
           document.body.innerHTML = "<h2>Something went wrong. Try again later.</h2>";
         });
     }
-  </script>
 
-  <script>
-    // Update generateShortUrl function to use new Firebase syntax
+    // URL Generation Function
     async function generateShortUrl() {
       try {
         const originalUrl = document.getElementById("originalUrl").value.trim();
@@ -116,7 +107,7 @@
         }
 
         const shortId = generateId(6);
-        await window.dbSet(window.dbRef(window.db, 'short_urls/' + shortId), {
+        await db.ref('short_urls/' + shortId).set({
           original: originalUrl,
           createdAt: new Date().toISOString()
         });
@@ -124,11 +115,18 @@
         const shortUrl = `https://linkshare.online/${shortId}`;
         document.getElementById("shortUrlResult").innerHTML = `
           Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+          <button onclick="copyToClipboard('${shortUrl}')" style="margin-left: 10px;">Copy</button>
         `;
       } catch (error) {
         console.error("Error generating short URL:", error);
         alert("Failed to create short URL. Please try again later.");
       }
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => alert('URL copied to clipboard!'))
+        .catch(err => console.error('Failed to copy:', err));
     }
 
     function generateId(length) {
