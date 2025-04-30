@@ -94,7 +94,7 @@
       }
 
       const shortId = generateId();
-      db.ref('shorturls/' + shortId).set({
+      db.ref('short_urls/' + shortId).set({
         original: longUrl,
         createdAt: new Date().toISOString()
       }, (error) => {
