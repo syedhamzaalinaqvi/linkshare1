@@ -1,65 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>LinkShare Short URL Tool</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <title>Short URL Generator | LinkShare.Online</title>
+  <meta charset="UTF-8">
 </head>
-<style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      background: #f7f7f7;
-      color: #333;
-    }
-
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-
-    button {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    .result {
-      margin-top: 20px;
-      padding: 12px;
-      background: #e9f7ef;
-      border-left: 4px solid #28a745;
-      word-break: break-all;
-    }
-  </style>
 <body>
-  <div id="app" style="display:none;">
+  <div id="app" style="display: none; padding: 30px;">
     <h2>Short URL Generator</h2>
-    <input type="text" id="longUrl" placeholder="Enter long URL" style="width:300px;" />
-    <button onclick="generateShortUrl()">Generate Short URL</button>
-    <p id="result"></p>
+    <input type="text" id="originalUrl" placeholder="Enter your long URL" style="width: 300px; padding: 8px;" />
+    <button onclick="generateShortUrl()" style="padding: 8px 16px;">Generate</button>
+    <p id="shortUrlResult" style="margin-top: 20px; font-weight: bold;"></p>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script>
-    // ✅ Firebase Config
+    // 🔥 Your Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyB1Nejcpv0jubaq85ufjZwll-k62aIjFuQ",
       authDomain: "short-url-generator-9ab67.firebaseapp.com",
@@ -71,49 +28,68 @@
       measurementId: "G-1Q7PCGD8TM"
     };
 
+    // 🔄 Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ✅ Check if user is visiting a short URL path (like /bT931G)
-    const path = window.location.pathname.slice(1); // remove leading slash
-    if (path) {
-      // This is a short ID, attempt to fetch and redirect
+    // ⚡ Auto-redirect if path is a short code
+    const path = window.location.pathname.replace(/^\/+/g, ''); // remove leading slashes
+
+    if (path.length > 0 && path !== 'index.html') {
+      console.log("Checking redirect for short code:", path);
       db.ref('short_urls/' + path).once('value').then(snapshot => {
         const data = snapshot.val();
         if (data && data.original) {
+          console.log("Redirecting to:", data.original);
           window.location.href = data.original;
         } else {
-          document.body.innerHTML = "<h2>404 - Short URL not found</h2>";
+          document.body.innerHTML = "<h2>404 - Short URL not found 😢</h2>";
         }
       }).catch(err => {
-        console.error(err);
-        document.body.innerHTML = "<h2>Error loading short link</h2>";
+        console.error("Firebase error:", err);
+        document.body.innerHTML = "<h2>Something went wrong. Try again later.</h2>";
       });
     } else {
-      // Show the shortener tool
-      document.getElementById('app').style.display = 'block';
+      document.getElementById("app").style.display = "block"; // show UI if not redirecting
     }
 
-    // ✅ Generate Short URL Function
+    // 🚀 Generate short URL
     function generateShortUrl() {
-      const longUrl = document.getElementById("longUrl").value.trim();
-      if (!longUrl) {
-        alert("Please enter a valid URL.");
+      const originalUrl = document.getElementById("originalUrl").value.trim();
+      if (!originalUrl || !originalUrl.startsWith("http")) {
+        alert("Please enter a valid URL starting with http or https");
         return;
       }
 
-      const shortId = Math.random().toString(36).substring(2, 8); // e.g. "bT931G"
-
+      const shortId = generateId(6); // generate a short 6-char ID
       db.ref('short_urls/' + shortId).set({
-        original: longUrl
+        original: originalUrl,
+        createdAt: new Date().toISOString()
       }).then(() => {
-        const shortUrl = `${window.location.origin}/${shortId}`;
-        document.getElementById("result").innerHTML = `Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+        const shortUrl = `https://linkshare.online/${shortId}`;
+        document.getElementById("shortUrlResult").innerHTML = `Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
       }).catch(err => {
         console.error("Error saving to Firebase:", err);
-        alert("Something went wrong while saving the link.");
+        alert("Failed to create short URL. Please try again later.");
       });
     }
+
+    function generateId(length) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let id = '';
+      for (let i = 0; i < length; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+    }
+
+    // ⏱ Show UI after fallback (if redirect didn’t trigger)
+    setTimeout(() => {
+      const app = document.getElementById('app');
+      if (app && app.style.display === 'none') {
+        app.style.display = 'block';
+      }
+    }, 2000);
   </script>
 </body>
 </html>
