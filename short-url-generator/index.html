@@ -350,13 +350,12 @@
 
         /* User ID Management */
         .user-id-container {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: var(--white);
+            background-color: var(--white);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            max-width: 800px;
-            margin: 2rem auto;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-top: 4px solid var(--accent-color);
         }
 
         .user-id-header {
@@ -366,40 +365,316 @@
             margin-bottom: 1rem;
         }
 
-        .user-id-display {
-            background: var(--gray-light);
-            padding: 0.75rem;
-            border-radius: var(--radius);
-            font-family: monospace;
-            font-size: 0.9rem;
+        .user-id-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
             color: var(--text-color);
-            margin-bottom: 1rem;
-            word-break: break-all;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .user-id-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
         .user-id-btn {
-            background: var(--accent-color);
             padding: 0.5rem 1rem;
-            width: auto;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+        }
+
+        .user-id-display {
+            background-color: var(--gray-light);
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            word-break: break-all;
+            border: 1px dashed var(--gray);
+            text-align: center;
+            color: var(--text-color);
         }
 
         .reset-btn {
-            background: #e53e3e;
+            background-color: #f56565;
+            color: white;
         }
 
         .reset-btn:hover {
-            background: #c53030;
+            background-color: #e53e3e;
+        }
+
+        /* Custom Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-container {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            position: relative;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .popup-overlay.show .popup-container {
+            transform: translateY(0);
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .popup-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .popup-close {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0;
+            line-height: 1;
+        }
+
+        .popup-close:hover {
+            color: var(--text-color);
+        }
+
+        .popup-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .popup-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .popup-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .popup-btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .popup-btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .popup-btn-secondary {
+            background-color: var(--gray-light);
+            color: var(--text-color);
+        }
+
+        .popup-btn-secondary:hover {
+            background-color: var(--gray);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .popup-btn-danger {
+            background-color: #e53e3e;
+            color: var(--white);
+        }
+
+        .popup-btn-danger:hover {
+            background-color: #c53030;
+            transform: translateY(-2px);
+        }
+
+        .popup-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-align: center;
+        }
+
+        .popup-icon.success {
+            color: var(--primary-color);
+        }
+
+        .popup-icon.warning {
+            color: #f59e0b;
+        }
+
+        .popup-icon.danger {
+            color: #e53e3e;
+        }
+
+        .popup-icon.info {
+            color: var(--accent-color);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .toast {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-icon.success {
+            color: var(--primary-color);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-message {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Animation for popups */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease forwards;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast {
+            animation: slideInRight 0.3s forwards;
+        }
+
+        .toast.hide {
+            animation: slideOutRight 0.3s forwards;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup-container {
+            animation: zoomIn 0.3s ease-out forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-light);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
         }
 
         @media (max-width: 768px) {
@@ -548,6 +823,43 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- Custom Popup Elements -->
+    <div class="popup-overlay" id="confirmPopup">
+        <div class="popup-container slide-up">
+            <div class="popup-header">
+                <h3 class="popup-title">Confirm Action</h3>
+                <button class="popup-close" id="closeConfirmPopup"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="popup-content">
+                <i class="fas fa-question-circle popup-icon warning"></i>
+                <p id="confirmMessage">Are you sure you want to proceed with this action?</p>
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-secondary" id="cancelAction">Cancel</button>
+                <button class="popup-btn popup-btn-danger" id="confirmAction">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="successPopup">
+        <div class="popup-container slide-up">
+            <div class="popup-header">
+                <h3 class="popup-title">Success</h3>
+                <button class="popup-close" id="closeSuccessPopup"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="popup-content">
+                <i class="fas fa-check-circle popup-icon success"></i>
+                <p id="successMessage">Action completed successfully!</p>
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-primary" id="okSuccessBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <script>
         // Initialize Firebase
         const firebaseConfig = {
@@ -577,6 +889,91 @@
         const userIdDisplay = document.getElementById('user-id-display');
         const copyIdBtn = document.getElementById('copy-id-btn');
         const resetIdBtn = document.getElementById('reset-id-btn');
+
+        // Popup Elements
+        const confirmPopup = document.getElementById('confirmPopup');
+        const closeConfirmPopup = document.getElementById('closeConfirmPopup');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const cancelAction = document.getElementById('cancelAction');
+        const confirmAction = document.getElementById('confirmAction');
+        const successPopup = document.getElementById('successPopup');
+        const closeSuccessPopup = document.getElementById('closeSuccessPopup');
+        const successMessage = document.getElementById('successMessage');
+        const okSuccessBtn = document.getElementById('okSuccessBtn');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Custom Popup Functions
+        function showConfirmPopup(message, onConfirm) {
+            confirmMessage.textContent = message;
+            confirmPopup.classList.add('show');
+            
+            // Set up the confirm action
+            const confirmHandler = () => {
+                confirmPopup.classList.remove('show');
+                onConfirm();
+                confirmAction.removeEventListener('click', confirmHandler);
+            };
+            
+            confirmAction.addEventListener('click', confirmHandler);
+            
+            // Set up cancel and close actions
+            const cancelHandler = () => {
+                confirmPopup.classList.remove('show');
+                confirmAction.removeEventListener('click', confirmHandler);
+                cancelAction.removeEventListener('click', cancelHandler);
+                closeConfirmPopup.removeEventListener('click', cancelHandler);
+            };
+            
+            cancelAction.addEventListener('click', cancelHandler);
+            closeConfirmPopup.addEventListener('click', cancelHandler);
+        }
+
+        function showSuccessPopup(message) {
+            successMessage.textContent = message;
+            successPopup.classList.add('show');
+            
+            const closeHandler = () => {
+                successPopup.classList.remove('show');
+                okSuccessBtn.removeEventListener('click', closeHandler);
+                closeSuccessPopup.removeEventListener('click', closeHandler);
+            };
+            
+            okSuccessBtn.addEventListener('click', closeHandler);
+            closeSuccessPopup.addEventListener('click', closeHandler);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            if (type === 'info') icon = 'info-circle';
+            if (type === 'warning') icon = 'exclamation-triangle';
+            
+            toast.innerHTML = `
+                <div class="toast-icon ${type}">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="toast-content">
+                    <p class="toast-message">${message}</p>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Trigger reflow for animation
+            void toast.offsetWidth;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
 
         // User ID Management
         function generateUserId(length = 16) {
@@ -609,10 +1006,7 @@
             const userId = getUserId();
             try {
                 await navigator.clipboard.writeText(userId);
-                copyIdBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    copyIdBtn.innerHTML = '<i class="fas fa-copy"></i> Copy ID';
-                }, 2000);
+                showToast('Device ID copied to clipboard!');
             } catch (error) {
                 errorDisplay.textContent = 'Failed to copy ID to clipboard';
                 errorDisplay.classList.add('show');
@@ -621,12 +1015,13 @@
 
         // Reset user ID
         function resetUserId() {
-            if (confirm('Are you sure you want to reset your ID? You will no longer see your previously created links.')) {
+            showConfirmPopup('Are you sure you want to reset your Device ID? You will no longer see your previously created links.', () => {
                 const newUserId = generateUserId();
                 localStorage.setItem('linkshare_user_id', newUserId);
                 displayUserId();
                 loadLinks(); // Refresh links list with new user ID
-            }
+                showSuccessPopup('Device ID has been reset successfully!');
+            });
         }
 
         // Generate random ID for short links
@@ -693,6 +1088,9 @@
                 
                 // Refresh links list
                 loadLinks();
+                
+                // Show success toast
+                showToast('Short URL created successfully!');
             } catch (error) {
                 errorDisplay.textContent = error.message;
                 errorDisplay.classList.add('show');
@@ -707,10 +1105,7 @@
             try {
                 const shortUrl = shortUrlDisplay.textContent || shortUrlDisplay.querySelector('a').href;
                 await navigator.clipboard.writeText(shortUrl);
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy to Clipboard';
-                }, 2000);
+                showToast('Link copied to clipboard!');
             } catch (error) {
                 errorDisplay.textContent = 'Failed to copy to clipboard';
                 errorDisplay.classList.add('show');
@@ -719,26 +1114,27 @@
 
         // Delete a link
         async function deleteLink(id) {
-            if (confirm('Are you sure you want to delete this link?')) {
+            showConfirmPopup('Are you sure you want to delete this link?', async () => {
                 try {
                     await database.ref(`links/${id}`).remove();
+                    showToast('Link deleted successfully!');
                     // Links list will automatically update due to the listener
                 } catch (error) {
                     errorDisplay.textContent = 'Failed to delete link';
                     errorDisplay.classList.add('show');
                 }
-            }
+            });
         }
 
         // Clear all links for the current user
         async function clearAllLinks() {
-            if (confirm('Are you sure you want to delete all your links? This action cannot be undone.')) {
+            showConfirmPopup('Are you sure you want to delete all your links? This action cannot be undone.', async () => {
                 try {
                     const userId = getUserId();
                     const snapshot = await database.ref('links').orderByChild('userId').equalTo(userId).once('value');
                     
                     if (!snapshot.exists()) {
-                        alert('You have no links to clear.');
+                        showToast('You have no links to clear.', 'info');
                         return;
                     }
                     
@@ -749,20 +1145,21 @@
                     });
                     
                     await database.ref('links').update(updates);
+                    showSuccessPopup('All your links have been deleted successfully!');
                     
                     // Links list will automatically update due to the listener
                 } catch (error) {
                     errorDisplay.textContent = 'Failed to clear links';
                     errorDisplay.classList.add('show');
                 }
-            }
+            });
         }
 
         // Copy a specific link
         async function copyLink(url) {
             try {
                 await navigator.clipboard.writeText(url);
-                alert('Link copied to clipboard!');
+                showToast('Link copied to clipboard!');
             } catch (error) {
                 errorDisplay.textContent = 'Failed to copy link';
                 errorDisplay.classList.add('show');
