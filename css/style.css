@@ -204,13 +204,13 @@ body {
     margin-bottom: 2rem;
 }
 
-.page-header h1 {
+.page-header .page-header-h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     color: white;
 }
 
-.page-header p {
+.page-header .page-header-p {
     color: white;
     font-size: 1.2rem;
     max-width: 800px;
