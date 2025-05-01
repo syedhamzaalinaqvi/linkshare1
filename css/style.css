@@ -939,7 +939,7 @@ select:focus {
     position: relative;
     z-index: 2;
 }
-}
+
 
 /* Loading Animation */
 @keyframes shimmer {
