@@ -348,6 +348,55 @@
             color: var(--accent-color);
         }
 
+        /* User ID Management */
+        .user-id-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .user-id-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .user-id-display {
+            background: var(--gray-light);
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            word-break: break-all;
+        }
+
+        .user-id-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .user-id-btn {
+            background: var(--accent-color);
+            padding: 0.5rem 1rem;
+            width: auto;
+            font-size: 0.875rem;
+        }
+
+        .reset-btn {
+            background: #e53e3e;
+        }
+
+        .reset-btn:hover {
+            background: #c53030;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -361,6 +410,10 @@
             .link-actions {
                 flex-direction: row;
                 justify-content: flex-end;
+            }
+            
+            .user-id-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -382,12 +435,22 @@
             <li><a href="https://www.linkshare.online/">Home</a></li>
             <li><a href="/add-group">Add Group</a></li>
             <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
-              <ul class="nav-dropdown-content">
-                  <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
-                  <li><a href="/qr-code-generator">QR Code Generator</a></li>
-                  <li><a href="/qr-code-reader">QR Code Scanner/Reader</a></li>
-                  <li><a href="/short-url-generator" class="active">URL Shortener</a></li>
-              </ul>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+                    <li><a href="/qr-code-generator" >QR Code Generator</a></li>
+                    <li><a href="/qr-code-reader" >QR Code Scanner/Reader</a></li>
+                    <li><a href="/short-url-generator"  class="active">URL Shortener</a></li>
+                </ul>
+            </li>
+            <li class="nav-dropdown">
+                <a href="#" class="dropbtn">Blog ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/Psl-live">🔴PSL Live</a></li>
+                    <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
+                    <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
+                    <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
+                    <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+                </ul>
             </li>
             <li><a href="/about">About</a></li>
             <li><a href="/contact">Contact</a></li>
@@ -429,6 +492,23 @@
             </div>
 
             <div id="error" class="error"></div>
+        </div>
+
+        <div class="user-id-container">
+            <div class="user-id-header">
+                <h2><i class="fas fa-fingerprint"></i> Your Device ID</h2>
+                <div class="user-id-actions">
+                    <button id="copy-id-btn" class="btn user-id-btn">
+                        <i class="fas fa-copy"></i> Copy ID
+                    </button>
+                    <button id="reset-id-btn" class="btn user-id-btn reset-btn">
+                        <i class="fas fa-sync-alt"></i> Reset ID
+                    </button>
+                </div>
+            </div>
+            <p>This ID is used to identify your shortened links. You'll only see links created with this ID.</p>
+            <div id="user-id-display" class="user-id-display"></div>
+            <p><small>Note: If you use a different device or browser, you'll need to copy this ID to see the same links.</small></p>
         </div>
 
         <div class="links-container">
@@ -494,8 +574,62 @@
         const errorDisplay = document.getElementById('error');
         const linksList = document.getElementById('links-list');
         const clearAllBtn = document.getElementById('clear-all-btn');
+        const userIdDisplay = document.getElementById('user-id-display');
+        const copyIdBtn = document.getElementById('copy-id-btn');
+        const resetIdBtn = document.getElementById('reset-id-btn');
 
-        // Generate random ID
+        // User ID Management
+        function generateUserId(length = 16) {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Get or create user ID
+        function getUserId() {
+            let userId = localStorage.getItem('linkshare_user_id');
+            if (!userId) {
+                userId = generateUserId();
+                localStorage.setItem('linkshare_user_id', userId);
+            }
+            return userId;
+        }
+
+        // Display user ID
+        function displayUserId() {
+            const userId = getUserId();
+            userIdDisplay.textContent = userId;
+        }
+
+        // Copy user ID to clipboard
+        async function copyUserId() {
+            const userId = getUserId();
+            try {
+                await navigator.clipboard.writeText(userId);
+                copyIdBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyIdBtn.innerHTML = '<i class="fas fa-copy"></i> Copy ID';
+                }, 2000);
+            } catch (error) {
+                errorDisplay.textContent = 'Failed to copy ID to clipboard';
+                errorDisplay.classList.add('show');
+            }
+        }
+
+        // Reset user ID
+        function resetUserId() {
+            if (confirm('Are you sure you want to reset your ID? You will no longer see your previously created links.')) {
+                const newUserId = generateUserId();
+                localStorage.setItem('linkshare_user_id', newUserId);
+                displayUserId();
+                loadLinks(); // Refresh links list with new user ID
+            }
+        }
+
+        // Generate random ID for short links
         function generateId(length = 6) {
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
@@ -509,6 +643,7 @@
         async function createShortUrl() {
             const url = urlInput.value.trim();
             const customAlias = customAliasInput.value.trim();
+            const userId = getUserId();
             
             // Reset error display
             errorDisplay.textContent = '';
@@ -537,12 +672,13 @@
                     }
                 }
 
-                // Save to Firebase
+                // Save to Firebase with user ID
                 await database.ref(`links/${shortId}`).set({
                     originalUrl: url,
                     shortUrl: `https://linkshare.online/${shortId}`,
                     clicks: 0,
-                    createdAt: Date.now()
+                    createdAt: Date.now(),
+                    userId: userId // Store the user ID with the link
                 });
 
                 // Display result
@@ -594,11 +730,18 @@
             }
         }
 
-        // Clear all links
+        // Clear all links for the current user
         async function clearAllLinks() {
             if (confirm('Are you sure you want to delete all your links? This action cannot be undone.')) {
                 try {
-                    const snapshot = await database.ref('links').once('value');
+                    const userId = getUserId();
+                    const snapshot = await database.ref('links').orderByChild('userId').equalTo(userId).once('value');
+                    
+                    if (!snapshot.exists()) {
+                        alert('You have no links to clear.');
+                        return;
+                    }
+                    
                     const updates = {};
                     
                     snapshot.forEach(childSnapshot => {
@@ -632,9 +775,12 @@
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // Load and display links
+        // Load and display links for the current user
         function loadLinks() {
-            database.ref('links').orderByChild('createdAt').limitToLast(10).on('value', (snapshot) => {
+            const userId = getUserId();
+            
+            // Use orderByChild to filter links by userId
+            database.ref('links').orderByChild('userId').equalTo(userId).on('value', (snapshot) => {
                 linksList.innerHTML = '';
                 const links = [];
                 
@@ -692,12 +838,15 @@
         shortenBtn.addEventListener('click', createShortUrl);
         copyBtn.addEventListener('click', copyToClipboard);
         clearAllBtn.addEventListener('click', clearAllLinks);
+        copyIdBtn.addEventListener('click', copyUserId);
+        resetIdBtn.addEventListener('click', resetUserId);
 
         // Make functions available globally for onclick handlers
         window.deleteLink = deleteLink;
         window.copyLink = copyLink;
 
-        // Trigger once on load to show links
+        // Initialize
+        displayUserId();
         loadLinks();
 
         // Scroll to top functionality
