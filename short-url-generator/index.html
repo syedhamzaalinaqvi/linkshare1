@@ -770,8 +770,24 @@
 
             <div id="error" class="error"></div>
         </div>
-
- 
+<!--
+        <div class="user-id-container">
+            <div class="user-id-header">
+                <h2><i class="fas fa-fingerprint"></i> Your Device ID</h2>
+                <div class="user-id-actions">
+                    <button id="copy-id-btn" class="btn user-id-btn">
+                        <i class="fas fa-copy"></i> Copy ID
+                    </button>
+                    <button id="reset-id-btn" class="btn user-id-btn reset-btn">
+                        <i class="fas fa-sync-alt"></i> Reset ID
+                    </button>
+                </div>
+            </div>
+            <p>This ID is used to identify your shortened links. You'll only see links created with this ID.</p>
+            <div id="user-id-display" class="user-id-display"></div>
+            <p><small>Note: If you use a different device or browser, you'll need to copy this ID to see the same links.</small></p>
+        </div>
+-->
         <div class="links-container">
             <div class="links-header">
                 <h2><i class="fas fa-history"></i> Your Recent Links</h2>
@@ -873,6 +889,8 @@
         const errorDisplay = document.getElementById('error');
         const linksList = document.getElementById('links-list');
         const clearAllBtn = document.getElementById('clear-all-btn');
+        
+        // User ID elements might not exist if commented out
         const userIdDisplay = document.getElementById('user-id-display');
         const copyIdBtn = document.getElementById('copy-id-btn');
         const resetIdBtn = document.getElementById('reset-id-btn');
@@ -982,33 +1000,41 @@
             return userId;
         }
 
-        // Display user ID
+        // Display user ID - only if element exists
         function displayUserId() {
-            const userId = getUserId();
-            userIdDisplay.textContent = userId;
-        }
-
-        // Copy user ID to clipboard
-        async function copyUserId() {
-            const userId = getUserId();
-            try {
-                await navigator.clipboard.writeText(userId);
-                showToast('Device ID copied to clipboard!');
-            } catch (error) {
-                errorDisplay.textContent = 'Failed to copy ID to clipboard';
-                errorDisplay.classList.add('show');
+            if (userIdDisplay) {
+                const userId = getUserId();
+                userIdDisplay.textContent = userId;
             }
         }
 
-        // Reset user ID
+        // Copy user ID to clipboard - only if element exists
+        async function copyUserId() {
+            if (copyIdBtn) {
+                const userId = getUserId();
+                try {
+                    await navigator.clipboard.writeText(userId);
+                    showToast('Device ID copied to clipboard!');
+                } catch (error) {
+                    errorDisplay.textContent = 'Failed to copy ID to clipboard';
+                    errorDisplay.classList.add('show');
+                }
+            }
+        }
+
+        // Reset user ID - only if element exists
         function resetUserId() {
-            showConfirmPopup('Are you sure you want to reset your Device ID? You will no longer see your previously created links.', () => {
-                const newUserId = generateUserId();
-                localStorage.setItem('linkshare_user_id', newUserId);
-                displayUserId();
-                loadLinks(); // Refresh links list with new user ID
-                showSuccessPopup('Device ID has been reset successfully!');
-            });
+            if (resetIdBtn) {
+                showConfirmPopup('Are you sure you want to reset your Device ID? You will no longer see your previously created links.', () => {
+                    const newUserId = generateUserId();
+                    localStorage.setItem('linkshare_user_id', newUserId);
+                    if (userIdDisplay) {
+                        userIdDisplay.textContent = newUserId;
+                    }
+                    loadLinks(); // Refresh links list with new user ID
+                    showSuccessPopup('Device ID has been reset successfully!');
+                });
+            }
         }
 
         // Generate random ID for short links
@@ -1222,16 +1248,18 @@
         shortenBtn.addEventListener('click', createShortUrl);
         copyBtn.addEventListener('click', copyToClipboard);
         clearAllBtn.addEventListener('click', clearAllLinks);
-        copyIdBtn.addEventListener('click', copyUserId);
-        resetIdBtn.addEventListener('click', resetUserId);
+        
+        // Only add event listeners if elements exist
+        if (copyIdBtn) copyIdBtn.addEventListener('click', copyUserId);
+        if (resetIdBtn) resetIdBtn.addEventListener('click', resetUserId);
 
         // Make functions available globally for onclick handlers
         window.deleteLink = deleteLink;
         window.copyLink = copyLink;
 
         // Initialize
-        displayUserId();
-        loadLinks();
+        displayUserId(); // This will only run if userIdDisplay exists
+        loadLinks(); // This should always run
 
         // Scroll to top functionality
         const scrollToTopBtn = document.querySelector('.scroll-to-top');
