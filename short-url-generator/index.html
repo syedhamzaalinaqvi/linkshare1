@@ -691,6 +691,79 @@
                 flex-direction: column;
             }
         }
+
+        /* User Guide Styles */
+        .user-guide-container {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .user-guide-container h2 {
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-guide-content {
+            color: var(--text-color);
+        }
+
+        .user-guide-content h3 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            margin: 1.5rem 0 0.8rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .user-guide-content ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-guide-content li {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .user-guide-content strong {
+            color: var(--secondary-color);
+        }
+
+        .user-guide-note {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        .user-guide-note p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .user-guide-container {
+                padding: 1.5rem;
+            }
+            
+            .user-guide-container h2 {
+                font-size: 1.5rem;
+            }
+            
+            .user-guide-content h3 {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -798,6 +871,40 @@
             <div id="links-list" class="links-list"></div>
         </div>
     </main>
+
+    <!-- User Guide Section -->
+    <div class="user-guide-container">
+        <h2><i class="fas fa-book"></i> How to Use URL Shortener</h2>
+        <div class="user-guide-content">
+            <h3>Creating Short Links</h3>
+            <ul>
+                <li><strong>Enter your long URL</strong> - Make sure to include http:// or https:// at the beginning</li>
+                <li><strong>Custom alias (optional)</strong> - Create a memorable name for your link</li>
+                <li><strong>Click "Create Short Link"</strong> - Your shortened URL will be generated instantly</li>
+                <li><strong>Copy to clipboard</strong> - Use the copy button to easily share your link</li>
+            </ul>
+
+            <h3>Custom Alias Tips</h3>
+            <ul>
+                <li><strong>Use only letters and numbers</strong> - Don't use dashes, underscores, spaces or other symbols</li>
+                <li><strong>Keep it simple</strong> - Use single words like "mylink" instead of "my-link" or "my_link"</li>
+                <li><strong>Be unique</strong> - If your alias is already taken, you'll need to choose another one</li>
+                <li><strong>Be memorable</strong> - Choose something easy to remember and type</li>
+            </ul>
+
+            <h3>Managing Your Links</h3>
+            <ul>
+                <li><strong>View your links</strong> - All your shortened links appear in the "Your Recent Links" section</li>
+                <li><strong>Copy links</strong> - Click the copy icon to copy any of your previously created links</li>
+                <li><strong>Delete links</strong> - Remove individual links with the delete button</li>
+                <li><strong>Clear all</strong> - Remove all your links at once with the "Clear All" button</li>
+            </ul>
+
+            <div class="user-guide-note">
+                <p><strong>Note:</strong> Your links are private and can only be seen on this device. If you use multiple devices, your links won't automatically sync between them.</p>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
     <footer class="footer">
@@ -1189,17 +1296,20 @@
         function loadLinks() {
             const userId = getUserId();
             
-            // Use orderByChild to filter links by userId
+            // Use orderByChild to filter links by userId and sort by createdAt in descending order
             database.ref('links').orderByChild('userId').equalTo(userId).on('value', (snapshot) => {
                 linksList.innerHTML = '';
                 const links = [];
                 
                 snapshot.forEach((childSnapshot) => {
-                    links.unshift({
+                    links.push({
                         id: childSnapshot.key,
                         ...childSnapshot.val()
                     });
                 });
+
+                // Sort links by createdAt in descending order (newest first)
+                links.sort((a, b) => b.createdAt - a.createdAt);
 
                 if (links.length === 0) {
                     linksList.innerHTML = `
