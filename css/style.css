@@ -1727,7 +1727,7 @@ select:focus {
 
 /* Content Page Styles */
 .content-section {
-    max-width:80% /*800px*/;
+    max-width: 90% /*800px*/;
     margin: 0 auto;
     padding: 2rem;
     background: var(--white);
