@@ -7,12 +7,12 @@
     body {
       font-family: sans-serif;
       padding: 20px;
-      background: #f4f4f4;
+      background: #f9f9f9;
     }
     h2 {
       color: #333;
     }
-    input[type="text"] {
+    input[type="text"], input[type="file"] {
       width: 100%;
       padding: 10px;
       margin-bottom: 10px;
@@ -22,6 +22,7 @@
       background: #007bff;
       color: white;
       border: none;
+      margin-bottom: 20px;
       cursor: pointer;
     }
     .channel {
@@ -38,59 +39,88 @@
     .url {
       color: #555;
       font-size: 0.9em;
-      word-break: break-all;
+      word-break: break-word;
     }
   </style>
 </head>
 <body>
-  <h2>M3U/M3U8 Playlist Viewer</h2>
-  <input type="text" id="m3uUrl" placeholder="Paste M3U or M3U8 file URL here..." />
-  <button onclick="loadPlaylist()">Load Playlist</button>
+  <h2>M3U / M3U8 Playlist Viewer</h2>
+
+  <!-- Paste URL -->
+  <input type="text" id="m3uUrl" placeholder="Paste M3U or M3U8 URL here..." />
+  <button onclick="loadFromUrl()">Load from URL</button>
+
+  <hr>
+
+  <!-- Upload File -->
+  <input type="file" id="m3uFile" accept=".m3u,.m3u8" />
+  <button onclick="loadFromFile()">Load from File</button>
 
   <div id="playlistContainer"></div>
 
   <script>
-    async function loadPlaylist() {
+    function parseM3U(content) {
+      const lines = content.split('\n');
+      let output = '';
+      let currentInfo = '';
+
+      lines.forEach(line => {
+        line = line.trim();
+        if (line.startsWith('#EXTINF')) {
+          currentInfo = line;
+        } else if (line && !line.startsWith('#')) {
+          const nameMatch = currentInfo.match(/,(.*)$/);
+          const logoMatch = currentInfo.match(/tvg-logo="([^"]+)"/);
+          const channelName = nameMatch ? nameMatch[1] : 'Unknown Channel';
+          const logo = logoMatch ? `<img class="logo" src="${logoMatch[1]}" alt="Logo"/>` : '';
+          output += `
+            <div class="channel">
+              ${logo}<strong>${channelName}</strong><br>
+              <div class="url">${line}</div>
+            </div>
+          `;
+          currentInfo = '';
+        }
+      });
+
+      return output || "<p>No channels found or format not recognized.</p>";
+    }
+
+    async function loadFromUrl() {
       const url = document.getElementById('m3uUrl').value.trim();
       const container = document.getElementById('playlistContainer');
       container.innerHTML = '';
-
       if (!url) {
-        alert("Please enter a URL.");
+        alert('Please enter a URL.');
         return;
       }
 
       try {
         const res = await fetch(url);
         const text = await res.text();
-
-        const lines = text.split('\n');
-        let currentInfo = '';
-        lines.forEach(line => {
-          line = line.trim();
-          if (line.startsWith('#EXTINF')) {
-            currentInfo = line;
-          } else if (line && !line.startsWith('#')) {
-            const nameMatch = currentInfo.match(/,(.*)$/);
-            const logoMatch = currentInfo.match(/tvg-logo="([^"]+)"/);
-            const channelName = nameMatch ? nameMatch[1] : 'Unknown';
-            const logo = logoMatch ? `<img class="logo" src="${logoMatch[1]}" alt="logo"/>` : '';
-            container.innerHTML += `
-              <div class="channel">
-                ${logo}<strong>${channelName}</strong><br>
-                <div class="url">${line}</div>
-              </div>
-            `;
-            currentInfo = '';
-          }
-        });
-
-        if (container.innerHTML === '') {
-          container.innerHTML = "<p>No valid channels found or it's a single stream link.</p>";
-        }
+        container.innerHTML = parseM3U(text);
       } catch (err) {
-        container.innerHTML = `<p style="color:red;">Error loading playlist: ${err.message}</p>`;
+        container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
       }
+    }
+
+    function loadFromFile() {
+      const fileInput = document.getElementById('m3uFile');
+      const file = fileInput.files[0];
+      const container = document.getElementById('playlistContainer');
+      container.innerHTML = '';
+
+      if (!file) {
+        alert('Please select a file.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = e.target.result;
+        container.innerHTML = parseM3U(text);
+      };
+      reader.readAsText(file);
     }
   </script>
 </body>
