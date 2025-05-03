@@ -2,68 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>M3U/M3U8 Playlist Viewer</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f9f9f9;
+    * {
+      box-sizing: border-box;
     }
-    h2 {
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #f0f4ff, #e0eaff);
       color: #333;
     }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      max-width: 800px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
     input[type="text"], input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
     }
     button {
-      padding: 10px 20px;
-      background: #007bff;
+      padding: 12px;
+      background: #0066ff;
       color: white;
       border: none;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      font-size: 16px;
       cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    button.loading::after {
+      content: " ⏳";
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .playlist-container {
+      max-width: 900px;
+      height: 500px;
+      overflow-y: auto;
+      margin: 30px auto 0;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
     }
     .channel {
-      background: white;
+      border-left: 4px solid #007bff;
+      background: #f9faff;
       margin: 10px 0;
       padding: 10px;
-      border-left: 5px solid #007bff;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    .channel:hover {
+      transform: scale(1.01);
+      background: #f0f6ff;
     }
     .logo {
-      max-height: 30px;
+      max-height: 25px;
+      margin-right: 8px;
       vertical-align: middle;
-      margin-right: 10px;
     }
     .url {
-      color: #555;
-      font-size: 0.9em;
-      word-break: break-word;
+      color: #666;
+      font-size: 14px;
+      word-break: break-all;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <h2>M3U / M3U8 Playlist Viewer</h2>
+  <h2>🌐 M3U / M3U8 Playlist Viewer</h2>
+  <div class="input-group">
+    <input type="text" id="m3uUrl" placeholder="Paste M3U or M3U8 URL here...">
+    <button onclick="loadFromUrl(this)">Load from URL</button>
+    <input type="file" id="m3uFile" accept=".m3u,.m3u8">
+    <button onclick="loadFromFile(this)">Load from File</button>
+  </div>
 
-  <!-- Paste URL -->
-  <input type="text" id="m3uUrl" placeholder="Paste M3U or M3U8 URL here..." />
-  <button onclick="loadFromUrl()">Load from URL</button>
-
-  <hr>
-
-  <!-- Upload File -->
-  <input type="file" id="m3uFile" accept=".m3u,.m3u8" />
-  <button onclick="loadFromFile()">Load from File</button>
-
-  <div id="playlistContainer"></div>
+  <div id="playlistContainer" class="playlist-container">
+    <p style="text-align:center;color:#aaa">Result will appear here...</p>
+  </div>
 
   <script>
     function parseM3U(content) {
       const lines = content.split('\n');
       let output = '';
       let currentInfo = '';
-
       lines.forEach(line => {
         line = line.trim();
         if (line.startsWith('#EXTINF')) {
@@ -75,26 +118,23 @@
           const logo = logoMatch ? `<img class="logo" src="${logoMatch[1]}" alt="Logo"/>` : '';
           output += `
             <div class="channel">
-              ${logo}<strong>${channelName}</strong><br>
+              ${logo}<strong>${channelName}</strong>
               <div class="url">${line}</div>
             </div>
           `;
           currentInfo = '';
         }
       });
-
-      return output || "<p>No channels found or format not recognized.</p>";
+      return output || "<p style='text-align:center;'>No channels found or format not recognized.</p>";
     }
 
-    async function loadFromUrl() {
+    async function loadFromUrl(btn) {
       const url = document.getElementById('m3uUrl').value.trim();
       const container = document.getElementById('playlistContainer');
       container.innerHTML = '';
-      if (!url) {
-        alert('Please enter a URL.');
-        return;
-      }
-
+      if (!url) return alert('Please enter a URL.');
+      btn.disabled = true;
+      btn.classList.add('loading');
       try {
         const res = await fetch(url);
         const text = await res.text();
@@ -102,23 +142,23 @@
       } catch (err) {
         container.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
       }
+      btn.disabled = false;
+      btn.classList.remove('loading');
     }
 
-    function loadFromFile() {
-      const fileInput = document.getElementById('m3uFile');
-      const file = fileInput.files[0];
+    function loadFromFile(btn) {
+      const file = document.getElementById('m3uFile').files[0];
       const container = document.getElementById('playlistContainer');
       container.innerHTML = '';
-
-      if (!file) {
-        alert('Please select a file.');
-        return;
-      }
-
+      if (!file) return alert('Please select a file.');
+      btn.disabled = true;
+      btn.classList.add('loading');
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = function(e) {
         const text = e.target.result;
         container.innerHTML = parseM3U(text);
+        btn.disabled = false;
+        btn.classList.remove('loading');
       };
       reader.readAsText(file);
     }
