@@ -307,9 +307,9 @@ select:focus {
 
 /* Groups Grid */
 .groups-section {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 0rem;
+    max-width: 99%;
+    margin: auto;
 }
 
 .groups-header {
