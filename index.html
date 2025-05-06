@@ -635,9 +635,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <!-- Our Scripts -->
-    <script src="js/firebase-config.js"></script>
+    <!-- <script src="js/firebase-config.js"></script> -->
     <script>
-        // Firebase configuration
+        // Firebase configuration - Using inline config to avoid conflicts
         const firebaseConfig = {
             apiKey: "AIzaSyBH_lgpYQtF0KHodqs0sL7dGjhJWjNs2SM",
             authDomain: "linkshare-a5b4b.firebaseapp.com",
@@ -648,9 +648,163 @@
             appId: "1:1042493714343:web:b4f7a6d5a5d8a5b1c5d5a5"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Initialize Firebase - Only initialize once
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const database = firebase.database();
+        
+        // Function to load groups for the slider
+        function loadGroupsForSlider() {
+            const groupsRef = database.ref('groups');
+            
+            // Log to debug
+            console.log("Attempting to load groups for slider");
+            
+            // Use once() to get all groups at once
+            groupsRef.limitToLast(8).once('value')
+                .then((snapshot) => {
+                    console.log("Firebase snapshot received:", snapshot.exists());
+                    
+                    if (!snapshot.exists()) {
+                        console.log("No groups found in database");
+                        // Add some dummy groups for testing if none exist
+                        populateGroupSliderWithDummy();
+                        return;
+                    }
+                    
+                    const groups = [];
+                    snapshot.forEach((childSnapshot) => {
+                        const group = childSnapshot.val();
+                        group.id = childSnapshot.key;
+                        groups.push(group);
+                        console.log("Group loaded:", group.name || "Unnamed group");
+                    });
+                    
+                    console.log(`Loaded ${groups.length} groups`);
+                    
+                    // Reverse to show newest first
+                    groups.reverse();
+                    
+                    // Populate the slider
+                    populateGroupSlider(groups);
+                })
+                .catch((error) => {
+                    console.error("Error loading groups:", error);
+                    // Add some dummy groups for testing if there's an error
+                    populateGroupSliderWithDummy();
+                });
+        }
+        
+        // Function to populate the group slider
+        function populateGroupSlider(groups) {
+            const slider = document.getElementById('groupSlider');
+            if (!slider) {
+                console.error("Group slider element not found!");
+                return;
+            }
+            
+            slider.innerHTML = '';
+            
+            if (groups.length === 0) {
+                console.log("No groups to display");
+                return;
+            }
+            
+            groups.forEach(group => {
+                const slide = document.createElement('div');
+                slide.className = 'group-slide';
+                
+                // Default image if none provided
+                const imageUrl = group.imageUrl || 'https://via.placeholder.com/300x200?text=WhatsApp+Group';
+                
+                // Make sure group.link is a valid URL
+                const link = group.link && group.link.startsWith('http') ? 
+                    group.link : 
+                    `https://chat.whatsapp.com/${group.link || 'example'}`;
+                
+                slide.innerHTML = `
+                    <div class="group-slide-img" style="background-image: url('${imageUrl}')">
+                        <span class="group-slide-category">${group.category || 'General'}</span>
+                        <span class="group-slide-country">${group.country || 'Global'}</span>
+                    </div>
+                    <div class="group-slide-content">
+                        <h3 class="group-slide-title">${group.name || 'WhatsApp Group'}</h3>
+                        <a href="${link}" target="_blank" class="group-slide-join">Join Group</a>
+                    </div>
+                `;
+                
+                slider.appendChild(slide);
+            });
+            
+            console.log(`Added ${groups.length} slides to the slider`);
+        }
+        
+        // Function to add dummy groups if no real groups exist
+        function populateGroupSliderWithDummy() {
+            console.log("Adding dummy groups for testing");
+            
+            const dummyGroups = [
+                {
+                    name: "Movies & TV Shows",
+                    category: "Entertainment",
+                    country: "Global",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Movies",
+                    link: "https://chat.whatsapp.com/example1"
+                },
+                {
+                    name: "Tech Enthusiasts",
+                    category: "Technology",
+                    country: "USA",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Tech",
+                    link: "https://chat.whatsapp.com/example2"
+                },
+                {
+                    name: "Football Fans",
+                    category: "Sports",
+                    country: "UK",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Football",
+                    link: "https://chat.whatsapp.com/example3"
+                },
+                {
+                    name: "Gaming Community",
+                    category: "Gaming",
+                    country: "Global",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Gaming",
+                    link: "https://chat.whatsapp.com/example4"
+                },
+                {
+                    name: "Music Lovers",
+                    category: "Music",
+                    country: "Global",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Music",
+                    link: "https://chat.whatsapp.com/example5"
+                },
+                {
+                    name: "Study Group",
+                    category: "Education",
+                    country: "India",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Education",
+                    link: "https://chat.whatsapp.com/example6"
+                },
+                {
+                    name: "Job Opportunities",
+                    category: "Jobs",
+                    country: "Pakistan",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Jobs",
+                    link: "https://chat.whatsapp.com/example7"
+                },
+                {
+                    name: "Memes & Fun",
+                    category: "Entertainment",
+                    country: "Global",
+                    imageUrl: "https://via.placeholder.com/300x200?text=Memes",
+                    link: "https://chat.whatsapp.com/example8"
+                }
+            ];
+            
+            populateGroupSlider(dummyGroups);
+        }
         
         // Group Slider Functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -794,56 +948,6 @@
                 return result;
             }
         });
-        
-        // Function to load groups for the slider
-        function loadGroupsForSlider() {
-            const groupsRef = database.ref('groups');
-            groupsRef.orderByChild('timestamp').limitToLast(8).once('value')
-                .then((snapshot) => {
-                    const groups = [];
-                    snapshot.forEach((childSnapshot) => {
-                        const group = childSnapshot.val();
-                        group.id = childSnapshot.key;
-                        groups.push(group);
-                    });
-                    
-                    // Reverse to show newest first
-                    groups.reverse();
-                    
-                    // Populate the slider
-                    populateGroupSlider(groups);
-                })
-                .catch((error) => {
-                    console.error("Error loading groups:", error);
-                });
-        }
-        
-        // Function to populate the group slider
-        function populateGroupSlider(groups) {
-            const slider = document.getElementById('groupSlider');
-            slider.innerHTML = '';
-            
-            groups.forEach(group => {
-                const slide = document.createElement('div');
-                slide.className = 'group-slide';
-                
-                // Default image if none provided
-                const imageUrl = group.imageUrl || 'https://via.placeholder.com/300x200?text=WhatsApp+Group';
-                
-                slide.innerHTML = `
-                    <div class="group-slide-img" style="background-image: url('${imageUrl}')">
-                        <span class="group-slide-category">${group.category || 'General'}</span>
-                        <span class="group-slide-country">${group.country || 'Global'}</span>
-                    </div>
-                    <div class="group-slide-content">
-                        <h3 class="group-slide-title">${group.name}</h3>
-                        <a href="${group.link}" target="_blank" class="group-slide-join">Join Group</a>
-                    </div>
-                `;
-                
-                slider.appendChild(slide);
-            });
-        }
     </script>
 </body>
 </html>
