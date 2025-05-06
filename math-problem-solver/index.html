@@ -333,6 +333,35 @@
             overflow-x: auto;
         }
         
+        .example-problems {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .example-problems p {
+            margin-bottom: 0.5rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+        
+        .example-problem {
+            display: inline-block;
+            background-color: var(--gray-light);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .example-problem:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
         @media (max-width: 768px) {
             .calculator-container {
                 flex-direction: column;
@@ -409,12 +438,20 @@
                             <option value="simplify">Simplify Expression</option>
                             <option value="calculus">Calculus (Derivatives)</option>
                             <option value="matrix">Matrix Operations</option>
+                            <option value="system">System of Equations</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
                         <label for="problem-input">Enter Your Problem</label>
                         <textarea id="problem-input" placeholder="Example: 2x + 3 = 7 or 3x^2 + 2x - 5"></textarea>
+                        <div class="example-problems">
+                            <p>Example Problems:</p>
+                            <span class="example-problem" data-problem="2x + 3 = 7">2x + 3 = 7</span>
+                            <span class="example-problem" data-problem="x^3 - 6x^2 + 11x - 6 = 0">x³ - 6x² + 11x - 6 = 0</span>
+                            <span class="example-problem" data-problem="(x+1)(x-2)(x+3)">Expand (x+1)(x-2)(x+3)</span>
+                            <span class="example-problem" data-problem="x + y = 5&#10;2x - y = 1">System: x + y = 5, 2x - y = 1</span>
+                        </div>
                     </div>
                     
                     <button id="solve-btn" onclick="solveProblem()">Solve Problem</button>

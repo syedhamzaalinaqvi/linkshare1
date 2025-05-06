@@ -68,6 +68,9 @@ function solveProblem() {
             case 'matrix':
                 [solution, steps] = solveMatrix(problem);
                 break;
+            case 'system':
+                [solution, steps] = solveSystem(problem);
+                break;
             default:
                 [solution, steps] = solveAlgebra(problem);
         }
@@ -274,70 +277,135 @@ function solveAlgebra(problem) {
                     expression: `${simplifiedStr} = 0`
                 });
                 
-                // For cubic equations, we can try numerical methods
+                if (degree === 3) {
+                    steps.push({
+                        description: `For a cubic equation, I'll try to factor it first, then use numerical methods if needed`,
+                        expression: `${simplifiedStr} = 0`
+                    });
+                    
+                    // Try to factor the cubic expression
+                    try {
+                        const factored = math.simplify(simplifiedStr);
+                        if (factored.toString() !== simplifiedStr) {
+                            steps.push({
+                                description: `I can factor this cubic expression as:`,
+                                expression: `${factored.toString()} = 0`
+                            });
+                            
+                            // Check if it's in a form like (x-a)(x-b)(x-c) = 0
+                            if (factored.toString().includes('*') && 
+                                (factored.toString().includes('(') || factored.toString().includes(')'))) {
+                                steps.push({
+                                    description: `When a product equals zero, at least one of the factors must be zero`,
+                                    expression: `Let's solve each factor = 0`
+                                });
+                                
+                                // Try to extract roots from the factored form
+                                const factorRoots = [];
+                                
+                                // Simple pattern matching for factors like (x-a)
+                                const factorPattern = /\(x\s*([+-])\s*(\d*\.?\d*)\)/g;
+                                let factorMatch;
+                                
+                                while ((factorMatch = factorPattern.exec(factored.toString())) !== null) {
+                                    const sign = factorMatch[1];
+                                    const value = parseFloat(factorMatch[2] || 1);
+                                    const root = sign === '+' ? value : -value;
+                                    factorRoots.push(root);
+                                    
+                                    steps.push({
+                                        description: `From the factor (x ${sign} ${value}), we get:`,
+                                        expression: `x = ${root}`
+                                    });
+                                }
+                                
+                                if (factorRoots.length > 0) {
+                                    solution = factorRoots.map(root => `x = ${root}`).join(' or ');
+                                    return [solution, steps];
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.log("Error factoring cubic:", e);
+                    }
+                }
+                
+                // If factoring didn't work or it's higher than cubic, use numerical methods
                 steps.push({
-                    description: `For higher degree polynomials, we'll use numerical methods to find the roots`,
+                    description: `For higher degree polynomials, I'll use numerical methods to find the roots`,
                     expression: `Finding roots of: ${simplifiedStr}`
                 });
                 
                 try {
-                    // Try to find roots numerically
-                    // This is a simplified approach for educational purposes
-                    // In a real solver, we'd use more robust numerical methods
+                    // Try to find roots numerically with our enhanced method
                     const roots = findRoots(simplifiedStr, 'x');
                     
                     if (roots.length > 0) {
+                        // Add explanation of the numerical method
                         steps.push({
-                            description: `I found ${roots.length} solution(s) for this equation:`,
-                            expression: roots.map(root => `x = ${root.toFixed(4)}`).join(', ')
+                            description: `I'm using a numerical method called the bisection method to find where the function crosses the x-axis`,
+                            expression: `This method works by repeatedly dividing intervals where the function changes sign`
                         });
                         
-                        solution = roots.map(root => `x = ${root.toFixed(4)}`).join(' or ');
+                        // Verify the roots by substituting back
+                        steps.push({
+                            description: `Let's verify these solutions by substituting them back into the original equation`,
+                            expression: `${simplifiedStr} = 0`
+                        });
+                        
+                        const expr = math.parse(simplifiedStr).compile();
+                        const verifiedRoots = [];
+                        
+                        roots.forEach((root, index) => {
+                            const roundedRoot = parseFloat(root.toFixed(4));
+                            const result = expr.evaluate({ x: roundedRoot });
+                            const isRoot = Math.abs(result) < 0.001;
+                            
+                            if (isRoot) {
+                                verifiedRoots.push(roundedRoot);
+                                steps.push({
+                                    description: `Solution ${index + 1}: x = ${roundedRoot}`,
+                                    expression: `When x = ${roundedRoot}, the expression ≈ ${result.toFixed(8)} ≈ 0 ✓`
+                                });
+                            }
+                        });
+                        
+                        if (verifiedRoots.length > 0) {
+                            solution = verifiedRoots.map(root => `x = ${root}`).join(' or ');
+                        } else {
+                            steps.push({
+                                description: `The numerical solutions weren't accurate enough. Let's try a different approach.`,
+                                expression: `For complex polynomials, specialized tools may be needed.`
+                            });
+                            solution = "No accurate solutions found";
+                        }
                     } else {
                         steps.push({
                             description: `I couldn't find any real solutions for this equation using numerical methods.`,
-                            expression: `Try using specialized tools for higher-degree polynomials.`
+                            expression: `The equation might have only complex solutions or require more advanced techniques.`
                         });
                         
                         solution = "No real solutions found";
                     }
                 } catch (e) {
+                    console.error("Error in numerical solving:", e);
                     steps.push({
-                        description: `This equation is too complex for direct solving with our current methods.`,
-                        expression: `For cubic equations, you might need to use the cubic formula or numerical methods.`
+                        description: `This equation is too complex for our current numerical methods.`,
+                        expression: `For higher-degree polynomials, specialized mathematical software may be needed.`
                     });
                     
                     solution = "Cannot solve directly";
                 }
-            } else {
-                // For more complex equations, provide a general approach
+            }
+            // For more complex equations, provide a general approach
+            else {
+                // For simpler expressions
+                const simplified = math.simplify(expr);
                 steps.push({
-                    description: `This equation is more complex. I'll try to solve it using algebraic techniques.`,
-                    expression: `${simplifiedStr} = 0`
+                    description: `I'll simplify this expression by combining like terms`,
+                    expression: simplified.toString()
                 });
-                
-                try {
-                    const solveResult = math.solve(simplified, 'x');
-                    if (Array.isArray(solveResult)) {
-                        steps.push({
-                            description: `After applying algebraic techniques, I found multiple solutions:`,
-                            expression: solveResult.map(sol => `x = ${sol}`).join(', ')
-                        });
-                        solution = solveResult.map(sol => `x = ${sol}`).join(' or ');
-                    } else {
-                        steps.push({
-                            description: `After applying algebraic techniques, I found the solution:`,
-                            expression: `x = ${solveResult}`
-                        });
-                        solution = `x = ${solveResult}`;
-                    }
-                } catch (e) {
-                    steps.push({
-                        description: `This equation is too complex for direct solving. You might need to use numerical methods or more advanced techniques.`,
-                        expression: `Cannot solve directly`
-                    });
-                    solution = "Cannot solve directly";
-                }
+                solution = simplified.toString();
             }
         } else {
             // If it's not an equation, treat it as an expression to simplify
@@ -358,31 +426,65 @@ function solveAlgebra(problem) {
 function getDegree(expression, variable) {
     let degree = 0;
     
-    console.log("Checking degree for expression:", expression);
-    
-    // Check for variable with exponent using regex
-    const exponentPattern = new RegExp(`${variable}\\s*\\^\\s*(\\d+)`, 'g');
-    let match;
-    
-    while ((match = exponentPattern.exec(expression)) !== null) {
-        const exponent = parseInt(match[1]);
-        console.log("Found exponent:", exponent);
-        degree = Math.max(degree, exponent);
-    }
-    
-    // Also check for x*x*x pattern (which is x^3)
-    if (expression.includes(`${variable}*${variable}*${variable}`)) {
-        degree = Math.max(degree, 3);
-    }
-    
-    // Check for x*x pattern (which is x^2)
-    if (expression.includes(`${variable}*${variable}`)) {
-        degree = Math.max(degree, 2);
-    }
-    
-    // Check for variable without exponent (degree 1)
-    if (expression.includes(variable) && degree === 0) {
-        degree = 1;
+    // First try to parse the expression with math.js
+    try {
+        const node = math.parse(expression);
+        
+        // Recursive function to traverse the expression tree
+        function findHighestDegree(node) {
+            if (node.isSymbolNode && node.name === variable) {
+                return 1; // Found the variable with degree 1
+            } 
+            else if (node.isOperatorNode) {
+                if (node.op === '^' && node.args[0].isSymbolNode && node.args[0].name === variable) {
+                    // Found variable raised to a power
+                    if (node.args[1].isConstantNode) {
+                        return node.args[1].value;
+                    }
+                }
+                // For other operators, check their arguments
+                return Math.max(...node.args.map(findHighestDegree));
+            }
+            else if (node.isParenthesisNode) {
+                return findHighestDegree(node.content);
+            }
+            else if (node.isFunctionNode) {
+                return Math.max(...node.args.map(findHighestDegree));
+            }
+            else if (node.isArrayNode) {
+                return Math.max(...node.items.map(findHighestDegree));
+            }
+            return 0; // Default for constant nodes, etc.
+        }
+        
+        degree = findHighestDegree(node);
+    } catch (e) {
+        console.log("Error in tree-based degree detection:", e);
+        
+        // Fallback to regex-based detection if tree traversal fails
+        // Check for variable with exponent using regex
+        const exponentPattern = new RegExp(`${variable}\\s*\\^\\s*(\\d+)`, 'g');
+        let match;
+        
+        while ((match = exponentPattern.exec(expression)) !== null) {
+            const exponent = parseInt(match[1]);
+            degree = Math.max(degree, exponent);
+        }
+        
+        // Also check for x*x*x pattern (which is x^3)
+        if (expression.includes(`${variable}*${variable}*${variable}`)) {
+            degree = Math.max(degree, 3);
+        }
+        
+        // Check for x*x pattern (which is x^2)
+        if (expression.includes(`${variable}*${variable}`)) {
+            degree = Math.max(degree, 2);
+        }
+        
+        // Check for variable without exponent (degree 1)
+        if (expression.includes(variable) && degree === 0) {
+            degree = 1;
+        }
     }
     
     console.log("Determined degree:", degree);
@@ -391,8 +493,7 @@ function getDegree(expression, variable) {
 
 // Helper function to find roots of a polynomial numerically
 function findRoots(expression, variable) {
-    // This is a simplified approach for educational purposes
-    // In a real solver, we'd use more robust numerical methods
+    // This is a more robust approach for educational purposes
     
     // Convert the expression to a function
     const expr = math.parse(expression);
@@ -400,9 +501,10 @@ function findRoots(expression, variable) {
     
     // Try to find roots in a reasonable range
     const roots = [];
-    const range = 10;
-    const step = 0.1;
+    const range = 20; // Increased range
+    const step = 0.05; // Smaller step for better precision
     
+    // First pass: scan for sign changes to locate potential roots
     for (let x = -range; x <= range; x += step) {
         const y1 = func.evaluate({ x: x });
         const y2 = func.evaluate({ x: x + step });
@@ -419,13 +521,49 @@ function findRoots(expression, variable) {
         }
     }
     
-    return roots;
+    // Second pass: try to find roots near critical points (where derivative is zero)
+    try {
+        // Get derivative of the expression
+        const derivative = math.derivative(expr, variable).compile();
+        
+        // Look for critical points
+        for (let x = -range; x <= range; x += step) {
+            const dy1 = derivative.evaluate({ x: x });
+            const dy2 = derivative.evaluate({ x: x + step });
+            
+            // Check for sign change in derivative (indicates a critical point)
+            if (dy1 * dy2 <= 0) {
+                // Use bisection to find the critical point
+                const criticalPoint = bisectionMethod(derivative, x, x + step);
+                
+                // Check if there's a root near the critical point
+                const y1 = func.evaluate({ x: criticalPoint - step });
+                const y2 = func.evaluate({ x: criticalPoint + step });
+                
+                if (y1 * y2 <= 0) {
+                    const root = bisectionMethod(func, criticalPoint - step, criticalPoint + step);
+                    if (!roots.some(r => Math.abs(r - root) < 0.0001)) {
+                        roots.push(root);
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.log("Error finding critical points:", e);
+    }
+    
+    // Sort roots for cleaner output
+    return roots.sort((a, b) => a - b);
 }
 
 // Bisection method to find a root in an interval
 function bisectionMethod(func, a, b, tolerance = 0.0001, maxIterations = 100) {
-    let fa = func.evaluate({ x: a });
-    let fb = func.evaluate({ x: b });
+    // Handle the case where one endpoint is very close to zero
+    const fa = typeof func.evaluate === 'function' ? func.evaluate({ x: a }) : func({ x: a });
+    const fb = typeof func.evaluate === 'function' ? func.evaluate({ x: b }) : func({ x: b });
+    
+    if (Math.abs(fa) < tolerance) return a;
+    if (Math.abs(fb) < tolerance) return b;
     
     // Check if the interval contains a root
     if (fa * fb > 0) {
@@ -438,7 +576,7 @@ function bisectionMethod(func, a, b, tolerance = 0.0001, maxIterations = 100) {
     while ((b - a) > tolerance && iteration < maxIterations) {
         // Calculate midpoint
         c = (a + b) / 2;
-        fc = func.evaluate({ x: c });
+        fc = typeof func.evaluate === 'function' ? func.evaluate({ x: c }) : func({ x: c });
         
         if (Math.abs(fc) < tolerance) {
             break; // Found a root
@@ -667,6 +805,334 @@ function solveMatrix(problem) {
         console.error('Error solving matrix problem:', error);
         solution = 'Error: Could not solve this matrix problem';
         steps = [];
+    }
+    
+    return [solution, steps];
+}
+
+// Function to solve systems of linear equations
+function solveSystem(problem) {
+    let solution = '';
+    let steps = [];
+    
+    try {
+        steps.push({
+            description: `Let's solve this system of equations:`,
+            expression: problem
+        });
+        
+        // Split the system into individual equations
+        const equations = problem.split(/\n|;/).map(eq => eq.trim()).filter(eq => eq);
+        
+        if (equations.length < 2) {
+            return [`Error: Not enough equations for a system`, [{
+                description: `A system of equations needs at least two equations.`,
+                expression: `Please provide multiple equations separated by line breaks or semicolons.`
+            }]];
+        }
+        
+        steps.push({
+            description: `I've identified ${equations.length} equations in this system:`,
+            expression: equations.join('\n')
+        });
+        
+        // Parse the equations and extract variables
+        const parsedEquations = [];
+        const allVariables = new Set();
+        
+        for (let i = 0; i < equations.length; i++) {
+            const eq = equations[i];
+            
+            // Check if it's an equation (contains =)
+            if (!eq.includes('=')) {
+                return [`Error: Invalid equation format`, [{
+                    description: `Each equation must contain an equals sign (=).`,
+                    expression: `Please check equation: ${eq}`
+                }]];
+            }
+            
+            // Split into left and right sides
+            const [leftSide, rightSide] = eq.split('=').map(side => side.trim());
+            
+            // Move everything to left side
+            const fullEquation = `(${leftSide})-(${rightSide})`;
+            const simplified = math.simplify(fullEquation).toString();
+            
+            // Extract variables using regex
+            const variableRegex = /([a-zA-Z])\b/g;
+            let match;
+            while ((match = variableRegex.exec(simplified)) !== null) {
+                allVariables.add(match[1]);
+            }
+            
+            parsedEquations.push(simplified);
+        }
+        
+        // Convert variables set to array and sort
+        const variables = Array.from(allVariables).sort();
+        
+        steps.push({
+            description: `I've identified the following variables in the system:`,
+            expression: variables.join(', ')
+        });
+        
+        // Check if we have the right number of equations
+        if (equations.length < variables.length) {
+            steps.push({
+                description: `This system has ${variables.length} variables but only ${equations.length} equations.`,
+                expression: `Such systems typically have infinitely many solutions.`
+            });
+        }
+        
+        // For 2x2 systems, solve using substitution method
+        if (variables.length === 2 && equations.length >= 2) {
+            const [x, y] = variables; // Assuming variables are sorted alphabetically
+            
+            steps.push({
+                description: `Since this is a system with two variables (${x} and ${y}), I'll solve it using the substitution method.`,
+                expression: `First, I'll solve for one variable in terms of the other.`
+            });
+            
+            // Try to extract coefficients from the first equation
+            let eq1 = parsedEquations[0];
+            let eq2 = parsedEquations[1];
+            
+            // Extract coefficients using regex
+            const extractCoefficients = (equation, variable) => {
+                const regex = new RegExp(`([+-]?\\s*\\d*\\.?\\d*)\\s*\\*?\\s*${variable}\\b`, 'g');
+                let match = regex.exec(equation);
+                if (match) {
+                    const coef = match[1].trim();
+                    if (coef === '' || coef === '+') return 1;
+                    if (coef === '-') return -1;
+                    return parseFloat(coef);
+                }
+                return 0;
+            };
+            
+            const extractConstant = (equation) => {
+                // Look for constant term (not followed by a variable)
+                const regex = /([+-]?\s*\d*\.?\d+)(?![a-zA-Z])/g;
+                let constant = 0;
+                let match;
+                while ((match = regex.exec(equation)) !== null) {
+                    constant += parseFloat(match[1]);
+                }
+                return constant;
+            };
+            
+            // Extract coefficients from first equation
+            const a1 = extractCoefficients(eq1, x);
+            const b1 = extractCoefficients(eq1, y);
+            const c1 = -extractConstant(eq1); // Negate because we moved everything to left side
+            
+            // Extract coefficients from second equation
+            const a2 = extractCoefficients(eq2, x);
+            const b2 = extractCoefficients(eq2, y);
+            const c2 = -extractConstant(eq2); // Negate because we moved everything to left side
+            
+            steps.push({
+                description: `I'll rewrite the equations in standard form:`,
+                expression: `${a1}${x} + ${b1}${y} = ${c1}\n${a2}${x} + ${b2}${y} = ${c2}`
+            });
+            
+            // Solve for x in terms of y from the first equation
+            if (a1 !== 0) {
+                const xCoef = 1 / a1;
+                const yCoef = -b1 / a1;
+                const constTerm = c1 / a1;
+                
+                steps.push({
+                    description: `From the first equation, I'll solve for ${x} in terms of ${y}:`,
+                    expression: `${x} = ${constTerm} + ${yCoef}${y}`
+                });
+                
+                // Substitute into the second equation
+                const newCoef = a2 * yCoef + b2;
+                const newConst = a2 * constTerm - c2;
+                
+                steps.push({
+                    description: `Now I'll substitute this expression for ${x} into the second equation:`,
+                    expression: `${a2}(${constTerm} + ${yCoef}${y}) + ${b2}${y} = ${c2}`
+                });
+                
+                steps.push({
+                    description: `Simplifying:`,
+                    expression: `${newCoef}${y} = ${-newConst}`
+                });
+                
+                // Solve for y
+                if (newCoef !== 0) {
+                    const yValue = -newConst / newCoef;
+                    
+                    steps.push({
+                        description: `Solving for ${y}:`,
+                        expression: `${y} = ${yValue}`
+                    });
+                    
+                    // Back-substitute to find x
+                    const xValue = constTerm + yCoef * yValue;
+                    
+                    steps.push({
+                        description: `Now I'll substitute ${y} = ${yValue} back to find ${x}:`,
+                        expression: `${x} = ${constTerm} + ${yCoef} × ${yValue} = ${xValue}`
+                    });
+                    
+                    solution = `${x} = ${xValue}, ${y} = ${yValue}`;
+                    
+                    // Verify the solution
+                    steps.push({
+                        description: `Let's verify this solution by substituting back into the original equations:`,
+                        expression: `Checking ${x} = ${xValue}, ${y} = ${yValue}`
+                    });
+                    
+                    // Create a function to evaluate an equation with the solution
+                    const evaluateEquation = (equation, xVal, yVal) => {
+                        const vars = {};
+                        vars[x] = xVal;
+                        vars[y] = yVal;
+                        return math.evaluate(equation, vars);
+                    };
+                    
+                    for (let i = 0; i < equations.length; i++) {
+                        const [left, right] = equations[i].split('=').map(side => side.trim());
+                        const leftVal = evaluateEquation(left, xValue, yValue);
+                        const rightVal = evaluateEquation(right, xValue, yValue);
+                        const isValid = Math.abs(leftVal - rightVal) < 0.0001;
+                        
+                        steps.push({
+                            description: `Equation ${i+1}: ${equations[i]}`,
+                            expression: `Left side = ${leftVal}, Right side = ${rightVal}, ${isValid ? '✓' : '✗'}`
+                        });
+                    }
+                } else {
+                    if (newConst === 0) {
+                        steps.push({
+                            description: `The system has infinitely many solutions.`,
+                            expression: `${x} = ${constTerm} + ${yCoef}${y}, where ${y} can be any value`
+                        });
+                        solution = `Infinitely many solutions: ${x} = ${constTerm} + ${yCoef}${y}`;
+                    } else {
+                        steps.push({
+                            description: `The system has no solutions (the equations are inconsistent).`,
+                            expression: `We get the contradiction: 0 = ${-newConst}`
+                        });
+                        solution = "No solution";
+                    }
+                }
+            } else if (b1 !== 0) {
+                // If a1 = 0, solve for y in terms of x
+                const yValue = c1 / b1;
+                
+                steps.push({
+                    description: `From the first equation, ${y} = ${yValue}`,
+                    expression: `${y} = ${yValue}`
+                });
+                
+                // Substitute into the second equation
+                const newCoef = a2;
+                const newConst = c2 - b2 * yValue;
+                
+                steps.push({
+                    description: `Substituting ${y} = ${yValue} into the second equation:`,
+                    expression: `${a2}${x} + ${b2} × ${yValue} = ${c2}`
+                });
+                
+                // Solve for x
+                if (newCoef !== 0) {
+                    const xValue = newConst / newCoef;
+                    
+                    steps.push({
+                        description: `Solving for ${x}:`,
+                        expression: `${x} = ${xValue}`
+                    });
+                    
+                    solution = `${x} = ${xValue}, ${y} = ${yValue}`;
+                } else {
+                    if (newConst === 0) {
+                        steps.push({
+                            description: `The system has infinitely many solutions.`,
+                            expression: `${y} = ${yValue}, ${x} can be any value`
+                        });
+                        solution = `Infinitely many solutions: ${y} = ${yValue}`;
+                    } else {
+                        steps.push({
+                            description: `The system has no solutions (the equations are inconsistent).`,
+                            expression: `We get the contradiction: 0 = ${newConst}`
+                        });
+                        solution = "No solution";
+                    }
+                }
+            } else {
+                // If both a1 and b1 are 0, the first equation is either a tautology or a contradiction
+                if (c1 === 0) {
+                    steps.push({
+                        description: `The first equation is a tautology (always true).`,
+                        expression: `Let's examine the second equation.`
+                    });
+                    
+                    // Check if the second equation gives us a unique solution
+                    if (a2 !== 0 || b2 !== 0) {
+                        steps.push({
+                            description: `The system has infinitely many solutions that satisfy the second equation.`,
+                            expression: `${a2}${x} + ${b2}${y} = ${c2}`
+                        });
+                        solution = `Infinitely many solutions that satisfy: ${a2}${x} + ${b2}${y} = ${c2}`;
+                    } else {
+                        if (c2 === 0) {
+                            steps.push({
+                                description: `Both equations are tautologies.`,
+                                expression: `The system has infinitely many solutions.`
+                            });
+                            solution = "Infinitely many solutions";
+                        } else {
+                            steps.push({
+                                description: `The second equation is a contradiction.`,
+                                expression: `The system has no solutions.`
+                            });
+                            solution = "No solution";
+                        }
+                    }
+                } else {
+                    steps.push({
+                        description: `The first equation is a contradiction (never true).`,
+                        expression: `The system has no solutions.`
+                    });
+                    solution = "No solution";
+                }
+            }
+        } 
+        // For 3x3 systems, we could implement Gaussian elimination
+        else if (variables.length === 3 && equations.length >= 3) {
+            steps.push({
+                description: `This is a system with three variables. For systems with 3 or more variables, I'll use a numerical solver.`,
+                expression: `Solving the system numerically...`
+            });
+            
+            // For now, we'll just indicate that this is not fully implemented
+            // In a real implementation, we would use a matrix-based approach
+            steps.push({
+                description: `For 3x3 systems, we would typically use Gaussian elimination or Cramer's rule.`,
+                expression: `This feature is under development.`
+            });
+            
+            solution = "Feature under development for 3x3 systems";
+        }
+        // For other systems, provide a general approach
+        else {
+            steps.push({
+                description: `For systems with ${variables.length} variables and ${equations.length} equations, we would use matrix methods.`,
+                expression: `This feature is under development.`
+            });
+            
+            solution = "Feature under development for larger systems";
+        }
+    } catch (error) {
+        console.error("Error in solveSystem:", error);
+        return [`Error: ${error.message}`, [{
+            description: `I encountered an error while solving this system: ${error.message}`,
+            expression: `Please check your input and try again.`
+        }]];
     }
     
     return [solution, steps];
