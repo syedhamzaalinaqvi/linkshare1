@@ -637,6 +637,44 @@
     <button class="scroll-to-top" aria-label="Scroll to top">
         <i class="fas fa-arrow-up"></i>
     </button>
+    
+    <!-- Custom Popup url delete confirm Elements -->
+    <div class="popup-overlay" id="confirmPopup">
+        <div class="popup-container slide-up">
+            <div class="popup-header">
+                <h3 class="popup-title">Confirm Action</h3>
+                <button class="popup-close" id="closeConfirmPopup"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="popup-content">
+                <i class="fas fa-question-circle popup-icon warning"></i>
+                <p id="confirmMessage">Are you sure you want to proceed with this action?</p>
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-secondary" id="cancelAction">Cancel</button>
+                <button class="popup-btn popup-btn-danger" id="confirmAction">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="successPopup">
+        <div class="popup-container slide-up">
+            <div class="popup-header">
+                <h3 class="popup-title">Success</h3>
+                <button class="popup-close" id="closeSuccessPopup"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="popup-content">
+                <i class="fas fa-check-circle popup-icon success"></i>
+                <p id="successMessage">Action completed successfully!</p>
+            </div>
+            <div class="popup-actions">
+                <button class="popup-btn popup-btn-primary" id="okSuccessBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+<!-- Custom Popup url delete confirm Elements ended-->
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -782,43 +820,6 @@
         });
     </script>-->
     
-    <!-- Custom Popup url delete confirm Elements -->
-    <div class="popup-overlay" id="confirmPopup">
-        <div class="popup-container slide-up">
-            <div class="popup-header">
-                <h3 class="popup-title">Confirm Action</h3>
-                <button class="popup-close" id="closeConfirmPopup"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="popup-content">
-                <i class="fas fa-question-circle popup-icon warning"></i>
-                <p id="confirmMessage">Are you sure you want to proceed with this action?</p>
-            </div>
-            <div class="popup-actions">
-                <button class="popup-btn popup-btn-secondary" id="cancelAction">Cancel</button>
-                <button class="popup-btn popup-btn-danger" id="confirmAction">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="popup-overlay" id="successPopup">
-        <div class="popup-container slide-up">
-            <div class="popup-header">
-                <h3 class="popup-title">Success</h3>
-                <button class="popup-close" id="closeSuccessPopup"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="popup-content">
-                <i class="fas fa-check-circle popup-icon success"></i>
-                <p id="successMessage">Action completed successfully!</p>
-            </div>
-            <div class="popup-actions">
-                <button class="popup-btn popup-btn-primary" id="okSuccessBtn">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-<!-- Custom Popup url delete confirm Elements ended-->
 
     <script>
         // Firebase configuration - Using inline config to avoid conflicts
