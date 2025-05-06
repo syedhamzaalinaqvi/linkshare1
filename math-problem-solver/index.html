@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free Math Problem Solver with step-by-step solutions for algebra, calculus, and more. Solve equations, simplify expressions, and learn mathematics.">
+    <meta name="keywords" content="math solver, equation solver, algebra calculator, step by step math, math solutions">
+    <meta name="author" content="LinkShare">
+    <meta property="og:title" content="Math Problem Solver - Step-by-Step Solutions | LinkShare">
+    <meta property="og:description" content="Free Math Problem Solver with step-by-step solutions for algebra, calculus, and more. Solve equations, simplify expressions, and learn mathematics.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://www.linkshare.online/linkshare-favicon.png">
+    <meta property="og:url" content="https://www.linkshare.online/math-problem-solver/">
+    
+    <!-- Favicon Implementation -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <title>Math Problem Solver - Step-by-Step Solutions | LinkShare</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.0.0/lib/browser/math.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #25D366;
+            --secondary-color: #128C7E;
+            --accent-color: #34B7F1;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --white: #ffffff;
+            --gray-light: #f8f9fa;
+            --gray: #6c757d;
+            --shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        .math-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        
+        .math-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .math-header h1 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .math-header p {
+            color: var(--gray);
+        }
+        
+        .calculator-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .output-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--gray-light);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            min-height: 300px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-group select, 
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .solution-title {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .solution-steps {
+            margin-top: 1rem;
+        }
+        
+        .step {
+            background-color: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .step-number {
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .step-description {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .step-expression {
+            background-color: var(--gray-light);
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin-top: 0.5rem;
+            overflow-x: auto;
+        }
+        
+        .explanation {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-top: 2rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .explanation p {
+            margin-bottom: 0.8rem;
+        }
+        
+        .solution-container {
+            display: none;
+            background-color: var(--gray-light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .solution-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .problem, .answer {
+            margin-bottom: 1rem;
+        }
+        
+        .answer {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+        }
+        
+        .history-section {
+            margin-top: 3rem;
+        }
+        
+        .history-item {
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .history-item:hover {
+            background-color: var(--gray-light);
+            border-color: #ddd;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .history-content {
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .history-problem {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .history-solution {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .history-timestamp {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .history-actions {
+            margin-left: 1rem;
+        }
+        
+        .delete-history-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .delete-history-btn:hover {
+            background-color: #ffeeee;
+            color: #ff5555;
+        }
+        
+        .clear-all-btn {
+            background-color: var(--gray-light);
+            color: var(--gray);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .clear-all-btn:hover {
+            background-color: #ffeeee;
+            color: #ff5555;
+        }
+        
+        .formula-section {
+            margin-top: 3rem;
+            background-color: var(--gray-light);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+        }
+        
+        .formula-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .formula-item {
+            background-color: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .formula-name {
+            font-weight: 500;
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .formula-expression {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-container {
+                flex-direction: column;
+            }
+            
+            .input-section, 
+            .output-section {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Add skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <a href="https://www.linkshare.online/" class="nav-brand">
+            <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
+            <span class="nav-brand-link-text">LinkShare</span>
+        </a>
+    
+        <button class="nav-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links">
+            <li><a href="https://www.linkshare.online/">Home</a></li>
+            <li><a href="/add-group">Add Group</a></li>
+            <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+                    <li><a href="/qr-code-generator">QR Code Generator</a></li>
+                    <li><a href="/qr-code-reader">QR Code Scanner/Reader</a></li>
+                    <li><a href="/short-url-generator">Short URL Generator</a></li>
+                    <li><a href="/m3u-playlist-reader.html">M3U Playlist Reader</a></li>
+                    <li><a href="/math-problem-solver" class="active">Math Problem Solver</a></li>
+                </ul>
+            </li>
+            <li class="nav-dropdown">
+                <a href="#" class="dropbtn">Blog ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/Psl-live">🔴PSL Live</a></li>
+                    <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
+                    <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
+                    <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
+                    <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+                </ul>
+            </li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/terms">Terms</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero" role="banner" style="background-color: var(--primary-color); color: white; text-align: center; padding: 2rem 1rem; margin-bottom: 2rem;">
+        <h1>Math Problem Solver</h1>
+        <p>Step-by-step solutions for algebra, calculus, and more</p>
+    </header>
+
+    <main id="main-content" class="container" role="main">
+        <div class="math-container">
+            <div class="math-header">
+                <h1>Math Problem Solver</h1>
+                <p>Get step-by-step solutions for various math problems</p>
+            </div>
+            
+            <div class="calculator-container">
+                <div class="input-section">
+                    <div class="form-group">
+                        <label for="problem-type">Problem Type</label>
+                        <select id="problem-type">
+                            <option value="algebra">Algebra (Equations)</option>
+                            <option value="simplify">Simplify Expression</option>
+                            <option value="calculus">Calculus (Derivatives)</option>
+                            <option value="matrix">Matrix Operations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="problem-input">Enter Your Problem</label>
+                        <textarea id="problem-input" placeholder="Example: 2x + 3 = 7 or 3x^2 + 2x - 5"></textarea>
+                    </div>
+                    
+                    <button id="solve-btn" onclick="solveProblem()">Solve Problem</button>
+                </div>
+                
+                <div class="output-section">
+                    <div class="solution-title">Solution</div>
+                    <div id="solution-output">
+                        <p>Your solution will appear here...</p>
+                    </div>
+                    <div class="solution-steps" id="solution-steps"></div>
+                </div>
+            </div>
+            
+            <div class="history-section">
+                <h2>Recent Problems</h2>
+                <div id="history-list">
+                    <!-- History items will be added here -->
+                </div>
+            </div>
+            
+            <div class="formula-section">
+                <h2>Common Formulas</h2>
+                <div class="formula-list">
+                    <div class="formula-item">
+                        <div class="formula-name">Quadratic Formula</div>
+                        <div class="formula-expression">x = (-b ± √(b² - 4ac)) / 2a</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="formula-name">Pythagorean Theorem</div>
+                        <div class="formula-expression">a² + b² = c²</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="formula-name">Area of Circle</div>
+                        <div class="formula-expression">A = πr²</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="formula-name">Derivative of x^n</div>
+                        <div class="formula-expression">d/dx(x^n) = n·x^(n-1)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo-container">
+                    <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+                    <h3>LinkShare</h3>
+                </div>
+                <div class="footer-tagline">
+                    <p>Share and discover amazing WhatsApp groups links</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 LinkShare. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <!-- Math Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.0.0/lib/browser/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script>
+    
+    <!-- Our Script -->
+    <script src="script.js"></script>
+    
+    <!-- Initialize KaTeX -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+            
+            // Add event listener to solve button
+            document.getElementById('solve-btn').addEventListener('click', solveProblem);
+        });
+    </script>
+</body>
+</html>
