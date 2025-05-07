@@ -47,20 +47,24 @@
     }
     </script>
     <style>
-        /* Secondary Menu Styles */
+        /* Secondary Menu Styles - Updated */
         .secondary-menu {
             background-color: #f8f9fa;
-            padding: 0.5rem 0;
+            padding: 0.5rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 100;
         }
         
         .secondary-nav-links {
             display: flex;
+            flex-wrap: wrap;
             list-style: none;
             padding: 0;
             margin: 0;
             justify-content: center;
+            gap: 10px;
         }
         
         .secondary-nav-links li {
@@ -69,46 +73,71 @@
         
         .secondary-nav-links a {
             display: block;
-            padding: 0.6rem 1rem;
+            padding: 8px 15px;
             color: #333;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            border-radius: 5px;
         }
         
         .secondary-nav-links a:hover {
             color: #25D366;
-        }
-        
-        .secondary-dropdown {
-            position: relative;
+            background: #f0f0f0;
         }
         
         .secondary-dropdown-content {
             display: none;
             position: absolute;
+            top: 100%;
+            left: 0;
             background-color: #fff;
             min-width: 200px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            z-index: 1;
-            border-radius: 4px;
-            padding: 0.5rem 0;
-            list-style: none;
+            border-radius: 8px;
+            padding: 8px 0;
+            z-index: 1000;
         }
         
-        .secondary-dropdown:hover .secondary-dropdown-content {
-            display: block;
+        /* Media query for mobile devices */
+        @media screen and (max-width: 768px) {
+            .secondary-nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .secondary-nav-links li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .secondary-dropdown-content {
+                position: static;
+                box-shadow: none;
+                background: #f8f9fa;
+                margin-top: 5px;
+                border-radius: 0;
+                width: 100%;
+            }
+            
+            .secondary-dropdown-content a {
+                padding: 10px 20px;
+            }
+            
+            .secondary-nav-links a {
+                padding: 12px 20px;
+                width: 100%;
+                text-align: center;
+            }
+            
+            .secondary-dropdown:hover .secondary-dropdown-content {
+                display: none; /* Prevent hover on mobile */
+            }
+            
+            .secondary-dropdown.active .secondary-dropdown-content {
+                display: block; /* Show on click instead */
+            }
         }
-        
-        .secondary-dropdown-content a {
-            padding: 0.5rem 1rem;
-            font-weight: normal;
-        }
-        
-        .secondary-dropdown-content a:hover {
-            background-color: #f8f9fa;
-        }
-        
         /* Group Slider Styles */
         .group-slider-container {
             position: relative;
@@ -1100,6 +1129,40 @@
                     });
                 });
             }
+        });
+    </script>
+    <!-- Add this script just before closing body tag -->
+    <script>
+        // Add click handler for mobile dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const secondaryDropdowns = document.querySelectorAll('.secondary-dropdown');
+            
+            secondaryDropdowns.forEach(dropdown => {
+                const dropButton = dropdown.querySelector('.secondary-dropbtn');
+                
+                dropButton.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        dropdown.classList.toggle('active');
+                        
+                        // Close other dropdowns
+                        secondaryDropdowns.forEach(other => {
+                            if (other !== dropdown) {
+                                other.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.secondary-dropdown')) {
+                    secondaryDropdowns.forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
         });
     </script>
 </body>
