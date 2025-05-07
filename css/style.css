@@ -78,7 +78,7 @@ body {
 
 .nav-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 10px;
     list-style: none;
     z-index: 1000;
 
@@ -89,7 +89,7 @@ body {
     /* Expands clickable area */
     width: 100%;
     /* Makes the link take full width of its parent */
-    padding: 5px 10px;
+    padding: 5px 5px;
     /* Adds padding for better clickability */
     color: var(--text-color);
     text-decoration: none;
@@ -100,6 +100,9 @@ body {
 .nav-links a.active {
     color: var(--primary-color);
     background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--primary-color)
+#25D366
+;
     /* Optional: Adds a hover effect */
 }
 
