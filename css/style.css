@@ -1626,7 +1626,7 @@ select:focus {
 /* Responsive Styles for All Pages */
 @media (max-width: 768px) {
     .page-container {
-        padding: 1rem;
+        padding: 0;
     }
 
     .page-header {
