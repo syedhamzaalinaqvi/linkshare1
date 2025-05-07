@@ -1729,7 +1729,7 @@ select:focus {
 .content-section {
     width: 90% /*800px*/;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem;
     background: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
