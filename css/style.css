@@ -1814,6 +1814,7 @@ select:focus {
     .content-section {
         padding: 1rem;
         margin: 0.5rem;
+        display: contents;
     }
 
     .content-section h2 {
