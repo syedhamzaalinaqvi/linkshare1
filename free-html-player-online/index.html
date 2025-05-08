@@ -82,8 +82,57 @@
     <button class="user-btn" id="update-logo-btn" onclick="updateLogo()">Update Logo</button>
     <button class="user-btn" id="remove-logo-btn" onclick="removeLogo()">Remove Logo</button>
     </div>
-</div>
 
+    <!-- Advanced Player Options -->
+    <div class="advanced-options">
+        <h4 class="inputheadingtxt">Advanced Player Options</h4>
+        <div class="option-row">
+            <div class="option-item">
+                <label for="autoplay-option">Autoplay</label>
+                <input type="checkbox" id="autoplay-option">
+            </div>
+            <div class="option-item">
+                <label for="loop-option">Loop Video</label>
+                <input type="checkbox" id="loop-option">
+            </div>
+            <div class="option-item">
+                <label for="volume-option">Initial Volume (%)</label>
+                <input type="number" id="volume-option" min="0" max="100" value="100">
+            </div>
+        </div>
+    </div>
+
+    <!-- Subtitle Input -->
+    <div class="subtitle-input">
+        <p class="inputheadingtxt">Add Subtitle File (Optional)</p>
+        <input type="text" class="user-input" id="subtitleUrl" placeholder="Paste subtitle file URL (.srt or .vtt)">
+        <button class="user-btn" id="add-subtitle-btn" onclick="addSubtitle()">Add Subtitle</button>
+    </div>
+
+    <!-- Embed Code Generator -->
+    <div class="embed-code-generator">
+        <h4 class="inputheadingtxt">Embed This Player On Your Website</h4>
+        <div class="embed-options">
+            <div class="embed-option">
+                <label for="embed-width">Width (px)</label>
+                <input type="number" id="embed-width" value="640" min="200" max="1920">
+            </div>
+            <div class="embed-option">
+                <label for="embed-height">Height (px)</label>
+                <input type="number" id="embed-height" value="360" min="200" max="1080">
+            </div>
+            <div class="embed-option">
+                <label for="responsive-embed">Responsive</label>
+                <input type="checkbox" id="responsive-embed" checked>
+            </div>
+        </div>
+        <button class="user-btn" id="generate-embed-btn" onclick="generateEmbedCode()">Generate Embed Code</button>
+        <div class="embed-code-display">
+            <textarea id="embed-code" readonly></textarea>
+            <button class="user-btn" id="copy-embed-btn" onclick="copyEmbedCode()">Copy Code</button>
+        </div>
+    </div>
+</div>
 
     <!-- Player HTML-->
     <div class="video-container" id="video-container">

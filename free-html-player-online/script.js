@@ -130,7 +130,7 @@ function removeLogo() {
   var logoImage = document.getElementById('videoLogo');
   logoImage.remove(); // Remove the entire img element
 }
-// Function to update the logo image based on user input
+
 // Function to update the logo image based on user input
 function updateLogo() {
   var logoUrl = document.getElementById('logoUrl').value;
@@ -154,6 +154,118 @@ function updateLogo() {
   }
 }
 
+// Function to add subtitle
+function addSubtitle() {
+  var subtitleUrl = document.getElementById('subtitleUrl').value;
+  
+  if (subtitleUrl.trim() !== '') {
+    // Check if it's a valid subtitle file (srt or vtt)
+    if (subtitleUrl.toLowerCase().endsWith('.srt') || subtitleUrl.toLowerCase().endsWith('.vtt')) {
+      // Create a track element
+      var track = document.createElement('track');
+      track.kind = 'subtitles';
+      track.label = 'Subtitles';
+      track.srclang = 'en'; // Default language
+      track.src = subtitleUrl;
+      track.default = true;
+      
+      // Remove any existing tracks
+      var existingTracks = video.getElementsByTagName('track');
+      while (existingTracks.length > 0) {
+        video.removeChild(existingTracks[0]);
+      }
+      
+      // Add the new track
+      video.appendChild(track);
+      
+      alert('Subtitle added successfully!');
+    } else {
+      alert('Please enter a valid subtitle file URL (.srt or .vtt)');
+    }
+  } else {
+    alert('Please enter a subtitle file URL');
+  }
+}
+
+// Function to generate embed code
+function generateEmbedCode() {
+  var mediaLink = document.getElementById('mediaLink').value;
+  var logoUrl = document.getElementById('logoUrl').value;
+  var width = document.getElementById('embed-width').value;
+  var height = document.getElementById('embed-height').value;
+  var autoplay = document.getElementById('autoplay-option').checked;
+  var loop = document.getElementById('loop-option').checked;
+  var volume = document.getElementById('volume-option').value;
+  var responsive = document.getElementById('responsive-embed').checked;
+  var subtitleUrl = document.getElementById('subtitleUrl').value;
+  
+  // Base URL of your website
+  var baseUrl = window.location.origin;
+  var embedUrl = `${baseUrl}/free-html-player-online/embed.html`;
+  
+  // Build query parameters
+  var params = [];
+  
+  if (mediaLink.trim() !== '') {
+    params.push(`src=${encodeURIComponent(mediaLink)}`);
+  }
+  
+  if (logoUrl.trim() !== '') {
+    params.push(`logo=${encodeURIComponent(logoUrl)}`);
+  }
+  
+  if (autoplay) {
+    params.push('autoplay=true');
+  }
+  
+  if (loop) {
+    params.push('loop=true');
+  }
+  
+  if (volume !== '100') {
+    params.push(`volume=${volume}`);
+  }
+  
+  if (subtitleUrl.trim() !== '') {
+    params.push(`subtitle=${encodeURIComponent(subtitleUrl)}`);
+  }
+  
+  // Combine URL and parameters
+  if (params.length > 0) {
+    embedUrl += '?' + params.join('&');
+  }
+  
+  // Generate the iframe code
+  var iframeCode;
+  if (responsive) {
+    iframeCode = `<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="${embedUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
+</div>`;
+  } else {
+    iframeCode = `<iframe src="${embedUrl}" width="${width}" height="${height}" frameborder="0" allowfullscreen></iframe>`;
+  }
+  
+  // Set the embed code in the textarea
+  var embedCodeElement = document.getElementById('embed-code');
+  embedCodeElement.value = iframeCode;
+  embedCodeElement.style.display = 'block';
+}
+
+// Function to copy embed code
+function copyEmbedCode() {
+  var embedCode = document.getElementById('embed-code');
+  embedCode.select();
+  document.execCommand('copy');
+  
+  // Visual feedback
+  var copyBtn = document.getElementById('copy-embed-btn');
+  var originalText = copyBtn.textContent;
+  copyBtn.textContent = 'Copied!';
+  
+  setTimeout(function() {
+    copyBtn.textContent = originalText;
+  }, 2000);
+}
 
 //============player Functionality start 
 //---Context menu Script
