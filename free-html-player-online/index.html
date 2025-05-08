@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> AnyWebPlayer Free Online Player | M3U8, MP4, MKV Files play online</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script type="nomodule" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+        
+
+<!--Plyr Styling script
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+-->
+<!--JS cdn link-->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script>
+<!--Or if you want the latest version from the main branch-->
+<!--<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>-->
+    </head>
+
+<body>
+<!-- Add skip link for accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+    <a href="https://www.linkshare.online/" class="nav-brand">
+        <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
+        <span class="nav-brand-link-text">LinkShare</span>
+    </a>
+
+    <button class="nav-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <ul class="nav-links">
+        <li><a href="https://www.linkshare.online/" class="active">Home</a></li>
+        <li><a href="/add-group">Add Group</a></li>
+        <li><a href="/join-group">Join Group</a></li>
+        <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
+          <ul class="nav-dropdown-content">
+              <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+              <li><a href="/qr-code-generator" >QR Code Generator</a></li>
+              <li><a href="/qr-code-reader" >QR Code Scanner/Reader</a></li>
+              <li><a href="/short-url-generator" >Short URL Generator</a></li>
+              <li><a href="/m3u-playlist-viewer">M3U Playlist viewer</a></li>
+          </ul>
+      </li>
+      <li class="nav-dropdown">
+          <a href="#" class="dropbtn">Blog ▾</a>
+          <ul class="nav-dropdown-content">
+              <li><a href="/Psl-live">🔴PSL Live</a></li>
+              <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
+              <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
+              <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
+              <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+          </ul>
+        </li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/terms">Terms</a></li>
+        
+    </ul>
+</nav>
+
+<!-- Uswer Media Input HTML -->
+   <div class="input-div">
+    <h4 class="inputheadingtxt mediainputheadingtxt" > Paste Your Media Source MP4, MKV, M3U8, MP3 and Other Live source Link here </h4>
+    <input type="text" class="user-input" id="mediaLink" placeholder="Paste your media link here">
+    <button class="user-btn" id="input-play-btn" onclick="playMedia()">Play</button>
+<!-- Uswer Logo Input HTML -->
+<p class="inputheadingtxt logoinputheadingtxt"> Paste Your Logo Url.Your Logo will display on top right corner of the player.</p>
+    <input type="text" class="user-input" id="logoUrl" placeholder="Paste your logo URL here"> 
+    <div class="btn-inline-div">
+    <button class="user-btn" id="update-logo-btn" onclick="updateLogo()">Update Logo</button>
+    <button class="user-btn" id="remove-logo-btn" onclick="removeLogo()">Remove Logo</button>
+    </div>
+</div>
+
+
+    <!-- Player HTML-->
+    <div class="video-container" id="video-container">
+        <video id="video" src="" oncontextmenu="showContextMenu(event)"></video>
+              <!-- Logo element -->
+            <img src="C:\Users\Hamza\Downloads\TextToImage_19_20240413.jpeg" class="logo" id="videoLogo">
+                <!-- Context Menu -->
+               
+                    
+               
+                  <div id="context-menu">
+                    <ul>
+                      <li><span>&#8226;</span> AnyWebPlayer</li>
+                    </ul>
+                  </div>   
+
+        <script>
+//              https://cdn23lhr.tamashaweb.com:8087/jazzauth/ARYdigital-abr/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9Mi8xOC8yMDI0IDQ6MTE6MDcgUE0maGFzaF92YWx1ZT1wVGlhQmIrTkYreGdmWHlac242VVV3PT0mdmFsaWRtaW51dGVzPTE= 
+        </script>
+        <!--http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 -->
+        <span class="custom-loader"></span>
+        <div class="player-state">
+            <span class="state-btn state-backward">
+                <ion-icon name="play-back-outline"></ion-icon>
+                <span class="backward-duration">5</span>
+            </span>
+            <span class="main-state state-btn">
+                <ion-icon name="play-outline"></ion-icon>
+            </span>
+            <span class="state-btn state-forward">
+                <span class="forward-duration">5</span>
+                <ion-icon name="play-forward-outline"></ion-icon>
+            </span>
+        </div>
+        <div class="controls">
+            <div class="duration">
+                <div class="current-time"></div>
+                <div class="hover-time">
+                    <span class="hover-duration"></span>
+                </div>
+                <div class="buffer"></div>
+            </div>
+            <div class="btn-controls">
+                <div class="btn-con">
+                    <span class="play-pause control-btn">
+                        <ion-icon name="play-outline"></ion-icon>
+                    </span>
+                    <span class="volume">
+                        <span class="mute-unmute control-btn">
+                            <ion-icon name="volume-high-outline"></ion-icon>
+                        </span>
+                        <div class="max-vol">
+                            <div class="current-vol"></div>
+                        </div>
+                    </span>
+                    <span class="time-container">
+                        <span class="current-duration">0:00</span>
+                        <span>/</span>
+                        <span class="total-duration">0:00</span>
+                    </span>
+                </div>
+                <div class="right-controls">
+                    <span class="backward control-btn" title="5 backward">
+                        <ion-icon name="play-back-outline"></ion-icon>
+                    </span>
+                    <span class="forward control-btn" title="5 forward">
+                        <ion-icon name="play-forward-outline"></ion-icon>
+                    </span>
+                    <!--      <span class="mini-player control-btn">
+            <ion-icon name="albums-outline"></ion-icon>
+          </span>
+          <span class="settings control-btn">
+            <span class="setting-btn">
+              <ion-icon name="options-outline"></ion-icon>
+            </span>
+            <ul class="setting-menu">
+              <li data-value="0.25">0.25x</li>
+              <li data-value="0.5">0.5x</li>
+              <li data-value="0.75">0.75x</li>
+              <li data-value="1" class="speed-active">1x</li>
+              <li data-value="1.25">1.25x</li>
+              <li data-value="1.5">1.5x</li>
+              <li data-value="1.75">1.75x</li>
+              <li data-value="2">2x</li>
+            </ul>
+          </span>
+          <span class="theater-btn control-btn">
+            <span class="theater-default">
+              <ion-icon name="tablet-landscape-outline"></ion-icon>
+            </span>
+            <span class="theater-active">
+              <ion-icon name="tv-outline"></ion-icon>
+            </span>
+          </span>-->
+                    <span class="fullscreen-btn control-btn" title="fullscreen">
+                        <span class="full">
+                            <ion-icon name="scan-outline"></ion-icon>
+                        </span>
+                        <span class="contract">
+                            <ion-icon name="contract-outline"></ion-icon>
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo-container">
+                    <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+                    <h3>LinkShare</h3>
+                </div>
+                <div class="footer-tagline">
+                    <p>Share and discover amazing WhatsApp groups links</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 LinkShare. All rights reserved.</p>
+        </div>
+    </footer>
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+
+
+    <script src="path/to/plyr.js"></script>
+<script>const player = new Plyr('#video'); </script>
+<script>
+    // Video.js script for hls/m3u files
+              // Set the default media link for demonstration
+              var defaultVideoSrc = "https://live-par-2-cdn-alt.livepush.io/live/bigbuckbunnyclip/index.m3u8";
+      
+        
+      // Initialize the video element
+      var video = document.getElementById('video');
+      var defaultVideoLoaded = false; // Flag to track if default video is loaded
+
+      // Function to play the media
+      function playMedia() {
+          // Get the media link from the input field
+          var mediaLink = document.getElementById('mediaLink').value;
+          // Check if the link is not empty
+          if (mediaLink.trim() !== '') {
+              loadMedia(mediaLink);
+          }else{
+            alert("Please paste media URL")
+          }
+      }
+  
+  /*===========New Load media testing */
+
+
+// Extract media URL from URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const mediaUrl = urlParams.get('media');
+
+  
+  function loadMedia(mediaSrc) {
+    // Check if the link is for MP3 file
+    if (mediaSrc.toLowerCase().endsWith('.mp3')) {
+        // Set the source directly to the video element for MP3 files
+        video.src = mediaSrc;
+      mediaSrc = mediaUrl;
+    } else {
+        // Handle other formats like M3U8, MP4, MKV
+        if (Hls.isSupported()) {
+            var hls = new Hls();
+            hls.loadSource(mediaSrc);
+            hls.attachMedia(video);
+            video.load();
+            video.play();
+          audio.play();
+             handleMediaSource(mediaSrc);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = mediaSrc;
+            handleMediaSource(mediaSrc);
+          mediaSrc = mediaUrl;
+            
+        }
+    }
+}
+
+  
+  function handleMediaSource(mediaSrc) {
+    // Check if the media source is a live stream
+    var isLive = mediaSrc.toLowerCase().includes('m3u8') || mediaSrc.toLowerCase().includes('rtmp');
+    
+    // Get the live indicator element
+    var liveIndicator = document.querySelector('.live-indicator');
+
+    // If the media source is live, show the live indicator
+    if (isLive) {
+        liveIndicator.style.display = 'inline-block';
+    } else {
+        liveIndicator.style.display = 'none';
+    }
+}
+  /*
+      // Function to load media into the video element
+      function loadMedia(mediaSrc) {
+          // Check if HLS is supported
+          if (Hls.isSupported()) {
+              var hls = new Hls();
+              hls.loadSource(mediaSrc);
+              hls.attachMedia(video);
+              video.load();
+            video.play();
+          }
+          // HLS.js is not supported on platforms that do not have Media Source
+          // Extensions (MSE) enabled.
+          //
+          // When the browser has built-in HLS support (check using `canPlayType`),
+          // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
+          // element through the `src` property. This is using the built-in support
+          // of the plain video element, without using HLS.js.
+          else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+              video.src = mediaSrc;
+          }
+      }
+*/
+      // Load default media when the page is loaded
+      window.onload = function() {
+          loadMedia(defaultVideoSrc);
+          defaultVideoLoaded = true;
+      };
+
+      // Check if default video is loaded, if not, load default video when user clicks play
+      function playDefaultVideoIfNeeded() {
+          if (!defaultVideoLoaded) {
+              loadMedia(defaultVideoSrc);
+              defaultVideoLoaded = true;
+          }
+      }
+
+    
+    </script>
+
+
+<script>
+    // nav toggle open close script
+    document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const dropdowns = document.querySelectorAll('.nav-dropdown');
+        
+            navToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+        
+            dropdowns.forEach(dropdown => {
+                const dropButton = dropdown.querySelector('.dropbtn');
+            dropButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                dropdown.classList.toggle('active');
+                
+                // Close other dropdowns
+                dropdowns.forEach(otherDropdown => {
+                    if (otherDropdown !== dropdown) {
+                        otherDropdown.classList.remove('active');
+                    }
+                });
+            });
+        });
+    
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-dropdown')) {
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+        });
+        </script>
+    
+
+    <script>
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+
+</html>
