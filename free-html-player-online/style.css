@@ -2,7 +2,7 @@
 
 /*input Styling Start*/
 .input-div{
-    width: 100%;
+    width: 98%;
     height: fit-content;
     margin: auto;
     background-color: rgb(19, 16, 16);
@@ -11,7 +11,7 @@
     justify-content: center;   
     margin-top: 10px;
     margin-bottom: 10px;
-    padding: 10px 0;
+    padding: 10px;
     text-align: center;
     
   }
@@ -108,7 +108,7 @@
   
   
   .video-container {
-      width: 100%;
+      width: 98%;
       margin: auto;
       height: calc((9 / 16) * 100%);
       position: relative;
