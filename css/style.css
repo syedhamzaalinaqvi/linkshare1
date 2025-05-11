@@ -1815,9 +1815,9 @@ select:focus {
 
 @media (max-width: 480px) {
     .content-section {
-        padding: 1rem;
-        margin: 0.5rem;
-        display: contents;
+        padding: 10px;
+        margin: auto;
+        /*display: contents;*/
     }
 
     .content-section h2 {
