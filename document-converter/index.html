@@ -271,6 +271,127 @@
             to { opacity: 1; }
         }
         
+        .recent-conversions {
+            margin-top: 3rem;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        .recent-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--gray-light);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .recent-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .recent-icon {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-right: 1rem;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .recent-details {
+            flex: 1;
+        }
+        
+        .recent-title {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            color: var(--text-color);
+        }
+        
+        .recent-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .recent-type,
+        .recent-date {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .recent-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        
+        .recent-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            background-color: transparent;
+            color: var(--gray);
+            border: none;
+            padding: 0.3rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--secondary-color);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+        
+        .empty-message i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
         .features-section {
             margin-top: 3rem;
             display: grid;
@@ -560,6 +681,23 @@
                 </div>
             </div>
             
+            <!-- Recent Conversions Section -->
+            <div class="recent-conversions">
+                <h3 class="section-title">Recent Conversions</h3>
+                <div class="recent-list" id="recent-conversions-list">
+                    <!-- Recent conversions will be added here dynamically -->
+                    <div class="empty-message" id="empty-conversions-message">
+                        <i class="fas fa-history"></i>
+                        <p>Your recent conversions will appear here</p>
+                    </div>
+                </div>
+                <div class="recent-actions">
+                    <button id="clear-history-btn" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Clear History
+                    </button>
+                </div>
+            </div>
+            
             <div class="features-section">
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -639,6 +777,156 @@
 
     <script src="/js/main.js"></script>
     <script>
+        // Local Storage for Recent Conversions
+        const STORAGE_KEY = 'linkshare_document_conversions';
+        let recentConversions = [];
+        
+        // Load recent conversions from local storage
+        function loadRecentConversions() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    recentConversions = JSON.parse(saved);
+                    renderRecentConversions();
+                } catch (e) {
+                    console.error('Error loading recent conversions:', e);
+                    recentConversions = [];
+                }
+            }
+        }
+        
+        // Save recent conversions to local storage
+        function saveRecentConversions() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(recentConversions));
+        }
+        
+        // Add a new conversion to history
+        function addConversion(type, fileName, sourceFormat, targetFormat, textPreview) {
+            // Limit preview text length
+            const previewText = textPreview ? (textPreview.length > 100 ? textPreview.substring(0, 100) + '...' : textPreview) : '';
+            
+            // Create new conversion record
+            const conversion = {
+                id: Date.now().toString(),
+                type: type,
+                fileName: fileName,
+                sourceFormat: sourceFormat,
+                targetFormat: targetFormat,
+                textPreview: previewText,
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            };
+            
+            // Add to beginning of array
+            recentConversions.unshift(conversion);
+            
+            // Limit to 10 most recent conversions
+            if (recentConversions.length > 10) {
+                recentConversions = recentConversions.slice(0, 10);
+            }
+            
+            // Save and render
+            saveRecentConversions();
+            renderRecentConversions();
+        }
+        
+        // Render recent conversions list
+        function renderRecentConversions() {
+            const listElement = document.getElementById('recent-conversions-list');
+            const emptyMessage = document.getElementById('empty-conversions-message');
+            
+            // Clear current list
+            listElement.innerHTML = '';
+            
+            if (recentConversions.length === 0) {
+                listElement.appendChild(emptyMessage);
+                return;
+            }
+            
+            // Hide empty message
+            if (emptyMessage) {
+                emptyMessage.style.display = 'none';
+            }
+            
+            // Add each conversion to the list
+            recentConversions.forEach(conversion => {
+                const item = document.createElement('div');
+                item.className = 'recent-item';
+                
+                // Determine icon based on conversion type
+                let iconClass = 'fa-file';
+                if (conversion.targetFormat === 'pdf') {
+                    iconClass = 'fa-file-pdf';
+                } else if (conversion.targetFormat === 'docx') {
+                    iconClass = 'fa-file-word';
+                } else if (conversion.targetFormat === 'txt') {
+                    iconClass = 'fa-file-alt';
+                }
+                
+                item.innerHTML = `
+                    <div class="recent-icon">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="recent-details">
+                        <div class="recent-title">${conversion.fileName || 'Untitled Document'}</div>
+                        <div class="recent-meta">
+                            <div class="recent-type">
+                                <i class="fas fa-exchange-alt"></i>
+                                ${conversion.sourceFormat || 'text'} → ${conversion.targetFormat}
+                            </div>
+                            <div class="recent-date">
+                                <i class="fas fa-clock"></i>
+                                ${conversion.date} ${conversion.time}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recent-item-actions">
+                        <button class="action-btn delete-conversion" data-id="${conversion.id}" title="Remove from history">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                listElement.appendChild(item);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-conversion').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    removeConversion(id);
+                    e.stopPropagation(); // Prevent item click
+                });
+            });
+        }
+        
+        // Remove a conversion from history
+        function removeConversion(id) {
+            recentConversions = recentConversions.filter(conversion => conversion.id !== id);
+            saveRecentConversions();
+            renderRecentConversions();
+        }
+        
+        // Clear all conversion history
+        function clearConversionHistory() {
+            recentConversions = [];
+            saveRecentConversions();
+            renderRecentConversions();
+        }
+        
+        // Initialize recent conversions
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRecentConversions();
+            
+            // Clear history button
+            document.getElementById('clear-history-btn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear your conversion history?')) {
+                    clearConversionHistory();
+                }
+            });
+        });
+        
         // Tab switching functionality
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
@@ -736,10 +1024,16 @@
             setTimeout(() => {
                 if (format === 'pdf') {
                     convertToPdf(text, fontFamily, fontSize);
+                    // Save to recent conversions
+                    addConversion('text-to-pdf', 'converted-document.pdf', 'text', 'pdf', text);
                 } else if (format === 'docx') {
                     convertToDocx(text, fontFamily, fontSize);
+                    // Save to recent conversions
+                    addConversion('text-to-docx', 'converted-document.docx', 'text', 'docx', text);
                 } else if (format === 'txt') {
                     convertToTxt(text);
+                    // Save to recent conversions
+                    addConversion('text-to-txt', 'converted-document.txt', 'text', 'txt', text);
                 }
                 
                 // Hide loading spinner
@@ -865,6 +1159,21 @@
             }
         });
         
+        // Extract text from TXT file
+        function extractFromTxt(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                document.getElementById('output-text').value = text;
+                document.getElementById('output-text-container').classList.remove('hidden');
+                document.getElementById('loading-extract').classList.remove('show');
+                
+                // Save to recent conversions
+                addConversion('doc-to-text', file.name, 'txt', 'text', text);
+            };
+            reader.readAsText(file);
+        }
+        
         // Extract text from PDF file
         function extractFromPdf(file) {
             // Set up PDF.js worker
@@ -894,6 +1203,9 @@
                                     document.getElementById('output-text').value = textContent;
                                     document.getElementById('output-text-container').classList.remove('hidden');
                                     document.getElementById('loading-extract').classList.remove('show');
+                                    
+                                    // Save to recent conversions
+                                    addConversion('doc-to-text', file.name, 'pdf', 'text', textContent);
                                 }
                             });
                         });
@@ -918,6 +1230,9 @@
                         document.getElementById('output-text-container').classList.remove('hidden');
                         document.getElementById('loading-extract').classList.remove('show');
                         
+                        // Save to recent conversions
+                        addConversion('doc-to-text', file.name, 'docx', 'text', result.value);
+                        
                         // Show warnings if any
                         if (result.messages.length > 0) {
                             console.warn('Warnings while extracting DOCX text:', result.messages);
@@ -933,17 +1248,7 @@
             reader.readAsArrayBuffer(file);
         }
         
-        // Extract text from TXT file
-        function extractFromTxt(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                document.getElementById('output-text').value = text;
-                document.getElementById('output-text-container').classList.remove('hidden');
-                document.getElementById('loading-extract').classList.remove('show');
-            };
-            reader.readAsText(file);
-        }
+
         
         // Download extracted text as TXT
         document.getElementById('download-text-btn').addEventListener('click', () => {
@@ -1105,6 +1410,10 @@
             Packer.toBlob(doc).then(blob => {
                 saveAs(blob, fileName + '.docx');
                 document.getElementById('loading-pdf-convert').classList.remove('show');
+                
+                // Save to recent conversions
+                const combinedText = textContent.map(page => page.content).join(' ');
+                addConversion('pdf-to-word', fileName + '.docx', 'pdf', 'docx', combinedText);
             }).catch(error => {
                 console.error("Error generating Word document:", error);
                 alert("Error generating Word document: " + error.message);
