@@ -28,6 +28,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
     <script src="https://unpkg.com/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script>
+        // Configure PDF.js worker
+        window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     
     <style>
         :root {
@@ -701,13 +708,37 @@
         // Convert to DOCX function
         function convertToDocx(text, fontFamily, fontSize) {
             // Using docx.js
-            const { Document, Paragraph, TextRun, Packer } = docx;
+            const { Document, Paragraph, TextRun, Packer, AlignmentType, HeadingLevel } = window.docx;
             
-            // Create document
-            const doc = new Document({
-                sections: [{
-                    properties: {},
-                    children: text.split('\n').map(line => 
+            // Create paragraphs from text
+            const paragraphs = [];
+            
+            // Add a title
+            paragraphs.push(
+                new Paragraph({
+                    text: "Converted Document",
+                    heading: HeadingLevel.HEADING_1,
+                    alignment: AlignmentType.CENTER,
+                })
+            );
+            
+            // Add a separator
+            paragraphs.push(new Paragraph({
+                text: "",
+                spacing: {
+                    after: 200,
+                },
+            }));
+            
+            // Add content paragraphs
+            text.split('\n').forEach(line => {
+                if (line.trim() === '') {
+                    // Empty line
+                    paragraphs.push(new Paragraph({
+                        text: "",
+                    }));
+                } else {
+                    paragraphs.push(
                         new Paragraph({
                             children: [
                                 new TextRun({
@@ -717,13 +748,24 @@
                                 })
                             ]
                         })
-                    )
+                    );
+                }
+            });
+            
+            // Create document
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: paragraphs
                 }]
             });
             
             // Generate and save document
             Packer.toBlob(doc).then(blob => {
                 saveAs(blob, 'converted-document.docx');
+            }).catch(error => {
+                console.error("Error generating DOCX:", error);
+                alert("Error generating Word document. Please try again.");
             });
         }
         
@@ -750,17 +792,83 @@
             // Check file type and extract text accordingly
             if (fileName.endsWith('.txt')) {
                 extractFromTxt(file);
+            } else if (fileName.endsWith('.pdf')) {
+                extractFromPdf(file);
+            } else if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+                extractFromDocx(file);
             } else {
-                // For PDF and DOCX, we'd need more complex libraries
-                // This is a simplified version that just shows a message
-                setTimeout(() => {
-                    const outputText = document.getElementById('output-text');
-                    outputText.value = "Text extraction from PDF and DOCX files requires additional libraries that are loaded on demand. For this demo, we're showing this placeholder text. In a full implementation, we would use PDF.js for PDFs and mammoth.js for DOCX files.";
-                    document.getElementById('output-text-container').classList.remove('hidden');
-                    document.getElementById('loading-extract').classList.remove('show');
-                }, 1500);
+                alert('Unsupported file format. Please upload a PDF, DOCX, or TXT file.');
+                document.getElementById('loading-extract').classList.remove('show');
             }
         });
+        
+        // Extract text from PDF file
+        function extractFromPdf(file) {
+            // Set up PDF.js worker
+            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const typedArray = new Uint8Array(e.target.result);
+                
+                // Load the PDF file
+                pdfjsLib.getDocument(typedArray).promise.then(function(pdf) {
+                    let textContent = '';
+                    let pendingPages = pdf.numPages;
+                    
+                    // Extract text from each page
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        pdf.getPage(i).then(function(page) {
+                            page.getTextContent().then(function(content) {
+                                // Concatenate the text items
+                                const pageText = content.items.map(item => item.str).join(' ');
+                                textContent += pageText + '\n\n--- Page ' + i + ' ---\n\n';
+                                
+                                pendingPages--;
+                                if (pendingPages === 0) {
+                                    // All pages processed
+                                    document.getElementById('output-text').value = textContent;
+                                    document.getElementById('output-text-container').classList.remove('hidden');
+                                    document.getElementById('loading-extract').classList.remove('show');
+                                }
+                            });
+                        });
+                    }
+                }).catch(function(error) {
+                    console.error('Error extracting PDF text:', error);
+                    document.getElementById('output-text').value = 'Error extracting text from PDF: ' + error.message;
+                    document.getElementById('output-text-container').classList.remove('hidden');
+                    document.getElementById('loading-extract').classList.remove('show');
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Extract text from DOCX file
+        function extractFromDocx(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                mammoth.extractRawText({arrayBuffer: e.target.result})
+                    .then(function(result) {
+                        document.getElementById('output-text').value = result.value;
+                        document.getElementById('output-text-container').classList.remove('hidden');
+                        document.getElementById('loading-extract').classList.remove('show');
+                        
+                        // Show warnings if any
+                        if (result.messages.length > 0) {
+                            console.warn('Warnings while extracting DOCX text:', result.messages);
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('Error extracting DOCX text:', error);
+                        document.getElementById('output-text').value = 'Error extracting text from Word document: ' + error.message;
+                        document.getElementById('output-text-container').classList.remove('hidden');
+                        document.getElementById('loading-extract').classList.remove('show');
+                    });
+            };
+            reader.readAsArrayBuffer(file);
+        }
         
         // Extract text from TXT file
         function extractFromTxt(file) {
