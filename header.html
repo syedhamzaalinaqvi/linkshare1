@@ -1,3 +1,6 @@
+<script src="js/script.js"></script>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <nav class="navbar">
     <a href="https://www.linkshare.online/" class="nav-brand">
         <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
@@ -38,3 +41,30 @@
         
     </ul>
 </nav>
+
+<script>
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+
+    // Scroll to Top Button
+    const scrollToTopBtn = document.querySelector('.scroll-to-top');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    });
+
+    scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+</script>
