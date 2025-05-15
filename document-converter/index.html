@@ -381,6 +381,7 @@
             <div class="converter-tabs">
                 <div class="tab active" data-tab="text-to-doc">Text to Document</div>
                 <div class="tab" data-tab="doc-to-text">Document to Text</div>
+                <div class="tab" data-tab="pdf-to-word">PDF to Word</div>
             </div>
             
             <div class="converter-content">
@@ -493,6 +494,68 @@
                     <div class="loading" id="loading-extract">
                         <div class="spinner"></div>
                         <p>Extracting text from your document...</p>
+                    </div>
+                </div>
+                
+                <!-- PDF to Word Tab -->
+                <div class="tab-content" id="pdf-to-word">
+                    <div class="form-group">
+                        <label for="pdf-input-file">Upload your PDF document:</label>
+                        <input type="file" id="pdf-input-file" accept=".pdf">
+                    </div>
+                    
+                    <div class="file-info hidden" id="pdf-file-info">
+                        <i class="fas fa-file-pdf file-icon"></i>
+                        <div class="file-details">
+                            <div id="pdf-file-name">document.pdf</div>
+                            <div id="pdf-file-size">123 KB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="options-container">
+                        <div class="option-group">
+                            <label for="word-format">Word Format:</label>
+                            <select id="word-format">
+                                <option value="docx">Word Document (.docx)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="pdf-font-family">Font:</label>
+                            <select id="pdf-font-family">
+                                <option value="Arial">Arial</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Calibri">Calibri</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Verdana">Verdana</option>
+                            </select>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="include-images">Include Images:</label>
+                            <select id="include-images">
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button id="convert-pdf-btn" class="btn">
+                            <i class="fas fa-file-word"></i> Convert to Word
+                        </button>
+                        <button id="clear-pdf-btn" class="btn btn-secondary">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    
+                    <div class="loading" id="loading-pdf-convert">
+                        <div class="spinner"></div>
+                        <p>Converting PDF to Word document...</p>
+                    </div>
+                    
+                    <div class="conversion-note">
+                        <p><i class="fas fa-info-circle"></i> Note: PDF to Word conversion maintains text content but may not perfectly preserve complex formatting or images.</p>
                     </div>
                 </div>
             </div>
@@ -888,6 +951,166 @@
             const blob = new Blob([text], { type: 'text/plain' });
             saveAs(blob, 'extracted-text.txt');
         });
+        
+        // PDF to Word conversion functionality
+        document.getElementById('pdf-input-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('pdf-file-name').textContent = file.name;
+                document.getElementById('pdf-file-size').textContent = formatFileSize(file.size);
+                document.getElementById('pdf-file-info').classList.remove('hidden');
+            } else {
+                document.getElementById('pdf-file-info').classList.add('hidden');
+            }
+        });
+        
+        document.getElementById('clear-pdf-btn').addEventListener('click', () => {
+            document.getElementById('pdf-input-file').value = '';
+            document.getElementById('pdf-file-info').classList.add('hidden');
+        });
+        
+        document.getElementById('convert-pdf-btn').addEventListener('click', () => {
+            const fileInput = document.getElementById('pdf-input-file');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Please upload a PDF document first.');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                alert('Please upload a PDF file.');
+                return;
+            }
+            
+            const fontFamily = document.getElementById('pdf-font-family').value;
+            const includeImages = document.getElementById('include-images').value === 'yes';
+            
+            // Show loading spinner
+            document.getElementById('loading-pdf-convert').classList.add('show');
+            
+            // Convert PDF to Word
+            convertPdfToWord(file, fontFamily, includeImages);
+        });
+        
+        // Convert PDF to Word function
+        function convertPdfToWord(file, fontFamily, includeImages) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const typedArray = new Uint8Array(e.target.result);
+                
+                // Load the PDF file
+                pdfjsLib.getDocument(typedArray).promise.then(function(pdf) {
+                    let textContent = [];
+                    let pendingPages = pdf.numPages;
+                    
+                    // Process each page
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        pdf.getPage(i).then(function(page) {
+                            page.getTextContent().then(function(content) {
+                                // Store text content with page number for ordering
+                                textContent.push({
+                                    page: i,
+                                    content: content.items.map(item => item.str).join(' ')
+                                });
+                                
+                                pendingPages--;
+                                if (pendingPages === 0) {
+                                    // All pages processed, create Word document
+                                    createWordFromPdfText(textContent, file.name.replace('.pdf', ''), fontFamily);
+                                }
+                            });
+                        });
+                    }
+                }).catch(function(error) {
+                    console.error('Error processing PDF:', error);
+                    alert('Error processing PDF: ' + error.message);
+                    document.getElementById('loading-pdf-convert').classList.remove('show');
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Create Word document from PDF text
+        function createWordFromPdfText(textContent, fileName, fontFamily) {
+            // Sort by page number
+            textContent.sort((a, b) => a.page - b.page);
+            
+            // Using docx.js
+            const { Document, Paragraph, TextRun, Packer, AlignmentType, HeadingLevel } = window.docx;
+            
+            // Create paragraphs from text
+            const paragraphs = [];
+            
+            // Add a title
+            paragraphs.push(
+                new Paragraph({
+                    text: fileName,
+                    heading: HeadingLevel.HEADING_1,
+                    alignment: AlignmentType.CENTER,
+                })
+            );
+            
+            // Add a separator
+            paragraphs.push(new Paragraph({
+                text: "",
+                spacing: {
+                    after: 200,
+                },
+            }));
+            
+            // Add content from each page
+            textContent.forEach((page, index) => {
+                // Add page header if not first page
+                if (index > 0) {
+                    paragraphs.push(
+                        new Paragraph({
+                            text: "",
+                            spacing: {
+                                before: 300,
+                            },
+                        })
+                    );
+                }
+                
+                // Add page content
+                const pageLines = page.content.split(/\r?\n/);
+                pageLines.forEach(line => {
+                    if (line.trim() === '') {
+                        paragraphs.push(new Paragraph({ text: "" }));
+                    } else {
+                        paragraphs.push(
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: line,
+                                        font: fontFamily,
+                                        size: 24 // 12pt
+                                    })
+                                ]
+                            })
+                        );
+                    }
+                });
+            });
+            
+            // Create document
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: paragraphs
+                }]
+            });
+            
+            // Generate and save document
+            Packer.toBlob(doc).then(blob => {
+                saveAs(blob, fileName + '.docx');
+                document.getElementById('loading-pdf-convert').classList.remove('show');
+            }).catch(error => {
+                console.error("Error generating Word document:", error);
+                alert("Error generating Word document: " + error.message);
+                document.getElementById('loading-pdf-convert').classList.remove('show');
+            });
+        }
     </script>
 </body>
 </html>
