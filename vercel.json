@@ -12,6 +12,9 @@
   ],
   "routes": [
     { "handle": "filesystem" },
+    { "src": "/css/(.*)", "dest": "/css/$1" },
+    { "src": "/js/(.*)", "dest": "/js/$1" },
+    { "src": "/(.*\\.(ico|png|jpg|jpeg|svg|webp|gif))", "dest": "/$1" },
     { "src": "/(.*)", "status": 404, "dest": "/404.html" }
   ]
 }
