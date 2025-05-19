@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gemini API Functions
     async function callGeminiAPI(apiKey, prompt) {
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${apiKey}`;
         
         const requestBody = {
             contents: [
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function callGeminiAPIWithImage(apiKey, prompt, imageData) {
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-vision:generateContent?key=${apiKey}`;
         
         // Extract the base64 data from the data URL
         const base64Data = imageData.split(',')[1];
