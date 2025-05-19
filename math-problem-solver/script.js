@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Convert canvas to image data URL
             const imageData = canvas.toDataURL('image/png');
             const prompt = "Solve the math problem presented in this PDF and provide a detailed, step-by-step solution.";
-            const response = await callGeminiAPIWithImage(apiKey, prompt, imageData);
+            const response = await callGeminiAPIWithImage(API_KEY, prompt, imageData);
             displaySolution(response);
             saveToHistory('pdf', 'PDF Math Problem', response);
         } catch (error) {
