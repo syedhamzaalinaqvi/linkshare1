@@ -35,19 +35,47 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <nav class="navbar" role="navigation" aria-label="Main navigation">
-        <div class="container navbar-container">
-            <a href="/" class="navbar-brand">
-                <img src="/linkshare-favicon.png" alt="LinkShare Logo" width="40" height="40">
-                LinkShare
-            </a>
-            <ul class="navbar-nav">
-                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="/about/" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="/contact/" class="nav-link">Contact</a></li>
-            </ul>
-        </div>
+        <a href="https://www.linkshare.online/" class="nav-brand">
+            <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">           
+            <span class="nav-brand-link-text">LinkShare</span>
+        </a>
+    
+        <button class="nav-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <ul class="nav-links">
+            <li><a href="https://www.linkshare.online/">Home</a></li>
+            <li><a href="/add-group">Add Group</a></li>
+            <li><a href="/join-group">Join Group</a></li>
+            <li class="nav-dropdown"><a href="#" class="dropbtn">Tools ▾</a>
+                <ul class="nav-dropdown-content">
+                    <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
+                    <li><a href="/qr-code-generator" >QR Code Generator</a></li>
+                    <li><a href="/qr-code-reader" >QR Code Scanner/Reader</a></li>
+                    
+                    <li><a href="/m3u-playlist-viewer" class="active">M3U Playlist Reader</a></li>
+                    <li><a href="/document-converter">Document Converter</a></li>
+                   <li><a href="/free-chatgpt-plus">Free ChatGPT Plus</a></li>
+                   <li><a href="/math-problem-solver">Math Problem Solver</a></li>
+                </ul>
+            </li>
+            <li class="nav-dropdown">
+                <a href="#" class="dropbtn">Blog ▾</a>
+                <ul class="nav-dropdown-content">
+                    
+                    <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
+                    <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
+                    <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
+                    <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+                </ul>
+            </li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/privacy">Privacy</a></li>
+            <li><a href="/terms">Terms</a></li>
+        </ul>
     </nav>
-
+ 
     <main id="main-content" class="container" role="main">
         <div class="math-container">
             <div class="math-header">
@@ -138,19 +166,97 @@
             </div>
         </div>
     </main>
-
     <footer class="footer">
-        <div class="container footer-content">
-            <p class="footer-text">&copy; 2025 LinkShare. All rights reserved.</p>
-            <ul class="footer-links">
-                <li><a href="/about/" class="footer-link">About</a></li>
-                <li><a href="/privacy/" class="footer-link">Privacy Policy</a></li>
-                <li><a href="/terms/" class="footer-link">Terms of Service</a></li>
-                <li><a href="/contact/" class="footer-link">Contact</a></li>
-            </ul>
+        <div class="footer-content">
+          <div class="footer-section">
+            <div class="logo-container">
+              <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+              <h3>LinkShare</h3>
+            </div>
+            <div class="footer-tagline">
+              <p>Share and discover amazing WhatsApp groups links</p>
+            </div>
+          </div>
+          <div class="footer-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/contact">Contact</a>
+          </div>
         </div>
-    </footer>
-
+        <div class="footer-bottom">
+          <p>&copy; 2025 LinkShare. All rights reserved.</p>
+        </div>
+      </footer>
+      
+      <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+      </button>
+      
+      <!-- Scroll to Top Script -->
+      <script>
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+          if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('visible');
+          } else {
+            scrollToTopBtn.classList.remove('visible');
+          }
+        });
+        
+        scrollToTopBtn.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+        
+        // Mobile navigation toggle
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        
+        navToggle.addEventListener('click', () => {
+          navLinks.classList.toggle('show');
+        });
+      </script>
+      <script>
+        // nav toggle open close script
+        document.addEventListener('DOMContentLoaded', function() {
+                const navToggle = document.querySelector('.nav-toggle');
+                const navLinks = document.querySelector('.nav-links');
+                const dropdowns = document.querySelectorAll('.nav-dropdown');
+            
+                navToggle.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                });
+            
+                dropdowns.forEach(dropdown => {
+                    const dropButton = dropdown.querySelector('.dropbtn');
+                dropButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                    
+                    // Close other dropdowns
+                    dropdowns.forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.nav-dropdown')) {
+                    dropdowns.forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
+            });
+            </script>
+    
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
