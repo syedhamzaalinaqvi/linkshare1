@@ -15,11 +15,7 @@ const database = firebase.database();
 
 // DOM Elements
 document.addEventListener('DOMContentLoaded', () => {
-    // API Key Management
-    const apiKeyToggle = document.getElementById('api-key-toggle');
-    const apiKeyForm = document.getElementById('api-key-form');
-    const apiKeyInput = document.getElementById('api-key');
-    const saveApiKeyBtn = document.getElementById('save-api-key');
+    // API Key Status
     const apiKeyStatus = document.getElementById('api-key-status');
 
     // Input Tabs
@@ -48,12 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Example Problems
     const exampleProblems = document.querySelectorAll('.example-problem');
 
-    // Check for saved API key
-    checkApiKey();
-
-    // Event Listeners
-    apiKeyToggle.addEventListener('click', toggleApiKeyForm);
-    saveApiKeyBtn.addEventListener('click', saveApiKey);
+    // Set API key status
+    apiKeyStatus.innerHTML = '<span class="api-key-status-success"><i class="fas fa-check-circle"></i> API Key is already set and ready to use</span>';
     
     inputTabs.forEach(tab => {
         tab.addEventListener('click', () => switchTab(tab));
@@ -75,46 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // API Key Management Functions
-    function toggleApiKeyForm() {
-        apiKeyForm.classList.toggle('show');
-        if (apiKeyForm.classList.contains('show')) {
-            apiKeyToggle.innerHTML = '<i class="fas fa-minus-circle"></i> Hide API Key Form';
-        } else {
-            apiKeyToggle.innerHTML = '<i class="fas fa-plus-circle"></i> Set or Change API Key';
-        }
-    }
 
-    function saveApiKey() {
-        const apiKey = apiKeyInput.value.trim();
-        if (!apiKey) {
-            showError('Please enter a valid API key');
-            return;
-        }
-
-        // Store in session storage (not local storage for security)
-        sessionStorage.setItem('geminiApiKey', apiKey);
-        
-        // Update UI
-        apiKeyStatus.innerHTML = '<span class="api-key-status-success"><i class="fas fa-check-circle"></i> API Key saved for this session</span>';
-        
-        // Hide the form after saving
-        setTimeout(() => {
-            apiKeyForm.classList.remove('show');
-            apiKeyToggle.innerHTML = '<i class="fas fa-plus-circle"></i> Set or Change API Key';
-        }, 2000);
-    }
-
-    function checkApiKey() {
-        const apiKey = sessionStorage.getItem('geminiApiKey');
-        if (apiKey) {
-            apiKeyStatus.innerHTML = '<span class="api-key-status-success"><i class="fas fa-check-circle"></i> API Key is set for this session</span>';
-            // Pre-fill the input
-            apiKeyInput.value = apiKey;
-        } else {
-            apiKeyStatus.innerHTML = '<span class="api-key-status-error"><i class="fas fa-exclamation-circle"></i> No API Key set</span>';
-        }
-    }
 
     // Tab Switching
     function switchTab(tab) {
@@ -222,16 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Get API key
-        const apiKey = getApiKey();
-        if (!apiKey) return;
+        // API Key provided by the user
+        const API_KEY = "AIzaSyCNK0qJXxj-_ZcvxFZ4BUaHrHyTL2XS8dM";
         
         // Show loading state
         showLoading();
         
         try {
             const prompt = `Solve the following math problem and show the step-by-step solution: ${problem}`;
-            const response = await callGeminiAPI(apiKey, prompt);
+            const response = await callGeminiAPI(API_KEY, prompt);
             displaySolution(response);
             saveToHistory('text', problem, response);
         } catch (error) {
@@ -247,9 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Get API key
-        const apiKey = getApiKey();
-        if (!apiKey) return;
+        // API Key provided by the user
+        const API_KEY = "AIzaSyCNK0qJXxj-_ZcvxFZ4BUaHrHyTL2XS8dM";
         
         // Show loading state
         showLoading();
@@ -257,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const imageData = imagePreview.src;
             const prompt = "Analyze the image provided and solve the math problem shown. Provide a detailed, step-by-step solution.";
-            const response = await callGeminiAPIWithImage(apiKey, prompt, imageData);
+            const response = await callGeminiAPIWithImage(API_KEY, prompt, imageData);
             displaySolution(response);
             saveToHistory('image', 'Image Math Problem', response);
         } catch (error) {
@@ -273,9 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Get API key
-        const apiKey = getApiKey();
-        if (!apiKey) return;
+        // API Key provided by the user
+        const API_KEY = "AIzaSyCNK0qJXxj-_ZcvxFZ4BUaHrHyTL2XS8dM";
         
         // Show loading state
         showLoading();
@@ -302,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gemini API Functions
     async function callGeminiAPI(apiKey, prompt) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
         
         const requestBody = {
             contents: [
@@ -338,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function callGeminiAPIWithImage(apiKey, prompt, imageData) {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent?key=${apiKey}`;
         
         // Extract the base64 data from the data URL
         const base64Data = imageData.split(',')[1];
@@ -384,18 +334,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Utility Functions
     function getApiKey() {
-        // First check if user has provided their own API key
-        const apiKey = sessionStorage.getItem('geminiApiKey');
-        
-        if (!apiKey) {
-            showError('Please set your Gemini API key first');
-            // Show the API key form
-            apiKeyForm.classList.add('show');
-            apiKeyToggle.innerHTML = '<i class="fas fa-minus-circle"></i> Hide API Key Form';
-            return null;
-        }
-        
-        return apiKey;
+        // Return the hardcoded API key
+        return API_KEY;
     }
 
     function showLoading() {
