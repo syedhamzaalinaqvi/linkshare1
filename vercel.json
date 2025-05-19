@@ -9,5 +9,9 @@
         { "key": "Cache-Control", "value": "s-maxage=1, stale-while-revalidate" }
       ]
     }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "status": 404, "dest": "/404.html" }
   ]
 }
