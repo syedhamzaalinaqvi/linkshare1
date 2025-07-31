@@ -382,6 +382,12 @@ select:focus {
 }
 
 /* Force grid layout at different screen sizes */
+@media (min-width: 480px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
 @media (min-width: 768px) {
     .groups-grid {
         grid-template-columns: repeat(2, 1fr) !important;
@@ -1666,35 +1672,50 @@ select:focus {
     }
 
     .groups-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
     }
 
     .group-card {
         height: auto;
-        min-height: 450px;
+        min-height: 380px;
+        padding: 0.8rem;
     }
 
     .group-card img {
-        height: 160px;
+        height: 120px;
     }
 
     .group-card h3 {
-        font-size: 1.1rem;
-        margin-bottom: 0.6rem;
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+        line-height: 1.2;
     }
 
     .group-card p {
-        font-size: 0.9rem;
-        margin-bottom: 0.8rem;
+        font-size: 0.75rem;
+        margin-bottom: 0.6rem;
+        line-height: 1.3;
     }
 
     .card-footer {
-        padding: 0.5rem 1rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
     }
 
     .views-count {
+        font-size: 0.65rem;
+    }
+
+    .join-btn {
+        padding: 0.5rem 0.8rem;
         font-size: 0.8rem;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.65rem;
     }
 }
 
@@ -1708,23 +1729,52 @@ select:focus {
         padding: 1rem;
     }
 
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+    }
+
     .group-card {
-        padding: 1rem;
+        padding: 0.6rem;
+        min-height: 350px;
+    }
+
+    .group-card img {
+        height: 100px;
+    }
+
+    .group-card h3 {
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .group-card p {
+        font-size: 0.7rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-footer {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.6rem;
+    }
+
+    .views-count {
+        font-size: 0.6rem;
+    }
+
+    .join-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
     }
 
     .group-badges {
-        gap: 0.4rem;
+        gap: 0.3rem;
     }
 
     .category-badge,
     .country-badge {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
-    }
-
-    .join-btn {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.9rem;
+        padding: 0.15rem 0.3rem;
+        font-size: 0.6rem;
     }
 }
 
