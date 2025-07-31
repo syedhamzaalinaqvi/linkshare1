@@ -381,10 +381,10 @@ select:focus {
     width: 100%;
 }
 
-/* Mobile-first approach - start with 2 columns for mobile */
+/* Mobile-first approach - minimum 2 columns, can show more based on space */
 @media (max-width: 767px) {
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
         gap: 1rem;
     }
 }
@@ -392,19 +392,19 @@ select:focus {
 /* Tablet and larger screens */
 @media (min-width: 768px) {
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
     }
 }
 
 @media (min-width: 992px) {
     .groups-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
     }
 }
 
 @media (min-width: 1200px) {
     .groups-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
     }
 }
 
@@ -863,7 +863,7 @@ select:focus {
 }
 
 .groups-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
     gap: 1rem;
     padding: 0rem;
 }
@@ -1656,7 +1656,7 @@ select:focus {
     }
 
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
         gap: 0.8rem;
     }
 
@@ -1714,7 +1714,7 @@ select:focus {
     }
 
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
         gap: 0.6rem;
     }
 
