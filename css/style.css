@@ -381,13 +381,15 @@ select:focus {
     width: 100%;
 }
 
-/* Force grid layout at different screen sizes */
-@media (min-width: 480px) {
+/* Mobile-first approach - start with 2 columns for mobile */
+@media (max-width: 767px) {
     .groups-grid {
         grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem;
     }
 }
 
+/* Tablet and larger screens */
 @media (min-width: 768px) {
     .groups-grid {
         grid-template-columns: repeat(2, 1fr) !important;
@@ -403,24 +405,6 @@ select:focus {
 @media (min-width: 1200px) {
     .groups-grid {
         grid-template-columns: repeat(4, 1fr) !important;
-    }
-}
-
-@media (min-width: 768px) {
-    .groups-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (min-width: 992px) {
-    .groups-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (min-width: 1200px) {
-    .groups-grid {
-        grid-template-columns: repeat(4, 1fr);
     }
 }
 
@@ -879,7 +863,7 @@ select:focus {
 }
 
 .groups-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 1rem;
     padding: 0rem;
 }
@@ -1672,7 +1656,7 @@ select:focus {
     }
 
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.8rem;
     }
 
@@ -1730,7 +1714,7 @@ select:focus {
     }
 
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.6rem;
     }
 
