@@ -375,36 +375,55 @@ select:focus {
 
 .groups-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(auto, 1fr)) !important;
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1.5rem;
     padding: 1rem 0;
     width: 100%;
 }
 
-/* Mobile-first approach - minimum 2 columns, can show more based on space */
+/* Mobile-first approach - responsive columns based on available space */
 @media (max-width: 768px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+        gap: 0.8rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+        gap: 0.6rem;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 340px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
+        gap: 0.5rem;
     }
 }
 
 /* Tablet and larger screens */
 @media (min-width: 768px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+        gap: 1.5rem;
     }
 }
 
 @media (min-width: 992px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+        gap: 2rem;
     }
 }
 
 @media (min-width: 1200px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+        gap: 2rem;
     }
 }
 
@@ -412,10 +431,10 @@ select:focus {
 .group-card {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
-    height: 450px;
+    height: 400px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -454,10 +473,10 @@ select:focus {
 
 .group-card img {
     width: 100%;
-    height: 180px;
+    height: 150px;
     object-fit: cover;
     border-radius: var(--radius);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
     position: relative;
 }
 
@@ -497,9 +516,9 @@ select:focus {
 }
 
 .group-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.8rem;
-    line-height: 1.4;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
     color: var(--text-color);
     font-weight: 600;
     display: -webkit-box;
@@ -507,7 +526,7 @@ select:focus {
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: auto;
-    min-height: 2.8em;
+    min-height: 2.6em;
 }
 
 .group-card p {
@@ -2798,3 +2817,181 @@ select:focus {
 }
 
 /* Style the form elements as needed */
+
+/* Mobile Responsive Card Adjustments */
+@media (max-width: 768px) {
+    .group-card {
+        height: 350px;
+        padding: 0.8rem;
+    }
+
+    .group-card img {
+        height: 120px;
+        margin-bottom: 0.6rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+        min-height: 2.4em;
+    }
+
+    .group-card p {
+        font-size: 0.75rem;
+        margin-bottom: 0.6rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .card-footer {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.7rem;
+        margin-top: -1.5rem;
+    }
+
+    .views-count {
+        font-size: 0.7rem;
+    }
+
+    .join-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.8rem;
+    }
+
+    .group-badges {
+        gap: 0.3rem;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.15rem 0.4rem;
+        font-size: 0.6rem;
+    }
+
+    .category-badge i,
+    .country-badge i {
+        font-size: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .group-card {
+        height: 320px;
+        padding: 0.6rem;
+    }
+
+    .group-card img {
+        height: 100px;
+        margin-bottom: 0.5rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+        min-height: 2.2em;
+    }
+
+    .group-card p {
+        font-size: 0.7rem;
+        margin-bottom: 0.5rem;
+        -webkit-line-clamp: 2;
+    }
+
+    .card-footer {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.65rem;
+        margin-top: -1.2rem;
+    }
+
+    .views-count {
+        font-size: 0.65rem;
+    }
+
+    .join-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .group-badges {
+        gap: 0.25rem;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.12rem 0.3rem;
+        font-size: 0.55rem;
+    }
+
+    .category-badge i,
+    .country-badge i {
+        font-size: 0.45rem;
+    }
+}
+
+@media (max-width: 340px) {
+    .group-card {
+        height: 280px;
+        padding: 0.4rem;
+    }
+
+    .group-card img {
+        height: 80px;
+        margin-bottom: 0.4rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.7rem;
+        margin-bottom: 0.2rem;
+        min-height: 2em;
+        line-height: 1.2;
+    }
+
+    .group-card p {
+        font-size: 0.6rem;
+        margin-bottom: 0.4rem;
+        line-height: 1.3;
+        -webkit-line-clamp: 2;
+    }
+
+    .card-footer {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.6rem;
+        margin-top: -1rem;
+    }
+
+    .views-count {
+        font-size: 0.6rem;
+    }
+
+    .join-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
+    }
+
+    .group-badges {
+        gap: 0.2rem;
+        top: 4px;
+        left: 4px;
+        right: 4px;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.1rem 0.25rem;
+        font-size: 0.5rem;
+    }
+
+    .category-badge i,
+    .country-badge i {
+        font-size: 0.4rem;
+    }
+
+    .card-actions {
+        padding: 0 0.4rem 0.8rem 0.4rem;
+    }
+}
