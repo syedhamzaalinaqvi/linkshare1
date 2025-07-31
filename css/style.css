@@ -1762,6 +1762,76 @@ select:focus {
     }
 }
 
+/* Extra Small Mobile Devices - Compact Cards */
+@media (max-width: 340px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 0.5rem;
+    }
+
+    .group-card {
+        padding: 0.4rem;
+        min-height: 280px;
+    }
+
+    .group-card img {
+        height: 80px;
+        margin-bottom: 0.5rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.7rem;
+        margin-bottom: 0.2rem;
+        line-height: 1.1;
+        min-height: 1.5em;
+    }
+
+    .group-card p {
+        font-size: 0.6rem;
+        margin-bottom: 0.3rem;
+        line-height: 1.2;
+        height: 2.4em;
+        -webkit-line-clamp: 2;
+    }
+
+    .card-footer {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.55rem;
+        margin-top: -1.5rem;
+    }
+
+    .views-count {
+        font-size: 0.55rem;
+    }
+
+    .join-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+    }
+
+    .group-badges {
+        gap: 0.2rem;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.1rem 0.25rem;
+        font-size: 0.5rem;
+    }
+
+    .category-badge i,
+    .country-badge i {
+        font-size: 0.4rem;
+    }
+
+    .card-actions {
+        padding: 0 0.4rem 0.5rem 0.4rem;
+    }
+}
+
 /* Content Page Styles */
 .content-section {
     width: 90% /*800px*/;
