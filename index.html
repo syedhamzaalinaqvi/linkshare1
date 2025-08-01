@@ -27,9 +27,35 @@
     <link rel="manifest" href="/site.webmanifest">
     
     <title>🔥 Join 1000+ WhatsApp Groups - Active Links Updated Daily | LinkShare</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=2.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="short-url-generator/style.css">
+    
+    <!-- CRITICAL: Force 2-column mobile grid -->
+    <style>
+        @media screen and (max-width: 595px) {
+            .groups-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.8rem !important;
+                width: 100% !important;
+            }
+        }
+        
+        @media screen and (max-width: 479px) {
+            .groups-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.6rem !important;
+            }
+        }
+        
+        @media screen and (max-width: 380px) {
+            .groups-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 0.5rem !important;
+            }
+        }
+    </style>
  
     <!-- Add structured data -->
     <script type="application/ld+json">

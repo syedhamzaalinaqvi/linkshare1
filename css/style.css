@@ -381,12 +381,13 @@ select:focus {
     width: 100%;
 }
 
-/* Progressive responsive grid system */
-/* Extra small devices (phones, 320px and up) - Force 2 columns */
-@media (max-width: 595px) {
+/* CACHE BUST v2.0 - Progressive responsive grid system */
+/* FORCE 2 COLUMNS ON ALL MOBILE DEVICES */
+@media screen and (max-width: 595px) {
     .groups-grid {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.8rem;
+        gap: 0.8rem !important;
+        width: 100% !important;
     }
 }
 
