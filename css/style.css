@@ -715,7 +715,7 @@ select:focus {
     .hero-btn {
         display: none !important;
     }
-    
+
     /* Show centered fixed button on mobile */
     .fixed-add-group-btn {
         display: flex !important;
@@ -861,7 +861,7 @@ select:focus {
     padding: 0 1.5rem 1rem 1.5rem;
     position: relative;
     z-index: 2;
-    bottom: 80px;
+    bottom: 70px;
     visibility: visible;
     display: block;
 }
