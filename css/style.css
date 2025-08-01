@@ -764,11 +764,11 @@ select:focus {
     align-items: center;
     padding-top: 0.5rem;
     border-top: 1px solid #eee;
-    font-size: 0.9rem;
+    font-size: 9px;
     color: var(--gray);
     position: relative;
     background: var(--white);
-    padding: 0.5rem 1.5rem;
+    padding: -0.5rem 1.5rem;
     z-index: 2;
     margin-top: -2.5rem;
 }
@@ -1441,7 +1441,7 @@ select:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
+    min-width: 60px;
 
 }
 
@@ -1807,7 +1807,7 @@ select:focus {
     .category-badge,
     .country-badge {
         padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
+        font-size: 10px;
     }
 
     .category-badge i,
@@ -1977,7 +1977,7 @@ select:focus {
     }
 
     .group-card p {
-        font-size: 0.75rem;
+        font-size: 10px;
         margin-bottom: 0.6rem;
         line-height: 1.3;
     }
