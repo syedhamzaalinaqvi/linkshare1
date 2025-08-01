@@ -741,7 +741,7 @@ select:focus {
     padding: 1rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
-    height: 400px;
+    height: 350px;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -1564,7 +1564,7 @@ select:focus {
     border-radius: var(--radius);
     padding: 1.5rem;
     box-shadow: var(--shadow);
-    min-height: 450px;
+    min-height: 350px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1961,8 +1961,8 @@ select:focus {
     }
 
    .group-card {
-        height: auto;
-        min-height: 380px;
+        height: 350px;
+        min-height: 350px;
         padding: 0.8rem;
     }
 
