@@ -381,57 +381,125 @@ select:focus {
     width: 100%;
 }
 
-/* Clean responsive grid - one rule for all mobile devices */
-@media (max-width: 768px) {
+/* Progressive responsive grid system */
+/* Extra small devices (phones, 320px and up) */
+@media (max-width: 479px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.8rem;
     }
-    
+}
+
+/* Small devices (larger phones, 480px and up) */
+@media (min-width: 480px) and (max-width: 767px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.2rem;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile-optimized group card styles */
+@media (max-width: 767px) {
+    .group-card {
+        height: 340px;
+        padding: 0.7rem;
+    }
+
+    .group-card img {
+        height: 100px;
+        margin-bottom: 0.5rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+        min-height: 2.2em;
+        line-height: 1.3;
+    }
+
+    .group-card p {
+        font-size: 0.7rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+        -webkit-line-clamp: 2;
+        height: 2.8em;
+    }
+
+    .card-footer {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.65rem;
+        margin-top: -1.5rem;
+    }
+
+    .views-count {
+        font-size: 0.65rem;
+    }
+
+    .join-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .group-badges {
+        gap: 0.3rem;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.15rem 0.35rem;
+        font-size: 0.55rem;
+    }
+
+    .card-actions {
+        padding: 0 0.7rem 0.7rem 0.7rem;
+    }
+}
+
+/* Extra small mobile optimization */
+@media (max-width: 479px) {
     .group-card {
         height: 320px;
         padding: 0.5rem;
     }
 
     .group-card img {
-        height: 90px;
+        height: 85px;
         margin-bottom: 0.4rem;
     }
 
     .group-card h3 {
-        font-size: 0.75rem;
-        margin-bottom: 0.25rem;
+        font-size: 0.8rem;
         min-height: 2em;
-        line-height: 1.2;
     }
 
     .group-card p {
         font-size: 0.65rem;
-        margin-bottom: 0.4rem;
-        line-height: 1.3;
+        height: 2.6em;
         -webkit-line-clamp: 2;
     }
 
-    .card-footer {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.6rem;
-        margin-top: -1rem;
-    }
-
-    .views-count {
-        font-size: 0.6rem;
-    }
-
     .join-btn {
-        padding: 0.4rem 0.8rem;
+        padding: 0.4rem 0.6rem;
         font-size: 0.7rem;
-    }
-
-    .group-badges {
-        gap: 0.2rem;
-        top: 4px;
-        left: 4px;
-        right: 4px;
     }
 
     .category-badge,
@@ -440,11 +508,15 @@ select:focus {
         font-size: 0.5rem;
     }
 
-    .category-badge i,
-    .country-badge i {
-        font-size: 0.4rem;
+    .card-actions {
+        padding: 0 0.5rem 0.5rem 0.5rem;
+    }
+
+    .card-footer {
+        font-size: 0.6rem;
     }
 }
+
 
 /* Group Card Styles */
 .group-card {
@@ -900,11 +972,7 @@ select:focus {
     padding: 1.5rem;
 }
 
-.groups-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    gap: 1rem;
-    padding: 0rem;
-}
+/* Removed conflicting grid rule - handled by responsive system above */
 
 .groups-header {
     flex-direction: column;
@@ -948,28 +1016,11 @@ select:focus {
     font-size: 1rem;
 }
 
-.group-card {
-    height: auto;
-    min-height: 450px;
-    padding-bottom: 4rem;
-}
+/* Group card base styles are handled above in main section */
 
-.card-actions {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem;
-    background: var(--white);
-    border-top: 1px solid #eee;
-}
+/* Card actions styles handled in main group card section above */
 
-.join-btn {
-    width: 100%;
-    margin: 0;
-    position: relative;
-    z-index: 2;
-}
+/* Join button styles handled in main section and responsive breakpoints */
 
 
 /* Loading Animation */
@@ -2719,62 +2770,4 @@ select:focus {
 
 /* Style the form elements as needed */
 
-/* Mobile Responsive Card Adjustments */
-@media (max-width: 768px) {
-    .group-card {
-        height: 320px;
-        padding: 0.5rem;
-    }
-
-    .group-card img {
-        height: 90px;
-        margin-bottom: 0.4rem;
-    }
-
-    .group-card h3 {
-        font-size: 0.75rem;
-        margin-bottom: 0.25rem;
-        min-height: 2em;
-        line-height: 1.2;
-    }
-
-    .group-card p {
-        font-size: 0.65rem;
-        margin-bottom: 0.4rem;
-        line-height: 1.3;
-        -webkit-line-clamp: 2;
-    }
-
-    .card-footer {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.6rem;
-        margin-top: -1rem;
-    }
-
-    .views-count {
-        font-size: 0.6rem;
-    }
-
-    .join-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
-    }
-
-    .group-badges {
-        gap: 0.2rem;
-        top: 4px;
-        left: 4px;
-        right: 4px;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.1rem 0.25rem;
-        font-size: 0.5rem;
-    }
-
-    .category-badge i,
-    .country-badge i {
-        font-size: 0.4rem;
-    }
-}
+/* Duplicate mobile styles removed - handled by progressive responsive system above */
