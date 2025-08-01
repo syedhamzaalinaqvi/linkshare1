@@ -884,7 +884,7 @@ select:focus {
     display: flex;
     align-items: center;
     background: var(--bg-light);
-    padding: 10px;
+    padding: 5px;
     border-radius: var(--radius);
     margin-bottom: 15px;
     position: relative;
@@ -921,8 +921,8 @@ select:focus {
     width: 100%;
     background: var(--bg-light);
     border: none;
-    padding: 12px;
-    font-size: 16px;
+    padding: 10px;
+    font-size: 12px;
     text-align: left;
     border-radius: var(--radius);
     cursor: pointer;
