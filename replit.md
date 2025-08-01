@@ -41,3 +41,7 @@ None specified yet.
 - 2025-08-01: Initial migration from Replit Agent environment
 - 2025-08-01: Fixed responsive grid layout issue - now shows minimum 2 columns on all mobile devices (340px+)
 - 2025-08-01: Implemented progressive responsive grid system with optimized breakpoints
+- 2025-08-01: Fixed card height issue - changed from 400px/450px to consistent 350px across all breakpoints
+- 2025-08-01: Implemented 5px spacing between card elements (description, join button, view/time)
+- 2025-08-01: Enhanced Add Group button - now large, centered, mobile-only with WhatsApp green styling
+- 2025-08-01: Added centered Add Group button to join-group page, hidden on desktop (768px+)

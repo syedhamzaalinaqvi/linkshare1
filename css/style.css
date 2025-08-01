@@ -674,39 +674,40 @@ select:focus {
     }
 }
 
-/* Fixed Add Group Button at Bottom */
+/* Fixed Add Group Button at Bottom - Large Centered Mobile Only */
 .fixed-add-group-btn {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     background: #25D366;
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    padding: 18px 40px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
     text-decoration: none;
-    display: inline-flex;
+    display: none;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
     z-index: 1000;
     transition: all 0.3s ease;
-    transform: translateY(0);
+    min-width: 200px;
 }
 
 .fixed-add-group-btn:hover {
     background: #128C7E;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
     color: white;
     text-decoration: none;
 }
 
 .fixed-add-group-btn i {
-    margin-right: 8px;
-    font-size: 1rem;
+    margin-right: 10px;
+    font-size: 1.2rem;
 }
 
 /* Hide original hero button on mobile */
@@ -714,21 +715,26 @@ select:focus {
     .hero-btn {
         display: none !important;
     }
+    
+    /* Show centered fixed button on mobile */
+    .fixed-add-group-btn {
+        display: flex !important;
+    }
 }
 
-/* Responsive fixed button */
+/* Responsive fixed button for smaller screens */
 @media (max-width: 480px) {
     .fixed-add-group-btn {
         bottom: 15px;
-        right: 15px;
-        padding: 10px 16px;
-        font-size: 0.8rem;
-        border-radius: 20px;
+        padding: 15px 30px;
+        font-size: 1rem;
+        border-radius: 25px;
+        min-width: 180px;
     }
 
     .fixed-add-group-btn i {
-        margin-right: 6px;
-        font-size: 0.9rem;
+        margin-right: 8px;
+        font-size: 1.1rem;
     }
 }
 
