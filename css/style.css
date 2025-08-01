@@ -1674,7 +1674,7 @@ select:focus {
         font-size: 0.95rem;
     }
 
-   /* .group-card {
+   .group-card {
         height: auto;
         min-height: 380px;
         padding: 0.8rem;
@@ -1714,7 +1714,7 @@ select:focus {
     .country-badge {
         padding: 0.2rem 0.4rem;
         font-size: 0.65rem;
-    }*/
+    }
 }
 
 /* Additional Mobile Optimizations */
@@ -1727,7 +1727,7 @@ select:focus {
         padding: 1rem;
     }
 
-    /*.groups-grid {
+    .groups-grid {
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
         gap: 0.6rem;
     }
@@ -1773,7 +1773,7 @@ select:focus {
     .country-badge {
         padding: 0.15rem 0.3rem;
         font-size: 0.6rem;
-    }*/
+    }
 }
 
 /* Extra Small Mobile Devices - Compact Cards */
@@ -2939,7 +2939,7 @@ select:focus {
         font-size: 0.4rem;
     }
 }*/
-@media (max-width: 340px) {
+@media (max-width: 600px) {
     .group-card {
         height: 260px;
         padding: 0.3rem;
