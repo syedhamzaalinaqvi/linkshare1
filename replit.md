@@ -1,13 +1,15 @@
 # WhatsApp Group Hub
 
 ## Project Overview
-A Flask web application that serves as a WhatsApp Group Hub, allowing users to discover and join various WhatsApp groups. The application includes multiple features like document conversion, QR code generation, M3U playlist viewing, and various utility tools.
+A static HTML/CSS/JavaScript web application that serves as a WhatsApp Group Hub, allowing users to discover and join various WhatsApp groups. The application uses Firebase as the backend database and includes multiple utility tools.
 
 ## Architecture
-- **Backend**: Flask web server serving static files and dynamic group pages
-- **Frontend**: Static HTML, CSS, and JavaScript files
-- **Database**: Not currently used, but configured for future expansion
-- **Deployment**: Gunicorn WSGI server on port 5000
+- **Frontend**: Static HTML, CSS, and JavaScript files using modern ES6+ features
+- **Backend**: Firebase Firestore for group data, Firebase Realtime Database for short URLs
+- **Database**: 
+  - Firebase Firestore: Groups collection with real-time data loading
+  - Firebase Realtime Database: Short URL links with user management
+- **Deployment**: Originally designed for Vercel hosting, now running on Replit with Flask server
 
 ## Key Features
 - WhatsApp group discovery and joining
