@@ -678,11 +678,11 @@ select:focus {
     align-items: center;
     padding-top: 0.5rem;
     border-top: 1px solid #eee;
-    font-size: 0.9rem;
+    font-size: 9px;
     color: var(--gray);
     position: relative;
     background: var(--white);
-    padding: 0.5rem 1.5rem;
+    padding: -0.5rem 1.5rem;
     z-index: 2;
     margin-top: -2.5rem;
 }
