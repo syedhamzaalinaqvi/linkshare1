@@ -395,7 +395,7 @@ select:focus {
         grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
         gap: 0.5rem;
     }
-}
+}*/
 
 /* Extra small mobile devices */
 /* @media (max-width: 340px) {
