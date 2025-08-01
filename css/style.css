@@ -100,9 +100,7 @@ body {
 .nav-links a.active {
     color: var(--primary-color);
     background: rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid var(--primary-color)
-#25D366
-;
+    border-bottom: 1px solid var(--primary-color) #25D366;
     /* Optional: Adds a hover effect */
 }
 
@@ -198,6 +196,7 @@ body {
     color: var(--primary-color);
     transform: translateY(-2px);
 }
+
 /*all page header============*/
 .page-header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -496,7 +495,7 @@ select:focus {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.6rem;
     }
-    
+
     .group-card {
         height: 300px;
         padding: 0.4rem;
@@ -547,7 +546,7 @@ select:focus {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.4rem !important;
     }
-    
+
     .group-card {
         height: 180px;
         padding: 0.2rem;
@@ -615,7 +614,7 @@ select:focus {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.5rem !important;
     }
-    
+
     .group-card {
         height: 200px;
         padding: 0.25rem;
@@ -726,7 +725,7 @@ select:focus {
         font-size: 0.8rem;
         border-radius: 20px;
     }
-    
+
     .fixed-add-group-btn i {
         margin-right: 6px;
         font-size: 0.9rem;
@@ -771,6 +770,7 @@ select:focus {
     padding: -0.5rem 1.5rem;
     z-index: 2;
     margin-top: -2.5rem;
+    bottom: 40px;
 }
 
 .group-card:hover {
@@ -855,7 +855,7 @@ select:focus {
     padding: 0 1.5rem 1rem 1.5rem;
     position: relative;
     z-index: 2;
-    bottom: 0;
+    bottom: 80px;
     visibility: visible;
     display: block;
 }
@@ -1960,7 +1960,7 @@ select:focus {
         font-size: 0.95rem;
     }
 
-   .group-card {
+    .group-card {
         height: 350px;
         min-height: 350px;
         padding: 0.8rem;
@@ -2016,7 +2016,9 @@ select:focus {
 
 /* Content Page Styles */
 .content-section {
-    width: 90% /*800px*/;
+    width: 90%
+        /*800px*/
+    ;
     margin: 0 auto;
     padding: 1rem;
     background: var(--white);
@@ -2651,7 +2653,8 @@ select:focus {
     .modal-footer .views-count i {
         font-size: 0.9rem;
     }
-  /*  #player{
+
+    /*  #player{
         width: 80%;
         margin: auto;
     }*/
