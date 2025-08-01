@@ -2877,6 +2877,11 @@ select:focus {
 }
 
 @media (max-width: 480px) {
+    
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+        gap: 0.6rem;
+    }
     .group-card {
         height: 300px;
         padding: 0.5rem;
