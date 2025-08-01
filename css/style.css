@@ -2876,7 +2876,7 @@ select:focus {
     }
 }
 
-@media (max-width: 480px) {
+/*@media (max-width: 480px) {
     
     .groups-grid {
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
@@ -2938,8 +2938,7 @@ select:focus {
     .country-badge i {
         font-size: 0.4rem;
     }
-}
-
+}*/
 @media (max-width: 340px) {
     .group-card {
         height: 260px;
