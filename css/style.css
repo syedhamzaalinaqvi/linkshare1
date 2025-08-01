@@ -444,7 +444,7 @@ select:focus {
 
     .group-card p {
         font-size: 0.5rem;
-        margin-bottom: 0.2rem;
+        margin-bottom: 5px;
         line-height: 1.1;
         -webkit-line-clamp: 2;
         height: 2.2em;
@@ -454,7 +454,7 @@ select:focus {
     .card-footer {
         padding: 0.15rem 0.3rem;
         font-size: 0.4rem;
-        margin-top: auto;
+        margin-top: 5px;
         text-align: center;
     }
 
@@ -466,7 +466,7 @@ select:focus {
         padding: 0.25rem 0.5rem;
         font-size: 0.5rem;
         border-radius: 4px;
-        margin-top: 0.15rem;
+        margin-top: 5px;
         width: 100%;
     }
 
@@ -574,7 +574,7 @@ select:focus {
         font-size: 0.4rem;
         height: 1.4em;
         line-height: 1;
-        margin-bottom: 0.15rem;
+        margin-bottom: 5px;
         text-align: center;
     }
 
@@ -582,7 +582,7 @@ select:focus {
         padding: 0.15rem 0.3rem;
         font-size: 0.4rem;
         width: 100%;
-        margin-top: 0.08rem;
+        margin-top: 5px;
     }
 
     .category-badge,
@@ -596,7 +596,7 @@ select:focus {
         font-size: 0.32rem;
         padding: 0.08rem 0.2rem;
         text-align: center;
-        margin-top: auto;
+        margin-top: 5px;
     }
 }
 
@@ -642,7 +642,7 @@ select:focus {
         font-size: 0.45rem;
         height: 1.6em;
         line-height: 1.05;
-        margin-bottom: 0.2rem;
+        margin-bottom: 5px;
         text-align: center;
     }
 
@@ -650,7 +650,7 @@ select:focus {
         padding: 0.2rem 0.4rem;
         font-size: 0.45rem;
         width: 100%;
-        margin-top: 0.1rem;
+        margin-top: 5px;
     }
 
     .category-badge,
@@ -664,7 +664,7 @@ select:focus {
         font-size: 0.35rem;
         padding: 0.1rem 0.25rem;
         text-align: center;
-        margin-top: auto;
+        margin-top: 5px;
     }
 }
 
