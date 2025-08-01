@@ -382,16 +382,16 @@ select:focus {
 }
 
 /* Progressive responsive grid system */
-/* Extra small devices (phones, 320px and up) */
-@media (max-width: 479px) {
+/* Extra small devices (phones, 320px and up) - Force 2 columns */
+@media (max-width: 595px) {
     .groups-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 0.8rem;
     }
 }
 
-/* Small devices (larger phones, 480px and up) */
-@media (min-width: 480px) and (max-width: 767px) {
+/* Small devices (larger phones, 596px to 767px) */
+@media (min-width: 596px) and (max-width: 767px) {
     .groups-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
@@ -415,7 +415,7 @@ select:focus {
 }
 
 /* Mobile-optimized group card styles */
-@media (max-width: 767px) {
+@media (max-width: 595px) {
     .group-card {
         height: 340px;
         padding: 0.7rem;
@@ -474,46 +474,93 @@ select:focus {
     }
 }
 
-/* Extra small mobile optimization */
+/* Extra small mobile optimization (340px-479px) */
 @media (max-width: 479px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.6rem;
+    }
+    
     .group-card {
-        height: 320px;
-        padding: 0.5rem;
+        height: 300px;
+        padding: 0.4rem;
     }
 
     .group-card img {
-        height: 85px;
-        margin-bottom: 0.4rem;
+        height: 75px;
+        margin-bottom: 0.3rem;
     }
 
     .group-card h3 {
-        font-size: 0.8rem;
-        min-height: 2em;
+        font-size: 0.75rem;
+        min-height: 1.8em;
+        line-height: 1.2;
     }
 
     .group-card p {
-        font-size: 0.65rem;
-        height: 2.6em;
+        font-size: 0.6rem;
+        height: 2.4em;
         -webkit-line-clamp: 2;
+        line-height: 1.2;
     }
 
     .join-btn {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.7rem;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
     }
 
     .category-badge,
     .country-badge {
-        padding: 0.1rem 0.25rem;
-        font-size: 0.5rem;
+        padding: 0.08rem 0.2rem;
+        font-size: 0.45rem;
     }
 
     .card-actions {
-        padding: 0 0.5rem 0.5rem 0.5rem;
+        padding: 0 0.4rem 0.4rem 0.4rem;
     }
 
     .card-footer {
+        font-size: 0.55rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+/* Very small devices (320px-380px) */
+@media (max-width: 380px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem;
+    }
+    
+    .group-card {
+        height: 280px;
+        padding: 0.3rem;
+    }
+
+    .group-card img {
+        height: 65px;
+        margin-bottom: 0.2rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.7rem;
+        min-height: 1.6em;
+    }
+
+    .group-card p {
+        font-size: 0.55rem;
+        height: 2.2em;
+    }
+
+    .join-btn {
+        padding: 0.25rem 0.4rem;
         font-size: 0.6rem;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.05rem 0.15rem;
+        font-size: 0.4rem;
     }
 }
 
