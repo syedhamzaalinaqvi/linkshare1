@@ -1727,10 +1727,10 @@ select:focus {
         padding: 1rem;
     }
 
-    .groups-grid {
+    /*.groups-grid {
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
         gap: 0.6rem;
-    }
+    }*/
 
     .group-card {
         padding: 0.6rem;
