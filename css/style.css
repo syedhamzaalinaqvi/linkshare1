@@ -942,6 +942,7 @@ select:focus {
     width: 100%;
     display: none;
     z-index: 500;
+    font-size: 12px;
 }
 
 .dropdown-menu li {
