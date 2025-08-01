@@ -1730,7 +1730,7 @@ select:focus {
     /*.groups-grid {
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
         gap: 0.6rem;
-    }*/
+    }
 
     .group-card {
         padding: 0.6rem;
@@ -1773,7 +1773,7 @@ select:focus {
     .country-badge {
         padding: 0.15rem 0.3rem;
         font-size: 0.6rem;
-    }
+    }*/
 }
 
 /* Extra Small Mobile Devices - Compact Cards */
