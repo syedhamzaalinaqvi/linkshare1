@@ -1891,7 +1891,7 @@ select:focus {
     }
 
     .group-card p {
-        font-size: 0.75rem;
+        font-size: 10px;
         margin-bottom: 0.6rem;
         line-height: 1.3;
     }
