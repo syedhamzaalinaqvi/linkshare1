@@ -381,50 +381,83 @@ select:focus {
     width: 100%;
 }
 
-/* Clean responsive grid - one rule for all mobile devices */
-@media (max-width: 768px) {
+/* CACHE BUST v2.0 - Progressive responsive grid system */
+/* FORCE 2 COLUMNS ON ALL MOBILE DEVICES */
+@media screen and (max-width: 595px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.8rem;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+        width: 100% !important;
     }
-    
+}
+
+/* Small devices (larger phones, 596px to 767px) */
+@media (min-width: 596px) and (max-width: 767px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.2rem;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .groups-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+/* Mobile-optimized group card styles - Compact Design */
+@media (max-width: 595px) {
     .group-card {
-        height: 320px;
-        padding: 0.5rem;
+        height: 280px;
+        padding: 0.4rem;
     }
 
     .group-card img {
-        height: 90px;
-        margin-bottom: 0.4rem;
+        height: 60px;
+        width: 60px;
+        margin-bottom: 0.3rem;
+        border-radius: 8px;
     }
 
     .group-card h3 {
-        font-size: 0.75rem;
-        margin-bottom: 0.25rem;
-        min-height: 2em;
+        font-size: 0.7rem;
+        margin-bottom: 0.2rem;
+        min-height: 1.4em;
         line-height: 1.2;
     }
 
     .group-card p {
-        font-size: 0.65rem;
-        margin-bottom: 0.4rem;
-        line-height: 1.3;
+        font-size: 0.55rem;
+        margin-bottom: 0.3rem;
+        line-height: 1.2;
         -webkit-line-clamp: 2;
+        height: 2.4em;
     }
 
     .card-footer {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.6rem;
-        margin-top: -1rem;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.45rem;
+        margin-top: auto;
     }
 
     .views-count {
-        font-size: 0.6rem;
+        font-size: 0.45rem;
     }
 
     .join-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.55rem;
+        border-radius: 4px;
     }
 
     .group-badges {
@@ -436,15 +469,184 @@ select:focus {
 
     .category-badge,
     .country-badge {
-        padding: 0.1rem 0.25rem;
+        padding: 0.1rem 0.2rem;
+        font-size: 0.4rem;
+        border-radius: 3px;
+    }
+
+    .card-actions {
+        padding: 0 0.4rem 0.4rem 0.4rem;
+    }
+}
+
+/* Extra small mobile optimization (340px-479px) */
+@media (max-width: 479px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.6rem;
+    }
+    
+    .group-card {
+        height: 300px;
+        padding: 0.4rem;
+    }
+
+    .group-card img {
+        height: 75px;
+        margin-bottom: 0.3rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.75rem;
+        min-height: 1.8em;
+        line-height: 1.2;
+    }
+
+    .group-card p {
+        font-size: 0.6rem;
+        height: 2.4em;
+        -webkit-line-clamp: 2;
+        line-height: 1.2;
+    }
+
+    .join-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.08rem 0.2rem;
+        font-size: 0.45rem;
+    }
+
+    .card-actions {
+        padding: 0 0.4rem 0.4rem 0.4rem;
+    }
+
+    .card-footer {
+        font-size: 0.55rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+/* Very small devices (320px-380px) */
+@media (max-width: 380px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+    
+    .group-card {
+        height: 240px;
+        padding: 0.3rem;
+    }
+
+    .group-card img {
+        height: 50px;
+        width: 50px;
+        margin-bottom: 0.2rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.65rem;
+        min-height: 1.4em;
+        line-height: 1.1;
+        margin-bottom: 0.2rem;
+    }
+
+    .group-card p {
+        font-size: 0.5rem;
+        height: 2em;
+        line-height: 1.1;
+        margin-bottom: 0.3rem;
+    }
+
+    .join-btn {
+        padding: 0.2rem 0.3rem;
+        font-size: 0.55rem;
+        margin-top: 0.2rem;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.03rem 0.1rem;
+        font-size: 0.35rem;
+        margin: 0.1rem 0.2rem 0.1rem 0;
+    }
+
+    .card-footer {
+        font-size: 0.45rem;
+        padding: 0.1rem 0.3rem;
+    }
+}
+
+/* CRITICAL MOBILE GRID OVERRIDES - Moved from HTML */
+@media screen and (max-width: 595px) {
+    .groups-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+        width: 100% !important;
+    }
+}
+
+@media screen and (max-width: 479px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.6rem !important;
+    }
+    
+    .group-card {
+        height: 260px;
+        padding: 0.3rem;
+    }
+
+    .group-card img {
+        height: 45px;
+        width: 45px;
+        margin-bottom: 0.2rem;
+    }
+
+    .group-card h3 {
+        font-size: 0.6rem;
+        min-height: 1.3em;
+        line-height: 1.1;
+        margin-bottom: 0.2rem;
+    }
+
+    .group-card p {
+        font-size: 0.48rem;
+        height: 1.8em;
+        line-height: 1.1;
+        margin-bottom: 0.3rem;
+    }
+
+    .join-btn {
+        padding: 0.25rem 0.4rem;
         font-size: 0.5rem;
     }
 
-    .category-badge i,
-    .country-badge i {
+    .category-badge,
+    .country-badge {
+        padding: 0.05rem 0.12rem;
+        font-size: 0.38rem;
+        margin: 0.1rem 0.15rem 0.1rem 0;
+    }
+
+    .card-footer {
         font-size: 0.4rem;
+        padding: 0.15rem 0.3rem;
     }
 }
+
+@media screen and (max-width: 380px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+}
+
 
 /* Group Card Styles */
 .group-card {
@@ -900,11 +1102,7 @@ select:focus {
     padding: 1.5rem;
 }
 
-.groups-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    gap: 1rem;
-    padding: 0rem;
-}
+/* Removed conflicting grid rule - handled by responsive system above */
 
 .groups-header {
     flex-direction: column;
@@ -948,28 +1146,11 @@ select:focus {
     font-size: 1rem;
 }
 
-.group-card {
-    height: auto;
-    min-height: 450px;
-    padding-bottom: 4rem;
-}
+/* Group card base styles are handled above in main section */
 
-.card-actions {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem;
-    background: var(--white);
-    border-top: 1px solid #eee;
-}
+/* Card actions styles handled in main group card section above */
 
-.join-btn {
-    width: 100%;
-    margin: 0;
-    position: relative;
-    z-index: 2;
-}
+/* Join button styles handled in main section and responsive breakpoints */
 
 
 /* Loading Animation */
@@ -1721,7 +1902,7 @@ select:focus {
     }
 
     .views-count {
-        font-size: 0.65rem;
+        font-size: 0.45rem;
     }
 
     .join-btn {
@@ -2719,62 +2900,4 @@ select:focus {
 
 /* Style the form elements as needed */
 
-/* Mobile Responsive Card Adjustments */
-@media (max-width: 768px) {
-    .group-card {
-        height: 320px;
-        padding: 0.5rem;
-    }
-
-    .group-card img {
-        height: 90px;
-        margin-bottom: 0.4rem;
-    }
-
-    .group-card h3 {
-        font-size: 0.75rem;
-        margin-bottom: 0.25rem;
-        min-height: 2em;
-        line-height: 1.2;
-    }
-
-    .group-card p {
-        font-size: 0.65rem;
-        margin-bottom: 0.4rem;
-        line-height: 1.3;
-        -webkit-line-clamp: 2;
-    }
-
-    .card-footer {
-        padding: 0.2rem 0.5rem;
-        font-size: 0.6rem;
-        margin-top: -1rem;
-    }
-
-    .views-count {
-        font-size: 0.6rem;
-    }
-
-    .join-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
-    }
-
-    .group-badges {
-        gap: 0.2rem;
-        top: 4px;
-        left: 4px;
-        right: 4px;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.1rem 0.25rem;
-        font-size: 0.5rem;
-    }
-
-    .category-badge i,
-    .country-badge i {
-        font-size: 0.4rem;
-    }
-}
+/* Duplicate mobile styles removed - handled by progressive responsive system above */
