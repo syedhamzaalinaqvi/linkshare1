@@ -1674,7 +1674,7 @@ select:focus {
         font-size: 0.95rem;
     }
 
-    .group-card {
+   /* .group-card {
         height: auto;
         min-height: 380px;
         padding: 0.8rem;
@@ -1714,7 +1714,7 @@ select:focus {
     .country-badge {
         padding: 0.2rem 0.4rem;
         font-size: 0.65rem;
-    }
+    }*/
 }
 
 /* Additional Mobile Optimizations */
