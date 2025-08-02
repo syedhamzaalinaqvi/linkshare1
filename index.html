@@ -795,11 +795,11 @@
         
         <!-- Tools Section -->
         <section class="groups-section" style="width: 98%; margin: 2rem auto; padding: 2rem; background: var(--white); border-radius: 15px;">
-            <iv class="groups-header">
+            <div class="groups-header">
                 <h2 style="text-align: center; margin-bottom: 2rem;">🛠️ Explore Linkshare Tools</h2>
             </div>
         
-            <div class="content-section groups-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(auto-fit, 1fr)); gap: 1.5rem; box-shadow: none;">
+            <div class="tools-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; box-shadow: none;">
                 <!-- QR Code Generator Card -->
                 <div style="background: white; border-radius: 12px; padding: 1.5rem; transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; border: 1px solid #e1e1e1; display: flex; flex-direction: column; align-items: center; text-align: center;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 10px 20px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'" onclick="window.location.href='/qr-code-generator'">
                     <div style="background: linear-gradient(135deg, #25D366, #128C7E); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
@@ -861,6 +861,15 @@
                     </div>
                     <h3 style="color: #333; margin-bottom: 0.5rem;">Free ChatGPT Plus</h3>
                     <p style="color: #6c757d; font-size: 0.9rem;">Get free access to premium ChatGPT features</p>
+                </div>
+
+                <!-- URL Shortener Card -->
+                <div style="background: white; border-radius: 12px; padding: 1.5rem; transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; border: 1px solid #e1e1e1; display: flex; flex-direction: column; align-items: center; text-align: center;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 10px 20px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none';" onclick="window.location.href='/short-url-generator'">
+                    <div style="background: linear-gradient(135deg, #FF9800, #F57C00); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                        <i class="fas fa-link" style="color: white; font-size: 24px;"></i>
+                    </div>
+                    <h3 style="color: #333; margin-bottom: 0.5rem;">URL Shortener</h3>
+                    <p style="color: #6c757d; font-size: 0.9rem;">Create short, shareable links for your long URLs</p>
                 </div>
             </div>
         </section>
@@ -1012,8 +1021,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <!-- Our Scripts -->
-    <script src="../js/firebase-config.js"></script>
-    <script src="../js/main.js"></script>
-     <script src="js/group-slider.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/group-slider.js"></script>
 </body>
 </html>

@@ -738,6 +738,38 @@ select:focus {
     }
 }
 
+/* Tools Section Mobile Responsiveness */
+@media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .tools-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}
+
+/* Filter Section Loading Fix */
+.filter-section {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; visibility: hidden; }
+    to { opacity: 1; visibility: visible; }
+}
+
+/* Search Box Responsive Fix */
+.search-bar {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
 
 /* Group Card Styles */
 .group-card {
