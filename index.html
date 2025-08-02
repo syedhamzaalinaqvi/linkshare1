@@ -547,6 +547,7 @@
                   <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
                   <li><a href="/qr-code-generator" >QR Code Generator</a></li>
                   <li><a href="/qr-code-reader" >QR Code Scanner/Reader</a></li>
+                  <li><a href="/short-url-generator" >Short URL Generator</a></li>
                   <li><a href="/m3u-playlist-viewer">M3U Playlist viewer</a></li>
                   <li><a href="/document-converter">Document Converter</a></li>
                   <li><a href="/free-chatgpt-plus">Free ChatGPT Plus</a></li>
@@ -791,70 +792,6 @@
             </button>
         </div>
             </section>
-        <!-- URL Shortener Section -->
-        <section class="groups-section" style="width: 100%; margin:0; padding: 1rem;">
-            <header class="shortner-header" style="text-align: center;">
-                <h1 >URL Shortener</h1>
-                <p >Create Free short, memorable links in seconds with LinkShare's free URL shortener</p>
-            </header>
-            <div class="content-section">
-            
-                <div class="shortener-card" style="width: 98%; margin: auto; padding: 10px;">
-                    <div class="input-group">
-                        <label for="url"><i class="fas fa-link"></i> Enter your long URL</label>
-                        <input type="url" id="url" placeholder="https://example.com/very-long-url-that-needs-shortening" required>
-                    </div>
-        
-                    <div class="input-group">
-                        <label for="custom-alias"><i class="fas fa-tag"></i> Custom alias (optional)</label>
-                        <div class="custom-url">
-                            <span>linkshare.online/</span>
-                            <input type="text" id="custom-alias" placeholder="mylink">
-                        </div>
-                    </div>
-        
-                    <button id="shorten-btn" class="btn">
-                        <i class="fas fa-cut"></i> Create Short Link
-                    </button>
-        
-                    <div id="result" class="result">
-                        <p class="result-title">Your short link is ready! 🎉</p>
-                        <p class="short-url" id="short-url"></p>
-                        <button class="btn copy-btn" id="copy-btn">
-                            <i class="fas fa-copy"></i> Copy to Clipboard
-                        </button>
-                    </div>
-        
-                    <div id="error" class="error"></div>
-                </div>
-        <!--
-                <div class="user-id-container">
-                    <div class="user-id-header">
-                        <h2><i class="fas fa-fingerprint"></i> Your Device ID</h2>
-                        <div class="user-id-actions">
-                            <button id="copy-id-btn" class="btn user-id-btn">
-                                <i class="fas fa-copy"></i> Copy ID
-                            </button>
-                            <button id="reset-id-btn" class="btn user-id-btn reset-btn">
-                                <i class="fas fa-sync-alt"></i> Reset ID
-                            </button>
-                        </div>
-                    </div>
-                    <p>This ID is used to identify your shortened links. You'll only see links created with this ID.</p>
-                    <div id="user-id-display" class="user-id-display"></div>
-                    <p><small>Note: If you use a different device or browser, you'll need to copy this ID to see the same links.</small></p>
-                </div>
-        -->
-                <div class="links-container">
-                    <div class="links-header">
-                        <h2><i class="fas fa-history"></i> Your Recent Links</h2>
-                        <button id="clear-all-btn" class="btn clear-all-btn">
-                            <i class="fas fa-trash-alt"></i> Clear All
-                        </button>
-                    </div>
-                    <div id="links-list" class="links-list"></div>
-                </div>
-        </section>
         
         <!-- Tools Section -->
         <section class="groups-section" style="width: 98%; margin: 2rem auto; padding: 2rem; background: var(--white); border-radius: 15px;">
@@ -957,187 +894,6 @@
         <i class="fas fa-arrow-up"></i>
     </button>
     
-    <!-- Custom Popup url delete confirm Elements -->
-    <div class="popup-overlay" id="confirmPopup">
-        <div class="popup-container slide-up">
-            <div class="popup-header">
-                <h3 class="popup-title">Confirm Action</h3>
-                <button class="popup-close" id="closeConfirmPopup"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="popup-content">
-                <i class="fas fa-question-circle popup-icon warning"></i>
-                <p id="confirmMessage">Are you sure you want to proceed with this action?</p>
-            </div>
-            <div class="popup-actions">
-                <button class="popup-btn popup-btn-secondary" id="cancelAction">Cancel</button>
-                <button class="popup-btn popup-btn-danger" id="confirmAction">Confirm</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="popup-overlay" id="successPopup">
-        <div class="popup-container slide-up">
-            <div class="popup-header">
-                <h3 class="popup-title">Success</h3>
-                <button class="popup-close" id="closeSuccessPopup"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="popup-content">
-                <i class="fas fa-check-circle popup-icon success"></i>
-                <p id="successMessage">Action completed successfully!</p>
-            </div>
-            <div class="popup-actions">
-                <button class="popup-btn popup-btn-primary" id="okSuccessBtn">OK</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
-<!-- Custom Popup url delete confirm Elements ended-->
-
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
-    <!-- Our Scripts -->
-    <script src="js/firebase-shorturl-config.js"></script>
-    <script src="js/group-slider.js"></script>
-    
-    <!-- URL Shortener Script 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // URL Shortener Functionality
-            const urlInput = document.getElementById('url');
-            const customAliasInput = document.getElementById('custom-alias');
-            const shortenBtn = document.getElementById('shorten-btn');
-            const resultDiv = document.getElementById('result');
-            const shortUrlText = document.getElementById('short-url');
-            const copyBtn = document.getElementById('copy-btn');
-            const errorDiv = document.getElementById('error');
-            
-            if (!urlInput || !shortenBtn) {
-                console.log("URL shortener elements not found");
-                return;
-            }
-            
-            shortenBtn.addEventListener('click', function() {
-                const longUrl = urlInput.value.trim();
-                const customAlias = customAliasInput.value.trim();
-                
-                if (!longUrl) {
-                    showError('Please enter a URL to shorten');
-                    return;
-                }
-                
-                if (!isValidUrl(longUrl)) {
-                    showError('Please enter a valid URL including http:// or https://');
-                    return;
-                }
-                
-                // Generate a unique ID if no custom alias
-                const urlId = customAlias || generateId(6);
-                
-                // Check if custom alias is available
-                if (customAlias) {
-                    const urlRef = firebase.database().ref('urls/' + urlId);
-                    urlRef.once('value')
-                        .then((snapshot) => {
-                            if (snapshot.exists()) {
-                                showError('This custom alias is already taken. Please try another one.');
-                            } else {
-                                saveUrl(urlId, longUrl);
-                            }
-                        })
-                        .catch((error) => {
-                            showError('Error checking alias: ' + error.message);
-                        });
-                } else {
-                    saveUrl(urlId, longUrl);
-                }
-            });
-            
-            copyBtn.addEventListener('click', function() {
-                const textToCopy = shortUrlText.textContent;
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                        setTimeout(() => {
-                            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy to Clipboard';
-                        }, 2000);
-                    })
-                    .catch(err => {
-                        showError('Failed to copy: ' + err);
-                    });
-            });
-            
-            function saveUrl(urlId, longUrl) {
-                const timestamp = new Date().toISOString();
-                const urlData = {
-                    longUrl: longUrl,
-                    createdAt: timestamp
-                };
-                
-                firebase.database().ref('urls/' + urlId).set(urlData)
-                    .then(() => {
-                        const shortUrl = `linkshare.online/${urlId}`;
-                        shortUrlText.textContent = shortUrl;
-                        resultDiv.style.display = 'block';
-                        errorDiv.style.display = 'none';
-                        
-                        // Save to recent links in local storage
-                        saveToLocalStorage(urlId, longUrl, shortUrl);
-                    })
-                    .catch((error) => {
-                        showError('Error creating short URL: ' + error.message);
-                    });
-            }
-            
-            function saveToLocalStorage(urlId, longUrl, shortUrl) {
-                let recentLinks = JSON.parse(localStorage.getItem('recentLinks')) || [];
-                
-                // Add new link to the beginning of the array
-                recentLinks.unshift({
-                    id: urlId,
-                    longUrl: longUrl,
-                    shortUrl: shortUrl,
-                    createdAt: new Date().toISOString()
-                });
-                
-                // Keep only the 10 most recent links
-                if (recentLinks.length > 10) {
-                    recentLinks = recentLinks.slice(0, 10);
-                }
-                
-                localStorage.setItem('recentLinks', JSON.stringify(recentLinks));
-            }
-            
-            function showError(message) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                resultDiv.style.display = 'none';
-            }
-            
-            function isValidUrl(url) {
-                try {
-                    new URL(url);
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            }
-            
-            function generateId(length) {
-                const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                let result = '';
-                for (let i = 0; i < length; i++) {
-                    result += characters.charAt(Math.floor(Math.random() * characters.length));
-                }
-                return result;
-            }
-        });
-    </script>-->
     
 
     <script>
@@ -1247,12 +1003,17 @@
         <i class="fas fa-plus"></i>
         Add Group
     </a>
+    
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <!-- Our Scripts -->
     <script src="../js/firebase-config.js"></script>
     <script src="../js/main.js"></script>
+     <script src="js/group-slider.js"></script>
 </body>
 </html>
