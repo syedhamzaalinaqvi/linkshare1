@@ -1257,8 +1257,7 @@
                     <!-- Stylish Text Generator Card -->
                     <div
                         style="
-
-                        background: white;
+                            background: white;
                             border-radius: 12px;
                             padding: 1.5rem;
                             transition:
@@ -1618,6 +1617,43 @@
             }
         });
     });*/
+        </script>
+
+        <script>
+            // nav toggle open close script
+            document.addEventListener("DOMContentLoaded", function () {
+                const navToggle = document.querySelector(".nav-toggle");
+                const navLinks = document.querySelector(".nav-links");
+                const dropdowns = document.querySelectorAll(".nav-dropdown");
+
+                navToggle.addEventListener("click", () => {
+                    navLinks.classList.toggle("active");
+                });
+
+                dropdowns.forEach((dropdown) => {
+                    const dropButton = dropdown.querySelector(".dropbtn");
+                    dropButton.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        dropdown.classList.toggle("active");
+
+                        // Close other dropdowns
+                        dropdowns.forEach((otherDropdown) => {
+                            if (otherDropdown !== dropdown) {
+                                otherDropdown.classList.remove("active");
+                            }
+                        });
+                    });
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (!e.target.closest(".nav-dropdown")) {
+                        dropdowns.forEach((dropdown) => {
+                            dropdown.classList.remove("active");
+                        });
+                    }
+                });
+            });
         </script>
 
         <!-- Scroll to Top Script -->
