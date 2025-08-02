@@ -201,6 +201,107 @@
 </script>
     <!-- Our Scripts -->
     <script src="/js/firebase-config.js"></script>
-    <script src="/js/main.js"></script>
+    
+    <!-- Add Group Form Script with Duplicate Prevention -->
+    <script>
+        // Wait for Firebase to initialize
+        let formInitialized = false;
+        
+        function initializeForm() {
+            if (formInitialized || !window.db) return;
+            formInitialized = true;
+            
+            const form = document.getElementById('groupForm');
+            const submitBtn = form.querySelector('.submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const spinner = submitBtn.querySelector('.loading-spinner');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const groupLink = document.getElementById('groupLink').value.trim();
+                const groupTitle = document.getElementById('groupTitle').value.trim();
+                const groupCategory = document.getElementById('groupCategory').value;
+                const groupCountry = document.getElementById('groupCountry').value;
+                const groupDescription = document.getElementById('groupDescription').value.trim();
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                btnText.textContent = 'Checking...';
+                spinner.style.display = 'inline-block';
+                
+                try {
+                    // Check for duplicate links with 2-hour cooldown
+                    const now = new Date();
+                    const twoHoursAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000));
+                    
+                    const duplicateQuery = window.db.collection('groups')
+                        .where('link', '==', groupLink)
+                        .where('timestamp', '>', twoHoursAgo)
+                        .limit(1);
+                    
+                    const duplicateSnapshot = await duplicateQuery.get();
+                    
+                    if (!duplicateSnapshot.empty) {
+                        const existingGroup = duplicateSnapshot.docs[0].data();
+                        const submittedTime = existingGroup.timestamp.toDate();
+                        const timeUntilAllowed = new Date(submittedTime.getTime() + (2 * 60 * 60 * 1000));
+                        const remainingTime = Math.ceil((timeUntilAllowed - now) / (1000 * 60)); // minutes
+                        
+                        alert(`This group link was already submitted recently. You can submit the same link again after ${remainingTime} minutes (approximately ${Math.ceil(remainingTime/60)} hours).`);
+                        
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        btnText.textContent = 'Submit Group';
+                        spinner.style.display = 'none';
+                        return;
+                    }
+                    
+                    // No duplicate found, proceed with submission
+                    btnText.textContent = 'Submitting...';
+                    
+                    const groupData = {
+                        title: groupTitle,
+                        link: groupLink,
+                        category: groupCategory,
+                        country: groupCountry,
+                        description: groupDescription,
+                        image: document.getElementById('groupImageUrl').value || '/favicon-96x96.png',
+                        timestamp: new Date(),
+                        status: 'pending'
+                    };
+                    
+                    await window.db.collection('groups').add(groupData);
+                    
+                    // Success
+                    alert('Group submitted successfully! It will be reviewed and published soon.');
+                    form.reset();
+                    document.getElementById('preview').innerHTML = '<p class="preview-tip">Paste a WhatsApp group link to see a preview</p>';
+                    
+                } catch (error) {
+                    console.error('Error submitting group:', error);
+                    alert('Error submitting group. Please try again.');
+                } finally {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Submit Group';
+                    spinner.style.display = 'none';
+                }
+            });
+        }
+        
+        // Initialize when Firebase is ready
+        if (window.db) {
+            initializeForm();
+        } else {
+            // Wait for Firebase initialization
+            const checkFirebase = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkFirebase);
+                    initializeForm();
+                }
+            }, 100);
+        }
+    </script>
 </body>
 </html>

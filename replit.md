@@ -45,3 +45,7 @@ None specified yet.
 - 2025-08-01: Implemented 5px spacing between card elements (description, join button, view/time)
 - 2025-08-01: Enhanced Add Group button - now large, centered, mobile-only with WhatsApp green styling
 - 2025-08-01: Added centered Add Group button to join-group page, hidden on desktop (768px+)
+- 2025-08-02: Fixed groups grid loading on homepage by removing duplicate Firebase configuration
+- 2025-08-02: Added tools section mobile responsiveness with proper grid breakpoints
+- 2025-08-02: Added URL Shortener card to tools section with orange gradient styling
+- 2025-08-02: Implemented duplicate link prevention system - prevents same WhatsApp group link submission within 2 hours
