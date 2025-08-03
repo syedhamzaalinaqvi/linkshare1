@@ -83,42 +83,94 @@
         </section>
     </main>
 
+
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo-container">
-                    <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+                    <img
+                        src="/linkshare-favicon.png"
+                        alt="LinkShare Logo"
+                        class="logo"
+                    />
                     <h3>LinkShare</h3>
                 </div>
-                <p>The largest WhatsApp Group Links Hub. Join, Share and Discover WhatsApp Groups.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="https://www.linkshare.online/">Home</a></li>
-                    <li><a href="/add-group">Add Group</a></li>
-                    <li><a href="/about">About</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/privacy">Privacy</a></li>
-                    <li><a href="/terms">Terms</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                <div class="footer-tagline">
+                    <p>Share and discover amazing WhatsApp groups links</p>
                 </div>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/contact">Contact</a>
             </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2025 LinkShare. All rights reserved.</p>
         </div>
     </footer>
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-    <!-- Our Scripts -->
+    <script>
+        // nav toggle open close script
+        document.addEventListener("DOMContentLoaded", function () {
+            const navToggle = document.querySelector(".nav-toggle");
+            const navLinks = document.querySelector(".nav-links");
+            const dropdowns = document.querySelectorAll(".nav-dropdown");
+
+            navToggle.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+            });
+
+            dropdowns.forEach((dropdown) => {
+                const dropButton = dropdown.querySelector(".dropbtn");
+                dropButton.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    dropdown.classList.toggle("active");
+
+                    // Close other dropdowns
+                    dropdowns.forEach((otherDropdown) => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove("active");
+                        }
+                    });
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest(".nav-dropdown")) {
+                    dropdowns.forEach((dropdown) => {
+                        dropdown.classList.remove("active");
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!-- Scroll to Top Script -->
+    <script>
+        const scrollToTopBtn = document.querySelector(".scroll-to-top");
+
+        window.addEventListener("scroll", () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add("visible");
+            } else {
+                scrollToTopBtn.classList.remove("visible");
+            }
+        });
+
+        scrollToTopBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        });
+    </script>
+        <!-- Our Scripts -->
     <script src="js/firebase-config.js"></script>
     <script src="js/main.js"></script>
 </body>
