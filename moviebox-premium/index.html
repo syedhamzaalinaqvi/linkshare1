@@ -275,9 +275,9 @@
                 // Hide progress bar after filling
                 setTimeout(() => {
                     progressContainer.classList.add('hidden');
-                }, 500);
+                }, 4500); // Hide after 4.5 seconds
 
-                // After 1 second
+                // After 5 seconds
                 setTimeout(() => {
                     // Change text to "Download Now"
                     btnText.textContent = 'Download Now';
@@ -286,7 +286,7 @@
                     downloadBtn.onclick = function() {
                         window.location.href = 'YOUR_DOWNLOAD_LINK_HERE'; // Replace with actual download link
                     };
-                }, 1000);
+                }, 5000);
             }
         </script>
     </main>
