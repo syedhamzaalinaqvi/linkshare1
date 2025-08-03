@@ -78,10 +78,201 @@
             <p>Download MovieBox Premium without watermark and unlock all features for free. Perfect for WhatsApp group sharing and movie streaming.</p>
         </section>
 
-        <!-- Content section - Empty for now -->
+        <!-- Content section -->
         <section class="content-section">
-            <!-- Content will be added here -->
+            <div class="app-card">
+                <div class="app-header">
+                    <img src="https://9mod.com/wp-content/uploads/2025/03/moviebox-asian-dramasanime.webp" alt="MovieBox Premium Logo" class="app-logo">
+                    <div class="app-info">
+                        <h2>MovieBox</h2>
+                        <div class="mod-info">Premium Unlocked</div>
+                    </div>
+                </div>
+                <div class="app-details">
+                    <div class="app-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">App name</span>
+                            <span class="meta-value">MovieBox</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">MOD info</span>
+                            <span class="meta-value">Premium Unlocked</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Version</span>
+                            <span class="meta-value">3.0.05.0711.03</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Size</span>
+                            <span class="meta-value">55M</span>
+                        </div>
+                    </div>
+                    <a href="https://moviebox.ltd/" class="off-site-link">off.site</a>
+                </div>
+                <div class="download-section">
+                    <button class="download-btn" onclick="handleDownload()">
+                        <span class="btn-text">Download</span>
+                        <div class="progress-bar">
+                            <div class="progress"></div>
+                        </div>
+                    </button>
+                </div>
+            </div>
         </section>
+
+        <style>
+            .content-section {
+                padding: 2rem;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            .app-card {
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 2rem;
+                text-align: center;
+            }
+
+            .app-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .app-logo {
+                width: 100px;
+                height: 100px;
+                border-radius: 10px;
+            }
+
+            .app-info h2 {
+                font-size: 2rem;
+                color: #128c7e;
+                margin: 0;
+            }
+
+            .mod-info {
+                font-size: 1.1rem;
+                color: #666;
+                margin-top: 0.5rem;
+            }
+
+            .app-details {
+                margin-bottom: 2rem;
+            }
+
+            .app-meta {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .meta-item {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .meta-label {
+                font-size: 0.9rem;
+                color: #666;
+            }
+
+            .meta-value {
+                font-weight: 500;
+                color: #333;
+            }
+
+            .off-site-link {
+                display: inline-block;
+                padding: 0.5rem 1rem;
+                background: #128c7e;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                transition: background 0.3s;
+            }
+
+            .off-site-link:hover {
+                background: #0d6b5c;
+            }
+
+            .download-section {
+                margin-top: 2rem;
+            }
+
+            .download-btn {
+                width: 100%;
+                padding: 1rem;
+                background: linear-gradient(135deg, #74ebd5, #acb6e5);
+                border: none;
+                border-radius: 10px;
+                color: white;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .download-btn:hover {
+                opacity: 0.9;
+            }
+
+            .btn-text {
+                display: block;
+                transition: opacity 0.3s;
+            }
+
+            .progress-bar {
+                height: 4px;
+                background: #e0e0e0;
+                border-radius: 2px;
+                margin-top: 0.5rem;
+                overflow: hidden;
+            }
+
+            .progress {
+                height: 100%;
+                background: #128c7e;
+                width: 0%;
+                transition: width 0.5s ease;
+            }
+        </style>
+
+        <script>
+            function handleDownload() {
+                const downloadBtn = document.querySelector('.download-btn');
+                const btnText = downloadBtn.querySelector('.btn-text');
+                const progressBar = downloadBtn.querySelector('.progress');
+
+                // Change text to "Downloading..."
+                btnText.textContent = 'Downloading...';
+                
+                // Start progress animation
+                progressBar.style.width = '100%';
+
+                // After 1 second
+                setTimeout(() => {
+                    // Change text to "Download Now"
+                    btnText.textContent = 'Download Now';
+                    
+                    // Reset progress bar
+                    progressBar.style.width = '0%';
+                    
+                    // Add click event for "Download Now"
+                    downloadBtn.onclick = function() {
+                        window.location.href = 'YOUR_DOWNLOAD_LINK_HERE'; // Replace with actual download link
+                    };
+                }, 1000);
+            }
+        </script>
     </main>
 
     <footer class="footer">
