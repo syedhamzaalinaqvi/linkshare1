@@ -1736,7 +1736,26 @@
         <!-- Our Scripts -->
         <script src="js/group-slider.js"></script>
         <script src="js/firebase-config.js"></script>
-        <script src="js/main.js"></script>
+        <script>
+            // Mobile Navigation Toggle
+            document.addEventListener('DOMContentLoaded', function() {
+                const navToggle = document.querySelector('.nav-toggle');
+                const navLinks = document.querySelector('.nav-links');
+
+                if (navToggle && navLinks) {
+                    navToggle.addEventListener('click', function() {
+                        navLinks.classList.toggle('active');
+                    });
+
+                    // Close menu when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                            navLinks.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        </script>
         
     </body>
 </html>
