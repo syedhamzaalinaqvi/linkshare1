@@ -82,14 +82,14 @@
         </script>
         <style>
             /* Secondary Menu Styles */
-            .secondary-menu {
+            .temporary-menu , .secondary-menu {
                 background-color: #f8f9fa;
                 padding: 0.5rem 0;
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 margin-bottom: 1.5rem;
             }
 
-            .secondary-nav-links {
+            .temporary-nav-links , .secondary-nav-links {
                 display: flex;
                 list-style: none;
                 padding: 0;
@@ -98,7 +98,7 @@
                 gap: 10px;
             }
 
-            .secondary-nav-links li {
+            .temporary-nav-links , .secondary-nav-links li {
                 position: relative;
             }
 
@@ -112,7 +112,18 @@
                 border: 1px solid green;
                 border-radius: 12px;
             }
+            .temporary-nav-links a{
+                display: block;
+                padding: 4px 4px;
+                color: black;
+                text-decoration: none;
+                font-weight: 400;
+                transition: all 0.3s ease;
+                border: 1px solid green;
+                border-radius: 2px;
+                background: gold;
 
+            }
             .secondary-nav-links a:hover {
                 color: #25d366;
             }
@@ -684,9 +695,9 @@
             >
         </header>
         <!-- temporary  Menu -->
-        <section class="secondary-menu">
+        <section class="temporary-menu">
             <div class="container">
-                <ul class="secondary-nav-links">
+                <ul class="temporary-nav-links">
                     <li>
                         <a href="/usa-whatsapp-group-links"
                             >🔥CapCut Pro</a>
