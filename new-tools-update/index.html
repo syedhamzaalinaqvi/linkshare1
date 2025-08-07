@@ -171,31 +171,56 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>About LinkShare</h3>
-                <p>LinkShare is your one-stop platform for WhatsApp group links and productivity tools. Connect with others, share resources, and enhance your digital experience.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/privacy">Privacy Policy</a></li>
-                    <li><a href="/terms">Terms of Service</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                <div class="logo-container">
+                    <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+                    <h3>LinkShare</h3>
                 </div>
+                <div class="footer-tagline">
+                    <p>Share and discover amazing WhatsApp groups links</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="https://www.linkshare.online/">Home</a>
+                <a href="../about">About</a>
+                <a href="../privacy">Privacy</a>
+                <a href="../contact">Contact</a>
             </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2025 LinkShare. All rights reserved.</p>
         </div>
     </footer>
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        const navToggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Scroll to Top Button
+        const scrollToTopBtn = document.querySelector('.scroll-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+
 
     <style>
         .blog-article {
