@@ -687,7 +687,14 @@
             </ul>
         </nav>
 
-        <header class="hero" role="banner">
+        <style>
+            @media screen and (min-width: 500px) {
+                .homepage-hero {
+                    display: none;
+                }
+            }
+        </style>
+        <header class="hero homepage-hero" role="banner">
             <h1>LinkShare - The largest WhatsApp Group Links Hub</h1>
             <p>Discover and Promote Your Active WhatsApp Group Links!</p>
             <a href="../add-group" class="hero-btn">➕ Add Group</a>
