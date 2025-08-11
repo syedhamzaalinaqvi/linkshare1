@@ -234,16 +234,20 @@
             justify-content: center;
             gap: 2rem;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .app-logo {
             width: 150px;
             height: 150px;
             object-fit: contain;
+            flex-shrink: 0;
         }
 
         .app-info {
             text-align: center;
+            flex: 1;
+            min-width: 200px;
         }
 
         .mod-info {
@@ -253,6 +257,7 @@
             border-radius: 15px;
             font-size: 0.9rem;
             margin-top: 1rem;
+            display: inline-block;
         }
 
         .app-details {
@@ -307,6 +312,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            min-width: 200px;
         }
 
         .download-btn:hover {
@@ -345,8 +351,42 @@
                 padding: 1.5rem;
             }
 
+            .app-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .app-logo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .app-info {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .mod-info {
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+
             .app-meta {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .meta-item {
+                text-align: left;
+            }
+
+            .download-btn {
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
             }
         }
     </style>
