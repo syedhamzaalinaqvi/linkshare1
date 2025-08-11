@@ -181,33 +181,31 @@
             });
         });
 
-        // Download button animation
         function handleDownload() {
-            const button = document.querySelector('.download-button');
-            const progressBar = document.querySelector('.progress-bar');
-            const buttonText = button.querySelector('.download-text');
+            const downloadBtn = document.querySelector('.download-btn');
+            const btnText = downloadBtn.querySelector('.btn-text');
+            const progressBar = downloadBtn.querySelector('.progress');
+            const progressContainer = downloadBtn.querySelector('.progress-bar');
 
-            // Change text to "Downloading..."
-            buttonText.textContent = 'Downloading...';
-
+            // Change text to "Download"
+            btnText.textContent = 'Download';
+            
             // Start progress animation
-            progressBar.style.width = '0%';
-            progressBar.style.transition = 'width 5s linear';
             progressBar.style.width = '100%';
+
+            // Hide progress bar after filling
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+            }, 5000); // Hide after 5 seconds
 
             // After 5 seconds
             setTimeout(() => {
-                // Hide progress bar
-                progressBar.style.width = '0%';
-                progressBar.style.transition = 'none';
-                
                 // Change text to "Download Now"
-                buttonText.textContent = 'Download Now';
-
-                // Add download link
-                button.style.cursor = 'pointer';
-                button.onclick = () => {
-                    window.location.href = 'YOUR_DOWNLOAD_LINK_HERE';
+                btnText.textContent = 'Download Now';
+                
+                // Add click event for "Download Now"
+                downloadBtn.onclick = function() {
+                    window.location.href = 'YOUR_DOWNLOAD_LINK_HERE'; // Replace with actual download link
                 };
             }, 5000);
         }
@@ -321,19 +319,23 @@
         }
 
         .progress-bar {
-            position: relative;
             height: 3px;
-            background: white;
+            background: #e0e0e0;
             border-radius: 2px;
-            margin-top: 1rem;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            transition: opacity 0.3s ease;
         }
 
         .progress {
-            position: absolute;
             height: 100%;
-            background: #25d366;
+            background: #6c5ce7;
             width: 0%;
             transition: width 5s linear;
+        }
+
+        .progress-bar.hidden {
+            opacity: 0;
         }
 
         .usage-instructions {
