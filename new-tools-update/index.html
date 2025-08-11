@@ -267,6 +267,10 @@
             object-fit: contain;
         }
 
+        .blog-feature-content {
+            flex: 1;
+        }
+
         .blog-feature-content ul {
             list-style-type: none;
             padding: 0;
@@ -276,6 +280,8 @@
             margin: 0.5rem 0;
             padding-left: 1.5rem;
             position: relative;
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         .blog-feature-content li:before {
@@ -283,6 +289,38 @@
             color: #128c7e;
             position: absolute;
             left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .blog-feature {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem 1rem;
+            }
+
+            .blog-feature-image {
+                width: 120px;
+                height: 120px;
+                margin: 0 auto 1.5rem;
+            }
+
+            .blog-feature-content {
+                text-align: left;
+            }
+
+            .blog-feature-content p {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .blog-feature-content ul {
+                margin-left: 1rem;
+            }
+
+            .blog-feature-content li {
+                font-size: 0.95rem;
+                margin: 0.75rem 0;
+            }
         }
 
         .blog-steps {
