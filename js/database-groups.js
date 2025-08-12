@@ -104,10 +104,17 @@ function createGroupCard(group) {
         imageUrl = 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png';
     }
     
+    // Optimize image loading - use placeholder for base64 images to speed up rendering
+    const isBase64Image = imageUrl.startsWith('data:image/');
+    const imageSrc = isBase64Image ? 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png' : imageUrl;
+    const imageClass = isBase64Image ? 'lazy-image' : 'fast-image';
+    
     card.innerHTML = `
         <div class="card-image">
-            <img src="${imageUrl}" 
+            <img src="${imageSrc}" 
+                 ${isBase64Image ? `data-src="${imageUrl}"` : ''} 
                  alt="${group.title}" 
+                 class="${imageClass}"
                  loading="lazy"
                  onerror="this.src='https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png'">
             <div class="card-overlay">
