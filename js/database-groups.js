@@ -14,18 +14,19 @@ async function loadDatabaseGroups() {
         const response = await fetch('/api/groups');
         const result = await response.json();
         
-        if (result.success && result.groups) {
+        if (result.success && result.groups && result.groups.length > 0) {
             window.databaseGroups = result.groups;
             console.log(`[DB] Loaded ${result.groups.length} groups from database`);
             
-            // If we're on the homepage, render the groups
+            // If we're on the homepage, render the groups immediately  
             if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
                 renderDatabaseGroups(result.groups);
             }
             
             return result.groups;
         } else {
-            console.warn('[DB] No groups found in database');
+            console.log('[DB] No database groups found, letting Firebase handle the loading');
+            window.databaseGroups = [];
             return [];
         }
         
@@ -70,14 +71,8 @@ function renderDatabaseGroups(groups) {
     groupsGrid.innerHTML = '';
     
     if (groups.length === 0) {
-        groupsGrid.innerHTML = `
-            <div class="no-groups">
-                <i class="fas fa-search"></i>
-                <h3>No Groups Found</h3>
-                <p>Be the first to add a WhatsApp group!</p>
-                <a href="/add-group/" class="btn-primary">Add Group</a>
-            </div>
-        `;
+        console.log('[DB] No database groups found, letting Firebase handle loading');
+        // Don't show "No Groups Found" immediately - let Firebase load groups first
         return;
     }
     
@@ -271,10 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('[DB] DOM loaded - initializing database groups loader');
     
     // Load database groups immediately on page load
-    setTimeout(() => {
-        console.log('[DB] Loading initial database groups...');
-        loadDatabaseGroups();
-    }, 200);
+    console.log('[DB] Loading initial database groups...');
+    loadDatabaseGroups();
     
     // Store original loadGroups function from main.js
     setTimeout(() => {
