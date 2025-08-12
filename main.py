@@ -4,13 +4,6 @@ import re
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
-# Import and initialize API endpoints
-try:
-    from api_endpoints import init_api_routes
-    init_api_routes(app)
-except ImportError:
-    print("API endpoints not available")
-
 # HTML template for group pages
 GROUP_TEMPLATE = '''
 <!DOCTYPE html>

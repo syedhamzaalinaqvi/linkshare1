@@ -55,5 +55,7 @@ None specified yet.
 - 2025-08-12: Implemented automatic group image extraction system with web scraping capabilities
 - 2025-08-12: Added real-time image extraction from WhatsApp group links using BeautifulSoup and Trafilatura
 - 2025-08-12: Created fallback storage system for environments without Firebase
-- 2025-08-12: Enhanced add-group form with auto-fill functionality and live image preview
-- 2025-08-12: Added API endpoints (/api/extract-group-info, /api/submit-group) for image extraction integration
+- 2025-08-12: Successfully reverted image extraction system to preserve free resources
+- 2025-08-12: Created beautiful "WhatsApp Group Links Guide" section on homepage above footer with modern glassmorphism design
+- 2025-08-12: Added interactive guide cards with hover animations and gradient backgrounds
+- 2025-08-12: Implemented responsive grid layout for guide section with mobile-optimized design

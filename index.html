@@ -629,6 +629,255 @@
                 background: #128c7e;
             }
 
+            /* WhatsApp Guide Section Styles */
+            .whatsapp-guide-section {
+                background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+                padding: 4rem 0;
+                margin-top: 3rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .whatsapp-guide-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+                opacity: 0.3;
+            }
+
+            .guide-content {
+                position: relative;
+                z-index: 2;
+            }
+
+            .guide-header {
+                text-align: center;
+                margin-bottom: 3rem;
+                color: white;
+            }
+
+            .guide-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 80px;
+                height: 80px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                margin-bottom: 1.5rem;
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .guide-icon i {
+                font-size: 2.5rem;
+                color: white;
+            }
+
+            .guide-header h2 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .guide-header p {
+                font-size: 1.2rem;
+                opacity: 0.9;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .guide-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+
+            .guide-card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(15px);
+                border-radius: 20px;
+                padding: 2rem;
+                text-align: center;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .guide-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #25D366, #128C7E, #25D366);
+                background-size: 200% 100%;
+                animation: shimmer 3s ease-in-out infinite;
+            }
+
+            @keyframes shimmer {
+                0%, 100% { background-position: 200% 0; }
+                50% { background-position: -200% 0; }
+            }
+
+            .guide-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 40px rgba(37, 211, 102, 0.2);
+            }
+
+            .card-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #25D366, #128C7E);
+                border-radius: 50%;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            }
+
+            .card-icon i {
+                font-size: 1.5rem;
+                color: white;
+            }
+
+            .guide-card h3 {
+                font-size: 1.4rem;
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 1rem;
+            }
+
+            .guide-card p {
+                color: #666;
+                line-height: 1.6;
+                margin-bottom: 1.5rem;
+            }
+
+            .card-features {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
+            .feature-tag {
+                background: linear-gradient(135deg, #25D366, #128C7E);
+                color: white;
+                padding: 0.3rem 0.8rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+
+            .guide-cta {
+                text-align: center;
+                padding: 2rem;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .guide-cta h3 {
+                color: white;
+                font-size: 2rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+
+            .guide-cta p {
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 1.1rem;
+                margin-bottom: 2rem;
+            }
+
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .cta-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 1rem 2rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .cta-btn.primary {
+                background: white;
+                color: #25D366;
+            }
+
+            .cta-btn.primary:hover {
+                background: #f8f9fa;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            }
+
+            .cta-btn.secondary {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .cta-btn.secondary:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+            }
+
+            /* Mobile responsiveness for guide section */
+            @media (max-width: 768px) {
+                .whatsapp-guide-section {
+                    padding: 3rem 0;
+                }
+                
+                .guide-header h2 {
+                    font-size: 2rem;
+                }
+                
+                .guide-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1.5rem;
+                }
+                
+                .guide-card {
+                    padding: 1.5rem;
+                }
+                
+                .cta-buttons {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                
+                .cta-btn {
+                    width: 100%;
+                    max-width: 280px;
+                    justify-content: center;
+                }
+            }
+
             .manual-slider-controls {
                 display: flex;
                 justify-content: space-between;
@@ -1776,6 +2025,90 @@
             </div>
         </section>
 
+        <!-- WhatsApp Group Links Guide Section -->
+        <section class="whatsapp-guide-section">
+            <div class="container">
+                <div class="guide-content">
+                    <div class="guide-header">
+                        <div class="guide-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h2>WhatsApp Group Links Guide</h2>
+                        <p>Everything you need to know about joining and sharing WhatsApp groups</p>
+                    </div>
+                    
+                    <div class="guide-grid">
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3>How to Find Groups</h3>
+                            <p>Browse our extensive collection of categorized WhatsApp groups. Use filters to find groups that match your interests and location.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Search by Category</span>
+                                <span class="feature-tag">Filter by Country</span>
+                                <span class="feature-tag">Latest Groups</span>
+                            </div>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>How to Join Groups</h3>
+                            <p>Simply click on any group link to join instantly. Make sure you follow group rules and be respectful to all members.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">One-Click Join</span>
+                                <span class="feature-tag">Instant Access</span>
+                                <span class="feature-tag">Active Groups</span>
+                            </div>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <h3>How to Share Your Group</h3>
+                            <p>Submit your WhatsApp group to reach thousands of potential members. Fill out our simple form and get your group featured.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Free Submission</span>
+                                <span class="feature-tag">Quick Approval</span>
+                                <span class="feature-tag">More Members</span>
+                            </div>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Safety Guidelines</h3>
+                            <p>Stay safe while joining groups. Verify group authenticity, respect privacy, and report any suspicious or inappropriate content.</p>
+                            <div class="card-features">
+                                <span class="feature-tag">Verified Groups</span>
+                                <span class="feature-tag">Privacy Protected</span>
+                                <span class="feature-tag">Community Moderated</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="guide-cta">
+                        <h3>Ready to Get Started?</h3>
+                        <p>Join thousands of WhatsApp groups or share your own group with our community</p>
+                        <div class="cta-buttons">
+                            <a href="#groups" class="cta-btn primary" onclick="scrollToGroups()">
+                                <i class="fas fa-th-list"></i>
+                                Browse Groups
+                            </a>
+                            <a href="/add-group" class="cta-btn secondary">
+                                <i class="fas fa-plus"></i>
+                                Add Your Group
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-section">
@@ -1807,6 +2140,24 @@
         </button>
 
         <script>
+            // Scroll to groups function
+            function scrollToGroups() {
+                const groupsSection = document.querySelector('.groups-section') || 
+                                    document.querySelector('#groups') || 
+                                    document.querySelector('.groups-container');
+                if (groupsSection) {
+                    groupsSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                } else {
+                    // Fallback to scroll to top of main content
+                    document.querySelector('#main-content').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                }
+            }
+
             // nav toggle open close script
             document.addEventListener("DOMContentLoaded", function () {
                 const navToggle = document.querySelector(".nav-toggle");
