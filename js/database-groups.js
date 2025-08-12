@@ -37,10 +37,31 @@ async function loadDatabaseGroups() {
 
 // Render database groups on homepage
 function renderDatabaseGroups(groups) {
-    const groupsGrid = document.getElementById('groupsGrid');
+    // Try multiple selectors to find the groups container
+    let groupsGrid = document.getElementById('groupsGrid');
     if (!groupsGrid) {
-        console.warn('[DB] Groups grid element not found');
-        return;
+        groupsGrid = document.querySelector('.groups-grid');
+    }
+    if (!groupsGrid) {
+        groupsGrid = document.querySelector('.groups-container');
+    }
+    if (!groupsGrid) {
+        groupsGrid = document.querySelector('[data-groups]');
+    }
+    
+    if (!groupsGrid) {
+        console.warn('[DB] Groups grid element not found, creating one');
+        // Create the groups grid if it doesn't exist
+        const container = document.querySelector('.container, main, .main-content');
+        if (container) {
+            groupsGrid = document.createElement('div');
+            groupsGrid.id = 'groupsGrid';
+            groupsGrid.className = 'groups-grid';
+            container.appendChild(groupsGrid);
+        } else {
+            console.error('[DB] Cannot find container to create groups grid');
+            return;
+        }
     }
     
     console.log(`[DB] Rendering ${groups.length} database groups`);
@@ -246,27 +267,34 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         console.log('[DB] Loading initial database groups...');
         loadDatabaseGroups();
-        
-        // Set flag to prevent Firebase from loading initially
-        window.databaseGroupsLoaded = true;
-    }, 100);
+    }, 200);
     
-    // Override main loadGroups function to prioritize database groups
-    window.loadGroups = function(topic, country, loadMore = false) {
-        console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}, loadMore: ${loadMore}`);
-        
-        if (!loadMore) {
-            // For initial load or filter changes, show database groups
-            console.log('[DB] Loading database groups for filter change');
-            filterDatabaseGroups(topic || 'all', country || 'all');
-        } else {
-            // For load more, try to load additional Firebase groups
-            console.log('[DB] Load More requested - trying Firebase groups');
-            if (window.originalLoadGroups) {
-                window.originalLoadGroups(topic, country, true);
-            }
+    // Store original loadGroups function from main.js
+    setTimeout(() => {
+        if (window.loadGroups && typeof window.loadGroups === 'function') {
+            window.originalLoadGroups = window.loadGroups;
+            console.log('[DB] Stored original loadGroups function');
         }
-    };
+        
+        // Override loadGroups function to handle database + Firebase
+        window.loadGroups = function(topic, country, loadMore = false) {
+            console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}, loadMore: ${loadMore}`);
+            
+            if (!loadMore) {
+                // For initial load or filter changes, show database groups
+                console.log('[DB] Loading database groups for filter change');
+                filterDatabaseGroups(topic || 'all', country || 'all');
+            } else {
+                // For load more, fall back to Firebase
+                console.log('[DB] Load More requested - trying Firebase groups');
+                if (window.originalLoadGroups) {
+                    window.originalLoadGroups(topic, country, true);
+                } else {
+                    console.warn('[DB] Original loadGroups function not available');
+                }
+            }
+        };
+    }, 500);
 });
 
 console.log('💾 Database Groups Loader initialized');
