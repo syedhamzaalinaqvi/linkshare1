@@ -242,37 +242,31 @@ function showNotification(message, type = 'info') {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('[DB] DOM loaded - initializing database groups loader');
     
-    // Load database groups immediately
-    loadDatabaseGroups();
+    // Load database groups immediately on page load
+    setTimeout(() => {
+        console.log('[DB] Loading initial database groups...');
+        loadDatabaseGroups();
+        
+        // Set flag to prevent Firebase from loading initially
+        window.databaseGroupsLoaded = true;
+    }, 100);
     
-    // Override main loadGroups function to always show database groups first
-    const originalLoadGroups = window.loadGroups;
+    // Override main loadGroups function to prioritize database groups
     window.loadGroups = function(topic, country, loadMore = false) {
-        console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}`);
+        console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}, loadMore: ${loadMore}`);
+        
         if (!loadMore) {
-            // For new searches, show database groups
+            // For initial load or filter changes, show database groups
+            console.log('[DB] Loading database groups for filter change');
             filterDatabaseGroups(topic || 'all', country || 'all');
         } else {
-            // For load more, fall back to original Firebase function
-            if (originalLoadGroups) {
-                originalLoadGroups(topic, country, loadMore);
+            // For load more, try to load additional Firebase groups
+            console.log('[DB] Load More requested - trying Firebase groups');
+            if (window.originalLoadGroups) {
+                window.originalLoadGroups(topic, country, true);
             }
         }
     };
-    
-    // Hook into Load More button to append Firebase groups
-    setTimeout(() => {
-        const loadMoreBtn = document.querySelector('.load-more-btn, #loadMoreBtn, button[onclick*="loadGroups"]');
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('[DB] Load More clicked - loading additional Firebase groups');
-                if (originalLoadGroups) {
-                    originalLoadGroups('all', 'all', true);
-                }
-            });
-        }
-    }, 1000);
 });
 
 console.log('💾 Database Groups Loader initialized');

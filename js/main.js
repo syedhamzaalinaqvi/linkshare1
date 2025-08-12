@@ -313,7 +313,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Start initialization process
+    // Check if database groups are already loaded
+    if (window.databaseGroupsLoaded) {
+        console.log('[MAIN] Database groups already loaded, skipping Firebase initialization for initial load');
+        initializeApp();
+        return;
+    }
+    
+    // Start initialization process only if database groups haven't loaded
     setTimeout(checkFirebaseAndInitialize, 100);
 
     // Main app initialization
