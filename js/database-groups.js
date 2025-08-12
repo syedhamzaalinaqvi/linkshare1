@@ -261,40 +261,40 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Initialize database groups loading
+// Initialize database groups loading - make it instant
 document.addEventListener('DOMContentLoaded', function() {
     console.log('[DB] DOM loaded - initializing database groups loader');
     
-    // Load database groups immediately on page load
-    console.log('[DB] Loading initial database groups...');
+    // Load database groups immediately on page load - no delays
     loadDatabaseGroups();
     
-    // Store original loadGroups function from main.js
-    setTimeout(() => {
-        if (window.loadGroups && typeof window.loadGroups === 'function') {
-            window.originalLoadGroups = window.loadGroups;
-            console.log('[DB] Stored original loadGroups function');
-        }
+    // Store original loadGroups function from main.js - immediate, no timeout
+    if (window.loadGroups && typeof window.loadGroups === 'function') {
+        window.originalLoadGroups = window.loadGroups;
+        console.log('[DB] Stored original loadGroups function');
+    }
+    
+    // Override loadGroups function immediately to prevent Firebase from loading first
+    window.loadGroups = function(topic, country, loadMore = false) {
+        console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}, loadMore: ${loadMore}`);
         
-        // Override loadGroups function to handle database + Firebase
-        window.loadGroups = function(topic, country, loadMore = false) {
-            console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}, loadMore: ${loadMore}`);
-            
-            if (!loadMore) {
-                // For initial load or filter changes, show database groups
-                console.log('[DB] Loading database groups for filter change');
-                filterDatabaseGroups(topic || 'all', country || 'all');
+        if (!loadMore) {
+            // For initial load or filter changes, show database groups instantly
+            console.log('[DB] Loading database groups for filter change');
+            filterDatabaseGroups(topic || 'all', country || 'all');
+        } else {
+            // For load more, fall back to Firebase
+            console.log('[DB] Load More requested - trying Firebase groups');
+            if (window.originalLoadGroups) {
+                window.originalLoadGroups(topic, country, true);
             } else {
-                // For load more, fall back to Firebase
-                console.log('[DB] Load More requested - trying Firebase groups');
-                if (window.originalLoadGroups) {
-                    window.originalLoadGroups(topic, country, true);
-                } else {
-                    console.warn('[DB] Original loadGroups function not available');
-                }
+                console.warn('[DB] Original loadGroups function not available');
             }
-        };
-    }, 500);
+        }
+    };
+    
+    // Set flag immediately to prevent Firebase initial load
+    window.databasePriority = true;
 });
 
 console.log('💾 Database Groups Loader initialized');

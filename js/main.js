@@ -313,9 +313,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Check if database groups are already loaded
-    if (window.databaseGroupsLoaded) {
-        console.log('[MAIN] Database groups already loaded, skipping Firebase initialization for initial load');
+    // Check if database has priority or is already loaded
+    if (window.databasePriority || window.databaseGroupsLoaded) {
+        console.log('[MAIN] Database has priority, skipping Firebase initial load');
         initializeApp();
         return;
     }
