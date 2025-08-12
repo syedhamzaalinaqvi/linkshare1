@@ -1,6 +1,14 @@
-from flask import Flask, send_from_directory, render_template_string
+from flask import Flask, send_from_directory, render_template_string, request, jsonify
 import os
 import re
+import requests
+from bs4 import BeautifulSoup
+import logging
+from urllib.parse import urljoin, urlparse
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 
@@ -116,6 +124,156 @@ GROUP_TEMPLATE = '''
 def serve_index():
     return send_from_directory('.', 'index.html')
 
+@app.route('/api/extract-group-image', methods=['POST'])
+def extract_group_image():
+    """
+    Enhanced WhatsApp group image extraction endpoint
+    This endpoint scrapes WhatsApp group pages to extract actual group images
+    """
+    try:
+        data = request.get_json()
+        url = data.get('url', '').strip()
+        
+        if not url:
+            return jsonify({'error': 'URL is required'}), 400
+            
+        if not url.startswith('https://chat.whatsapp.com/'):
+            return jsonify({'error': 'Invalid WhatsApp group URL'}), 400
+            
+        logger.info(f"Extracting image from WhatsApp URL: {url}")
+        
+        # Set up headers to mimic a real browser
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        }
+        
+        # Fetch the WhatsApp group page
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        # Parse the HTML content
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Extract group information
+        group_image = None
+        group_title = None
+        group_description = None
+        
+        # Method 1: Look for Open Graph meta tags (most reliable)
+        og_image = soup.find('meta', property='og:image')
+        if og_image and hasattr(og_image, 'attrs') and 'content' in og_image.attrs:
+            group_image = og_image.attrs['content']
+            logger.info(f"Found OG image: {group_image}")
+            
+        og_title = soup.find('meta', property='og:title')
+        if og_title and hasattr(og_title, 'attrs') and 'content' in og_title.attrs:
+            group_title = og_title.attrs['content']
+            
+        og_description = soup.find('meta', property='og:description')
+        if og_description and hasattr(og_description, 'attrs') and 'content' in og_description.attrs:
+            group_description = og_description.attrs['content']
+        
+        # Method 2: Look for Twitter Card meta tags as fallback
+        if not group_image:
+            twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
+            if twitter_image and hasattr(twitter_image, 'attrs') and 'content' in twitter_image.attrs:
+                group_image = twitter_image.attrs['content']
+                logger.info(f"Found Twitter image: {group_image}")
+        
+        # Method 3: Look for WhatsApp-specific image containers
+        if not group_image:
+            # Look for images in typical WhatsApp group page structure
+            whatsapp_images = soup.find_all('img', src=True)
+            for img in whatsapp_images:
+                if hasattr(img, 'attrs') and 'src' in img.attrs:
+                    src = img.attrs['src']
+                    # Look for WhatsApp profile/group images (usually contain specific patterns)
+                    if src and isinstance(src, str) and any(pattern in src.lower() for pattern in ['profile', 'group', 'avatar', 'photo']):
+                        if src.startswith('http'):
+                            group_image = src
+                            logger.info(f"Found WhatsApp-specific image: {group_image}")
+                            break
+                        elif src.startswith('/'):
+                            group_image = urljoin(url, src)
+                            logger.info(f"Found relative WhatsApp image: {group_image}")
+                            break
+        
+        # Method 4: Use fallback API if direct scraping doesn't work
+        if not group_image:
+            logger.info("Trying fallback with Microlink API")
+            try:
+                microlink_url = f"https://api.microlink.io/?url={url}"
+                microlink_response = requests.get(microlink_url, timeout=10)
+                microlink_data = microlink_response.json()
+                
+                if microlink_data.get('status') == 'success':
+                    data = microlink_data.get('data', {})
+                    if data.get('image', {}).get('url'):
+                        group_image = data['image']['url']
+                        logger.info(f"Found image via Microlink: {group_image}")
+                    
+                    # Also update title and description if not found
+                    if not group_title and data.get('title'):
+                        group_title = data['title']
+                    if not group_description and data.get('description'):
+                        group_description = data['description']
+                        
+            except Exception as e:
+                logger.warning(f"Microlink fallback failed: {e}")
+        
+        # If still no image found, use default WhatsApp logo
+        if not group_image:
+            group_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
+            logger.info("Using default WhatsApp logo")
+        
+        # Validate the image URL
+        if group_image and isinstance(group_image, str) and not group_image.startswith('http'):
+            group_image = urljoin(url, group_image)
+        
+        # Test if the image URL is accessible
+        try:
+            if group_image and isinstance(group_image, str) and group_image.startswith('http'):
+                img_response = requests.head(group_image, timeout=5)
+                if img_response.status_code != 200:
+                    logger.warning(f"Image URL not accessible: {group_image}")
+                    group_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
+        except Exception as e:
+            logger.warning(f"Could not verify image URL: {group_image}, error: {e}")
+            group_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
+        
+        result = {
+            'success': True,
+            'image': group_image,
+            'title': group_title or 'WhatsApp Group',
+            'description': group_description or 'Join this WhatsApp group',
+            'url': url
+        }
+        
+        logger.info(f"Successfully extracted: {result}")
+        return jsonify(result)
+        
+    except requests.RequestException as e:
+        logger.error(f"Request error: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to fetch WhatsApp group page',
+            'image': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'
+        }), 500
+        
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return jsonify({
+            'success': False,
+            'error': 'An unexpected error occurred',
+            'image': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'
+        }), 500
+
 @app.route('/group/<slug>')
 def serve_group_page(slug):
     # Convert slug back to title (basic implementation)
@@ -165,9 +323,13 @@ def serve_group_page(slug):
         group_card=group_card_html
     )
 
-@app.route('/<path:path>')
-def serve_files(path):
-    return send_from_directory('.', path)
+@app.route('/<path:filename>')
+def serve_file(filename):
+    return send_from_directory('.', filename)
+
+@app.route('/<path:folder>/')
+def serve_folder_index(folder):
+    return send_from_directory(folder, 'index.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

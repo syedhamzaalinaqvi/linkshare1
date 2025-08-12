@@ -588,7 +588,7 @@ function setupLazyLoading() {
 // Global variable to store the current preview data and image URL
 window.previewImageUrl = null;
 
-// Function to fetch link preview using Microlink.io API with direct fetch approach
+// Enhanced function to fetch link preview using our Flask backend with multiple extraction methods
 async function fetchLinkPreview(url, previewContainer) {
     // Reset the hidden input field for the image URL
     const imageUrlInput = document.getElementById("groupImageUrl");
@@ -603,47 +603,62 @@ async function fetchLinkPreview(url, previewContainer) {
     }
 
     try {
-        // Show loading indicator
-        previewContainer.innerHTML =
-            '<div class="loading">Loading preview...</div>';
-        console.log("[FETCH] Starting preview fetch for:", url);
+        // Show loading indicator with improved styling
+        previewContainer.innerHTML = `
+            <div class="loading-preview">
+                <div class="loading-spinner"></div>
+                <p>Extracting group image and details...</p>
+            </div>
+        `;
+        console.log("[FETCH] Starting enhanced preview fetch for:", url);
 
-        // Direct fetch to the public API endpoint
-        const apiUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
-        console.log("[FETCH] Calling Microlink API:", apiUrl);
+        // Call our Flask backend API for enhanced image extraction
+        const response = await fetch('/api/extract-group-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url: url })
+        });
 
-        const response = await fetch(apiUrl);
-        const json = await response.json();
+        const result = await response.json();
+        console.log("[FETCH] Backend API response:", result);
 
-        console.log("[FETCH] Microlink API response:", json);
+        let imageUrl, title, description;
 
-        if (json.status !== "success") {
-            throw new Error("Failed to fetch link preview");
-        }
-
-        // Extract data from the response
-        const data = json.data;
-
-        // Extract the metadata we need
-        const title = data.title || "WhatsApp Group";
-        const description = data.description || "Join this WhatsApp group";
-        let imageUrl = null;
-
-        // Find the best image to use in order of preference
-        if (data.image && data.image.url) {
-            imageUrl = data.image.url;
-            console.log("[FETCH] Using image URL:", imageUrl);
-        } else if (data.logo && data.logo.url) {
-            imageUrl = data.logo.url;
-            console.log("[FETCH] Using logo URL:", imageUrl);
-        } else if (data.screenshot && data.screenshot.url) {
-            imageUrl = data.screenshot.url;
-            console.log("[FETCH] Using screenshot URL:", imageUrl);
+        if (result.success) {
+            imageUrl = result.image;
+            title = result.title || "WhatsApp Group";
+            description = result.description || "Join this WhatsApp group";
+            console.log("[FETCH] Successfully extracted data via backend:", { imageUrl, title, description });
         } else {
-            // Fallback to WhatsApp logo
-            imageUrl =
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png";
-            console.log("[FETCH] No image found, using default WhatsApp logo");
+            // If backend fails, fallback to Microlink API
+            console.warn("[FETCH] Backend extraction failed, trying Microlink fallback:", result.error);
+            
+            const microlinkUrl = `https://api.microlink.io/?url=${encodeURIComponent(url)}`;
+            const microlinkResponse = await fetch(microlinkUrl);
+            const microlinkJson = await microlinkResponse.json();
+
+            if (microlinkJson.status === "success") {
+                const data = microlinkJson.data;
+                title = data.title || "WhatsApp Group";
+                description = data.description || "Join this WhatsApp group";
+                
+                // Find the best image to use in order of preference
+                if (data.image && data.image.url) {
+                    imageUrl = data.image.url;
+                } else if (data.logo && data.logo.url) {
+                    imageUrl = data.logo.url;
+                } else if (data.screenshot && data.screenshot.url) {
+                    imageUrl = data.screenshot.url;
+                } else {
+                    imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png";
+                }
+                
+                console.log("[FETCH] Microlink fallback successful:", { imageUrl, title, description });
+            } else {
+                throw new Error("Both backend and Microlink APIs failed");
+            }
         }
 
         // CRITICALLY IMPORTANT: Set the hidden input field value
@@ -651,66 +666,106 @@ async function fetchLinkPreview(url, previewContainer) {
             imageUrlInput.value = imageUrl;
             console.log("[FETCH] Set hidden input field value to:", imageUrl);
         } else {
-            console.error(
-                "[FETCH] Could not find the groupImageUrl hidden input field!",
-            );
+            console.error("[FETCH] Could not find the groupImageUrl hidden input field!");
         }
 
-        // Create a visually appealing preview card
+        // Create a visually appealing preview card with enhanced styling
         previewContainer.innerHTML = `
-            <div class="link-preview">
+            <div class="link-preview enhanced">
                 <div class="preview-image">
-                    <img src="${imageUrl}" alt="${title}" />
+                    <img src="${imageUrl}" alt="${title}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'" />
+                    <div class="image-overlay">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
                 </div>
                 <div class="preview-content">
                     <h3>${title}</h3>
                     <p>${description}</p>
                     <div class="preview-url">
-                        <span>${url.substring(0, 30)}${url.length > 30 ? "..." : ""}</span>
+                        <i class="fas fa-link"></i>
+                        <span>${url.substring(0, 35)}${url.length > 35 ? "..." : ""}</span>
                     </div>
-                    <div class="preview-status">
-                        <span style="color: #26a269; font-weight: bold">✓ Image will be used as feature image</span>
+                    <div class="preview-status success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Group image extracted successfully</span>
                     </div>
                 </div>
             </div>
         `;
 
-        // Add responsive styles
+        // Add enhanced responsive styles
         const previewElement = previewContainer.querySelector(".link-preview");
         if (previewElement) {
-            previewElement.style.display = "flex";
-            previewElement.style.flexDirection = "column";
-            previewElement.style.border = "1px solid #ddd";
-            previewElement.style.borderRadius = "8px";
-            previewElement.style.overflow = "hidden";
-            previewElement.style.maxWidth = "100%";
-            previewElement.style.backgroundColor = "#fff";
-            previewElement.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+            Object.assign(previewElement.style, {
+                display: "flex",
+                flexDirection: "column",
+                border: "1px solid #25D366",
+                borderRadius: "12px",
+                overflow: "hidden",
+                maxWidth: "100%",
+                backgroundColor: "#fff",
+                boxShadow: "0 4px 16px rgba(37, 211, 102, 0.15)",
+                transition: "all 0.3s ease"
+            });
         }
 
         const imageContainer = previewContainer.querySelector(".preview-image");
         if (imageContainer) {
-            imageContainer.style.width = "100%";
-            imageContainer.style.height = "180px";
-            imageContainer.style.overflow = "hidden";
-            imageContainer.style.backgroundColor = "#f5f5f5";
+            Object.assign(imageContainer.style, {
+                width: "100%",
+                height: "200px",
+                overflow: "hidden",
+                backgroundColor: "#f5f5f5",
+                position: "relative"
+            });
         }
 
-        const imageElement =
-            previewContainer.querySelector(".preview-image img");
+        const imageElement = previewContainer.querySelector(".preview-image img");
         if (imageElement) {
-            imageElement.style.width = "100%";
-            imageElement.style.height = "100%";
-            imageElement.style.objectFit = "cover";
+            Object.assign(imageElement.style, {
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transition: "transform 0.3s ease"
+            });
         }
 
-        const contentElement =
-            previewContainer.querySelector(".preview-content");
+        const overlay = previewContainer.querySelector(".image-overlay");
+        if (overlay) {
+            Object.assign(overlay.style, {
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                backgroundColor: "rgba(37, 211, 102, 0.9)",
+                color: "white",
+                padding: "8px",
+                borderRadius: "50%",
+                fontSize: "14px"
+            });
+        }
+
+        const contentElement = previewContainer.querySelector(".preview-content");
         if (contentElement) {
-            contentElement.style.padding = "12px";
+            Object.assign(contentElement.style, {
+                padding: "16px"
+            });
         }
 
-        return data;
+        const statusElement = previewContainer.querySelector(".preview-status");
+        if (statusElement) {
+            Object.assign(statusElement.style, {
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "#26a269",
+                fontWeight: "500",
+                fontSize: "14px",
+                marginTop: "8px"
+            });
+        }
+
+        return { title, description, imageUrl };
+        
     } catch (error) {
         console.error("[FETCH] Error fetching link preview:", error);
 
@@ -719,24 +774,38 @@ async function fetchLinkPreview(url, previewContainer) {
             imageUrlInput.value = "";
         }
 
-        // Show error and fallback to a basic preview
+        // Show enhanced error preview
         previewContainer.innerHTML = `
-            <div class="link-preview">
+            <div class="link-preview error">
                 <div class="preview-image">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png" alt="WhatsApp" />
+                    <div class="image-overlay error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
                 </div>
                 <div class="preview-content">
                     <h3>WhatsApp Group</h3>
                     <p>Join this WhatsApp group</p>
                     <div class="preview-url">
-                        <span>${url.substring(0, 30)}${url.length > 30 ? "..." : ""}</span>
+                        <i class="fas fa-link"></i>
+                        <span>${url.substring(0, 35)}${url.length > 35 ? "..." : ""}</span>
                     </div>
-                    <div class="preview-status">
-                        <span style="color: #c01c28;">⚠️ Failed to load preview image</span>
+                    <div class="preview-status error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Could not extract group image - using default</span>
                     </div>
                 </div>
             </div>
         `;
+
+        // Apply error-specific styles
+        const previewElement = previewContainer.querySelector(".link-preview");
+        if (previewElement) {
+            Object.assign(previewElement.style, {
+                border: "1px solid #dc3545",
+                boxShadow: "0 4px 16px rgba(220, 53, 69, 0.15)"
+            });
+        }
 
         return null;
     }
