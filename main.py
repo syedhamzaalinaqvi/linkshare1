@@ -2,11 +2,13 @@ from flask import Flask, send_from_directory, render_template_string, request, j
 import os
 import re
 import requests
+import base64
 from bs4 import BeautifulSoup
 import logging
 from urllib.parse import urljoin, urlparse
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -340,6 +342,50 @@ def extract_group_image():
             'image': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'
         }), 500
 
+def extract_group_metadata(url):
+    """Extract WhatsApp group metadata using web scraping"""
+    try:
+        logger.info(f"Extracting metadata from URL: {url}")
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Extract OG image
+        og_image = soup.find('meta', property='og:image')
+        image_url = og_image.attrs['content'] if og_image and 'content' in og_image.attrs else None
+        
+        # Extract title
+        og_title = soup.find('meta', property='og:title')
+        title = og_title.attrs['content'] if og_title and 'content' in og_title.attrs else 'WhatsApp Group'
+        
+        return {
+            'success': True,
+            'image': image_url or 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+            'title': title,
+            'description': 'Join this WhatsApp group'
+        }
+        
+    except Exception as e:
+        logger.error(f"Error extracting metadata: {e}")
+        return {
+            'success': False,
+            'image': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+            'title': 'WhatsApp Group',
+            'description': 'Join this WhatsApp group'
+        }
+
 @app.route('/api/groups', methods=['GET', 'POST'])
 def api_groups():
     """API endpoint for managing WhatsApp groups"""
@@ -368,12 +414,30 @@ def api_groups():
             if existing_group:
                 return jsonify({'success': False, 'error': 'Group already exists'}), 409
             
+            # Handle image processing
+            image_url = data.get('image_url', '')
+            
+            # If image is base64 (uploaded), convert to data URL or extract from WhatsApp
+            if image_url.startswith('data:image/'):
+                # Base64 uploaded image - keep as is for now
+                logger.info("Using uploaded base64 image")
+            elif not image_url or image_url == 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png':
+                # No image provided or default, try to extract from WhatsApp link
+                try:
+                    metadata = extract_group_metadata(data['group_url'])
+                    if metadata.get('image'):
+                        image_url = metadata['image']
+                        logger.info(f"Extracted image from WhatsApp link: {image_url}")
+                except Exception as e:
+                    logger.warning(f"Failed to extract image: {e}")
+                    image_url = 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png'
+            
             # Create new group
             new_group = WhatsAppGroup(
                 title=data['title'],
                 description=data['description'],
                 group_url=data['group_url'],
-                image_url=data.get('image_url', 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png'),
+                image_url=image_url,
                 category=data.get('category', 'General'),
                 country=data.get('country', 'Global'),
                 member_count=data.get('member_count', 0)

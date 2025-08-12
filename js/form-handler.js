@@ -19,13 +19,26 @@ function setupFormHandler() {
         
         // Get form data
         const formData = new FormData(groupForm);
+        
+        // Get values from the specific form fields
+        const title = document.getElementById('groupTitle')?.value || '';
+        const link = document.getElementById('groupLink')?.value || '';
+        const category = document.getElementById('groupCategory')?.value || 'General';
+        const country = document.getElementById('groupCountry')?.value || 'Global';
+        let imageUrl = document.getElementById('groupImageUrl')?.value || '';
+        
+        // If no custom image uploaded, try to use extracted image
+        if (!imageUrl) {
+            imageUrl = 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png';
+        }
+        
         const data = {
-            title: formData.get('title'),
-            description: formData.get('description'),
-            group_url: formData.get('group_url'),
-            image_url: formData.get('image_url') || 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
-            category: formData.get('category'),
-            country: formData.get('country')
+            title: title,
+            description: 'Join this amazing WhatsApp group!',
+            group_url: link,
+            image_url: imageUrl,
+            category: category,
+            country: country
         };
         
         console.log('[FORM] Submitting data:', data);
