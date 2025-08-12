@@ -25,8 +25,15 @@ async function loadDatabaseGroups() {
             
             return result.groups;
         } else {
-            console.log('[DB] No database groups found, letting Firebase handle the loading');
+            console.log('[DB] No database groups found, loading Firebase groups immediately');
             window.databaseGroups = [];
+            // Trigger Firebase loading immediately when database is empty
+            setTimeout(() => {
+                if (window.originalLoadGroups) {
+                    console.log('[DB] Calling Firebase loadGroups after database check');
+                    window.originalLoadGroups('all', 'all', false);
+                }
+            }, 100);
             return [];
         }
         
@@ -71,8 +78,11 @@ function renderDatabaseGroups(groups) {
     groupsGrid.innerHTML = '';
     
     if (groups.length === 0) {
-        console.log('[DB] No database groups found, letting Firebase handle loading');
-        // Don't show "No Groups Found" immediately - let Firebase load groups first
+        console.log('[DB] No database groups found, loading Firebase groups immediately');
+        // Database is empty, load Firebase groups right away
+        if (window.originalLoadGroups) {
+            window.originalLoadGroups('all', 'all', false);
+        }
         return;
     }
     

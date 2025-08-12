@@ -313,11 +313,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Check if database has priority or is already loaded
+    // Check if database has priority - but still initialize app
     if (window.databasePriority || window.databaseGroupsLoaded) {
-        console.log('[MAIN] Database has priority, skipping Firebase initial load');
+        console.log('[MAIN] Database has priority, but initializing app for fallback');
         initializeApp();
-        return;
+        // Don't return - let Firebase initialize as fallback
     }
     
     // Start initialization process only if database groups haven't loaded
