@@ -240,21 +240,25 @@ function showNotification(message, type = 'info') {
 
 // Initialize database groups loading
 document.addEventListener('DOMContentLoaded', function() {
-    // Load database groups on page load
-    loadDatabaseGroups();
+    // Wait a bit for other scripts to load, then load database groups
+    setTimeout(() => {
+        loadDatabaseGroups();
+    }, 500);
     
-    // Override existing filter functions if they exist
-    if (window.loadGroups) {
-        const originalLoadGroups = window.loadGroups;
-        window.loadGroups = function(filters) {
-            // First try to load from database
-            filterDatabaseGroups(filters.filterTopic, filters.filterCountry);
-            
-            // If no database groups, fall back to original function
-            if (window.databaseGroups.length === 0) {
-                originalLoadGroups(filters);
-            }
-        };
+    // Override existing loadGroups function to prioritize database
+    window.loadDatabaseGroupsFirst = function(filters = {}) {
+        console.log('[DB] Loading database groups with filters:', filters);
+        filterDatabaseGroups(filters.filterTopic || 'all', filters.filterCountry || 'all');
+    };
+    
+    // Hook into the Load More button
+    const loadMoreBtn = document.querySelector('.load-more-btn, #loadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('[DB] Load More button clicked - loading database groups');
+            loadDatabaseGroups();
+        });
     }
 });
 

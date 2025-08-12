@@ -226,6 +226,9 @@ def extract_group_image():
         og_image = soup.find('meta', property='og:image')
         if og_image and hasattr(og_image, 'attrs') and 'content' in og_image.attrs:
             group_image = og_image.attrs['content']
+            # Ensure we get the full URL with all query parameters
+            if group_image and not group_image.startswith('http'):
+                group_image = urljoin(url, group_image)
             logger.info(f"Found OG image: {group_image}")
             
         og_title = soup.find('meta', property='og:title')
@@ -284,25 +287,31 @@ def extract_group_image():
             except Exception as e:
                 logger.warning(f"Microlink fallback failed: {e}")
         
-        # If still no image found, use default WhatsApp logo
+        # Ensure we have a complete image URL with all query parameters preserved
+        if group_image and isinstance(group_image, str):
+            # Make sure URL is absolute
+            if not group_image.startswith('http'):
+                group_image = urljoin(url, group_image)
+            
+            # For WhatsApp images, preserve ALL query parameters as they're essential
+            if 'pps.whatsapp.net' in group_image or 'static.whatsapp.net' in group_image:
+                logger.info(f"WhatsApp CDN image found, preserving complete URL: {group_image}")
+                # WhatsApp CDN URLs are valid, don't test them due to CORS
+            else:
+                # Test non-WhatsApp images for accessibility
+                try:
+                    img_response = requests.head(group_image, timeout=5)
+                    if img_response.status_code != 200:
+                        logger.warning(f"External image not accessible: {group_image}")
+                        group_image = "https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png"
+                except Exception as e:
+                    logger.warning(f"Could not verify external image: {e}")
+                    group_image = "https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png"
+        
+        # Final fallback if no image found
         if not group_image:
-            group_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
-            logger.info("Using default WhatsApp logo")
-        
-        # Validate the image URL
-        if group_image and isinstance(group_image, str) and not group_image.startswith('http'):
-            group_image = urljoin(url, group_image)
-        
-        # Test if the image URL is accessible
-        try:
-            if group_image and isinstance(group_image, str) and group_image.startswith('http'):
-                img_response = requests.head(group_image, timeout=5)
-                if img_response.status_code != 200:
-                    logger.warning(f"Image URL not accessible: {group_image}")
-                    group_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
-        except Exception as e:
-            logger.warning(f"Could not verify image URL: {group_image}, error: {e}")
-            group_image = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png"
+            group_image = "https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png"
+            logger.info("Using WhatsApp default image")
         
         result = {
             'success': True,
