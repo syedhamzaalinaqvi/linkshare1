@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Group Image Extraction - WhatsApp Group Hub</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .test-form {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        .result-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: none;
+        }
+        .extracted-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp Group Hub</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="test-container">
+            <h1>Test Group Image Extraction</h1>
+            <p>Test the automatic image extraction from WhatsApp group links</p>
+
+            <div class="test-form">
+                <h3>Extract Group Info</h3>
+                <form id="extractForm">
+                    <div class="form-group">
+                        <label for="whatsappUrl">WhatsApp Group Link:</label>
+                        <input type="url" 
+                               id="whatsappUrl" 
+                               name="whatsappUrl" 
+                               placeholder="https://chat.whatsapp.com/..." 
+                               required>
+                    </div>
+                    <button type="submit" class="submit-btn">Extract Group Info</button>
+                </form>
+            </div>
+
+            <div id="loadingContainer" class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> Extracting group information...
+            </div>
+
+            <div id="resultContainer" class="result-container">
+                <h3>Extraction Results</h3>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('extractForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const whatsappUrl = document.getElementById('whatsappUrl').value;
+            const loadingContainer = document.getElementById('loadingContainer');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultContent = document.getElementById('resultContent');
+            
+            // Show loading
+            loadingContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/extract-group-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        link: whatsappUrl
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading
+                loadingContainer.style.display = 'none';
+                resultContainer.style.display = 'block';
+                
+                if (data.success) {
+                    let html = '<div class="success">✓ Extraction successful!</div>';
+                    
+                    if (data.data.title) {
+                        html += `<p><strong>Title:</strong> ${data.data.title}</p>`;
+                    }
+                    
+                    if (data.data.description) {
+                        html += `<p><strong>Description:</strong> ${data.data.description}</p>`;
+                    }
+                    
+                    if (data.data.image) {
+                        html += `<p><strong>Image extracted:</strong> Yes</p>`;
+                        html += `<img src="${data.data.image}" alt="Extracted group image" class="extracted-image">`;
+                    } else {
+                        html += `<p><strong>Image extracted:</strong> No image found</p>`;
+                    }
+                    
+                    resultContent.innerHTML = html;
+                } else {
+                    resultContent.innerHTML = `<div class="error">✗ Error: ${data.error}</div>`;
+                }
+                
+            } catch (error) {
+                loadingContainer.style.display = 'none';
+                resultContainer.style.display = 'block';
+                resultContent.innerHTML = `<div class="error">✗ Network error: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
