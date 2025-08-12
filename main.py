@@ -5,12 +5,69 @@ import requests
 from bs4 import BeautifulSoup
 import logging
 from urllib.parse import urljoin, urlparse
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder='.', static_url_path='')
+
+# Database configuration
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
+    }
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+else:
+    # Fallback for environments without database
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///whatsapp_groups.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database
+db = SQLAlchemy(app)
+
+# WhatsApp Group Model
+class WhatsAppGroup(db.Model):
+    __tablename__ = 'whatsapp_groups'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    group_url = db.Column(db.String(500), nullable=False, unique=True)
+    image_url = db.Column(db.String(500), nullable=True)
+    category = db.Column(db.String(100), nullable=True, default='General')
+    country = db.Column(db.String(100), nullable=True, default='Global')
+    member_count = db.Column(db.Integer, nullable=True, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'group_url': self.group_url,
+            'image_url': self.image_url,
+            'category': self.category,
+            'country': self.country,
+            'member_count': self.member_count,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
+    
+    def __repr__(self):
+        return f'<WhatsAppGroup {self.title}>'
+
+# Create tables
+with app.app_context():
+    db.create_all()
 
 # HTML template for group pages
 GROUP_TEMPLATE = '''
@@ -273,6 +330,61 @@ def extract_group_image():
             'error': 'An unexpected error occurred',
             'image': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png'
         }), 500
+
+@app.route('/api/groups', methods=['GET', 'POST'])
+def api_groups():
+    """API endpoint for managing WhatsApp groups"""
+    if request.method == 'GET':
+        try:
+            groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).all()
+            return jsonify({
+                'success': True,
+                'groups': [group.to_dict() for group in groups]
+            })
+        except Exception as e:
+            logger.error(f"Error getting groups: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+    
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+            required_fields = ['title', 'description', 'group_url']
+            
+            for field in required_fields:
+                if not data.get(field):
+                    return jsonify({'success': False, 'error': f'{field} is required'}), 400
+            
+            # Check if group already exists
+            existing_group = WhatsAppGroup.query.filter_by(group_url=data['group_url']).first()
+            if existing_group:
+                return jsonify({'success': False, 'error': 'Group already exists'}), 409
+            
+            # Create new group
+            new_group = WhatsAppGroup(
+                title=data['title'],
+                description=data['description'],
+                group_url=data['group_url'],
+                image_url=data.get('image_url', 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png'),
+                category=data.get('category', 'General'),
+                country=data.get('country', 'Global'),
+                member_count=data.get('member_count', 0)
+            )
+            
+            db.session.add(new_group)
+            db.session.commit()
+            
+            logger.info(f"New group added: {new_group.title}")
+            
+            return jsonify({
+                'success': True,
+                'message': 'Group added successfully',
+                'group': new_group.to_dict()
+            }), 201
+            
+        except Exception as e:
+            db.session.rollback()
+            logger.error(f"Error adding group: {e}")
+            return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/group/<slug>')
 def serve_group_page(slug):
