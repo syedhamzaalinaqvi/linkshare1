@@ -13,10 +13,7 @@ function createGroupCard(group) {
     const card = document.createElement("div");
     card.className = "group-card";
     card.setAttribute("data-group-id", group.id);
-    // Force grid layout to apply properly with specific styling
-    card.style.height = "350px";
-    card.style.display = "flex";
-    card.style.flexDirection = "column";
+    // Let CSS handle all styling including responsive heights
     card.style.width = "100%";
     card.style.maxWidth = "100%";
     card.style.boxSizing = "border-box";

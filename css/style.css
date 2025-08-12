@@ -834,6 +834,9 @@ body {
     flex-direction: column;
     position: relative;
     overflow: visible;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Make sure that the layout is properly structured */
