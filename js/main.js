@@ -17,6 +17,9 @@ function createGroupCard(group) {
     card.style.height = "350px";
     card.style.display = "flex";
     card.style.flexDirection = "column";
+    card.style.width = "100%";
+    card.style.maxWidth = "100%";
+    card.style.boxSizing = "border-box";
 
     // Handle timestamp display safely
     let timeDisplay = "Recently added";
