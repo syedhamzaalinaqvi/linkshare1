@@ -40,33 +40,54 @@ async function fetchLinkPreview(url, previewContainer) {
         let imageUrl, title, description;
         let extractionSuccess = false;
 
-        // Use our advanced metadata extractor if available
-        if (window.metadataExtractor) {
+        // Use our WhatsApp-specific extractor for maximum effectiveness
+        if (window.whatsappExtractor) {
             // Animate loading steps
             const steps = previewContainer.querySelectorAll('.step');
             let currentStep = 0;
             
             const animateStep = () => {
                 if (currentStep < steps.length) {
-                    steps[currentStep].classList.add('active');
+                    if (steps[currentStep]) {
+                        steps[currentStep].classList.add('active');
+                    }
                     currentStep++;
-                    setTimeout(animateStep, 600);
+                    setTimeout(animateStep, 800);
                 }
             };
-            setTimeout(animateStep, 400);
+            setTimeout(animateStep, 500);
             
             try {
-                const metadata = await window.metadataExtractor.extractMetadata(url);
-                console.log("[ENHANCED] Advanced extraction successful:", metadata);
+                console.log("[ENHANCED] Using WhatsApp-specific extractor...");
+                const metadata = await window.whatsappExtractor.extractGroupMetadata(url);
+                console.log("[ENHANCED] WhatsApp extraction successful:", metadata);
                 
                 if (metadata && metadata.success !== false) {
                     imageUrl = metadata.image || 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png';
                     title = metadata.title || "WhatsApp Group";
                     description = metadata.description || "Join this WhatsApp group";
                     extractionSuccess = true;
+                    
+                    console.log(`🎯 Extraction method used: ${metadata.method || 'unknown'}`);
                 }
             } catch (extractorError) {
-                console.warn("[ENHANCED] Advanced extractor failed:", extractorError);
+                console.warn("[ENHANCED] WhatsApp extractor failed:", extractorError);
+                
+                // Fallback to basic metadata extractor
+                if (window.metadataExtractor) {
+                    try {
+                        console.log("[ENHANCED] Falling back to basic extractor...");
+                        const fallbackMetadata = await window.metadataExtractor.extractMetadata(url);
+                        if (fallbackMetadata && fallbackMetadata.success !== false) {
+                            imageUrl = fallbackMetadata.image || 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png';
+                            title = fallbackMetadata.title || "WhatsApp Group";
+                            description = fallbackMetadata.description || "Join this WhatsApp group";
+                            extractionSuccess = true;
+                        }
+                    } catch (fallbackError) {
+                        console.warn("[ENHANCED] Fallback extractor also failed:", fallbackError);
+                    }
+                }
             }
         }
         
