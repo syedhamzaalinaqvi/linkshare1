@@ -27,9 +27,10 @@ function setupFormHandler() {
         const country = document.getElementById('groupCountry')?.value || 'Global';
         let imageUrl = document.getElementById('groupImageUrl')?.value || '';
         
-        // If no custom image uploaded, try to use extracted image
+        // Require custom image upload
         if (!imageUrl) {
-            imageUrl = 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png';
+            showNotification('Please upload a custom group image', 'error');
+            return;
         }
         
         const data = {

@@ -102,15 +102,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="upload-label">Custom Group Image (Optional)</label>
+                    <label class="upload-label">Custom Group Image (Required)</label>
                     <div class="image-upload-container">
-                        <input type="file" id="groupImage" name="group_image" accept="image/*" class="image-input">
+                        <input type="file" id="groupImage" name="group_image" accept="image/*" class="image-input" required>
                         <div class="image-upload-preview" id="imagePreview">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>Click to upload custom group image<br><small>JPG, PNG, GIF up to 5MB</small></p>
                         </div>
                     </div>
-                    <small class="upload-hint">Upload your own image or leave blank to auto-extract from WhatsApp link</small>
+                    <small class="upload-hint">Custom image upload is required since auto-extraction is disabled</small>
                 </div>
 
                 <div class="form-group">
