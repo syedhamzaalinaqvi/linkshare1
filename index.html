@@ -230,48 +230,89 @@
                 color: green;
             }
 
-            /* Filter dropdown styles */
+            /* Modern compact filter dropdown styles */
             .filter-group .dropdown {
                 position: relative;
                 display: inline-block;
             }
 
             .filter-group .dropdown-btn {
-                background: #128c7e;
+                background: linear-gradient(135deg, #128c7e, #25d366);
                 color: white;
-                padding: 12px 20px;
+                padding: 10px 16px;
                 border: none;
-                border-radius: 8px;
+                border-radius: 25px;
                 cursor: pointer;
-                font-size: 14px;
-                min-width: 180px;
+                font-size: 13px;
+                font-weight: 500;
+                min-width: 140px;
                 text-align: left;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                transition: all 0.3s ease;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 2px 8px rgba(18, 140, 126, 0.3);
+                backdrop-filter: blur(10px);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .filter-group .dropdown-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .filter-group .dropdown-btn:hover::before {
+                left: 100%;
             }
 
             .filter-group .dropdown-btn:hover {
-                background: #25d366;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 6px 20px rgba(18, 140, 126, 0.4);
+            }
+
+            .filter-group .dropdown-btn i {
+                transition: transform 0.3s ease;
+                font-size: 12px;
+            }
+
+            .filter-group .dropdown.active .dropdown-btn i {
+                transform: rotate(180deg);
             }
 
             .filter-group .dropdown-menu {
                 display: none;
                 position: absolute;
-                background: white;
-                min-width: 200px;
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                min-width: 160px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
                 z-index: 1000;
-                border-radius: 8px;
-                padding: 8px 0;
+                border-radius: 16px;
+                padding: 6px;
                 list-style: none;
-                margin: 4px 0 0 0;
-                border: 1px solid #e0e0e0;
-                max-height: 300px;
+                margin: 6px 0 0 0;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                max-height: 280px;
                 overflow-y: auto;
+                animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            @keyframes dropdownSlide {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
             }
 
             .filter-group .dropdown.active .dropdown-menu {
@@ -279,29 +320,80 @@
             }
 
             .filter-group .dropdown-menu .filter-btn {
-                padding: 10px 16px;
+                padding: 8px 12px;
                 cursor: pointer;
-                transition: background-color 0.2s ease;
-                border-bottom: 1px solid #f0f0f0;
+                transition: all 0.2s ease;
+                border-radius: 10px;
                 color: #333;
+                font-size: 13px;
+                margin: 2px 0;
+                position: relative;
+                overflow: hidden;
             }
 
-            .filter-group .dropdown-menu .filter-btn:last-child {
-                border-bottom: none;
+            .filter-group .dropdown-menu .filter-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #128c7e, #25d366);
+                transition: left 0.3s ease;
+                z-index: -1;
+            }
+
+            .filter-group .dropdown-menu .filter-btn:hover::before {
+                left: 0;
             }
 
             .filter-group .dropdown-menu .filter-btn:hover {
-                background-color: #f8f9fa;
-                color: #128c7e;
+                color: white;
+                transform: translateX(4px);
             }
 
             .filter-group .dropdown-menu .filter-btn.active {
-                background-color: #128c7e;
+                background: linear-gradient(135deg, #128c7e, #25d366);
                 color: white;
+                box-shadow: 0 2px 8px rgba(18, 140, 126, 0.3);
             }
 
             .filter-group .dropdown-menu .filter-btn.active:hover {
-                background-color: #25d366;
+                background: linear-gradient(135deg, #25d366, #128c7e);
+                transform: translateX(4px);
+            }
+
+            /* Responsive dropdown styles */
+            @media (max-width: 768px) {
+                .filter-group .dropdown-btn {
+                    min-width: 120px;
+                    padding: 8px 12px;
+                    font-size: 12px;
+                }
+                
+                .filter-group .dropdown-menu {
+                    min-width: 140px;
+                    max-height: 200px;
+                }
+                
+                .filter-group .dropdown-menu .filter-btn {
+                    padding: 6px 10px;
+                    font-size: 12px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .filter-group .dropdown-btn {
+                    min-width: 100px;
+                    padding: 6px 10px;
+                    font-size: 11px;
+                }
+                
+                .filter-group .dropdown-menu {
+                    min-width: 120px;
+                    left: 0;
+                    right: auto;
+                }
             }
 
             .secondary-dropdown {
