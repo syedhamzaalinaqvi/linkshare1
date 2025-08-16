@@ -454,8 +454,11 @@ select:focus {
         height: 45px;
         width: 45px;
         margin-bottom: 0.2rem;
-        border-radius: 6px;
+        border-radius: 50%;
         align-self: center;
+        object-fit: cover;
+        border: 2px solid #25d366;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
     }
 
     .group-card h3 {
@@ -536,6 +539,10 @@ select:focus {
         width: 60px;
         margin-bottom: 0.4rem;
         align-self: center;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #25d366;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
     }
 
     .group-card h3 {
@@ -603,6 +610,10 @@ select:focus {
         width: 50px;
         margin-bottom: 0.3rem;
         align-self: center;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #25d366;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
     }
 
     .group-card h3 {
@@ -676,6 +687,10 @@ select:focus {
         width: 40px;
         margin-bottom: 0.2rem;
         align-self: center;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #25d366;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
     }
 
     .group-card h3 {
@@ -746,6 +761,30 @@ body {
     max-width: 100%;
     box-sizing: border-box;
     margin: 0;
+}
+
+/* Base styles for all group card images - Professional round profile style */
+.group-card img, .card-image img {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #25d366;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.group-card img:hover, .card-image img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+
+/* Desktop and large screen image sizes */
+@media (min-width: 768px) {
+    .group-card img, .card-image img {
+        height: 80px;
+        width: 80px;
+        margin-bottom: 0.5rem;
+        align-self: center;
+    }
 }
 
 /* Fixed Add Group Button at Bottom - Large Centered Mobile Only */
@@ -1863,21 +1902,25 @@ select:focus {
     opacity: 1;
 }
 
-/* Fix for card image display */
+/* Fix for card image display - Professional profile style */
 .card-image {
-    height: 200px;
-    overflow: hidden;
+    height: auto;
+    overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f5f5f5;
+    background-color: transparent;
+    padding: 1rem 0;
 }
 
 .card-image img {
-    width: 100%;
-    height: 100%;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     transition: transform 0.3s ease;
+    border-radius: 50%;
+    border: 2px solid #25d366;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
 }
 
 /* Error State Styles */
