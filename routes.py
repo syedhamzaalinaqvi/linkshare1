@@ -169,26 +169,26 @@ def extract_group_image():
         
         # Method 1: Look for Open Graph meta tags (most reliable)
         og_image = soup.find('meta', property='og:image')
-        if og_image and hasattr(og_image, 'attrs') and 'content' in og_image.attrs:
-            group_image = og_image.attrs['content']
+        if og_image and og_image.get('content'):
+            group_image = og_image.get('content')
             # Ensure we get the full URL with all query parameters
-            if group_image and not group_image.startswith('http'):
-                group_image = urljoin(url, group_image)
+            if group_image and not str(group_image).startswith('http'):
+                group_image = urljoin(url, str(group_image))
             logger.info(f"Found OG image: {group_image}")
             
         og_title = soup.find('meta', property='og:title')
-        if og_title and hasattr(og_title, 'attrs') and 'content' in og_title.attrs:
-            group_title = og_title.attrs['content']
+        if og_title and og_title.get('content'):
+            group_title = og_title.get('content')
             
         og_description = soup.find('meta', property='og:description')
-        if og_description and hasattr(og_description, 'attrs') and 'content' in og_description.attrs:
-            group_description = og_description.attrs['content']
+        if og_description and og_description.get('content'):
+            group_description = og_description.get('content')
         
         # Method 2: Look for Twitter Card meta tags as fallback
         if not group_image:
             twitter_image = soup.find('meta', attrs={'name': 'twitter:image'})
-            if twitter_image and hasattr(twitter_image, 'attrs') and 'content' in twitter_image.attrs:
-                group_image = twitter_image.attrs['content']
+            if twitter_image and twitter_image.get('content'):
+                group_image = twitter_image.get('content')
                 logger.info(f"Found Twitter image: {group_image}")
         
         # Method 3: Look for WhatsApp-specific image containers
@@ -196,16 +196,16 @@ def extract_group_image():
             # Look for images in typical WhatsApp group page structure
             whatsapp_images = soup.find_all('img', src=True)
             for img in whatsapp_images:
-                if hasattr(img, 'attrs') and 'src' in img.attrs:
-                    src = img.attrs['src']
+                src = img.get('src')
+                if src:
                     # Look for WhatsApp profile/group images (usually contain specific patterns)
-                    if src and isinstance(src, str) and any(pattern in src.lower() for pattern in ['profile', 'group', 'avatar', 'photo']):
-                        if src.startswith('http'):
-                            group_image = src
+                    if any(pattern in str(src).lower() for pattern in ['profile', 'group', 'avatar', 'photo']):
+                        if str(src).startswith('http'):
+                            group_image = str(src)
                             logger.info(f"Found WhatsApp-specific image: {group_image}")
                             break
-                        elif src.startswith('/'):
-                            group_image = urljoin(url, src)
+                        elif str(src).startswith('/'):
+                            group_image = urljoin(url, str(src))
                             logger.info(f"Found relative WhatsApp image: {group_image}")
                             break
         
@@ -307,15 +307,15 @@ def extract_group_metadata(url):
         
         # Extract OG image
         og_image = soup.find('meta', property='og:image')
-        image_url = og_image.attrs['content'] if og_image and 'content' in og_image.attrs else None
+        image_url = og_image.get('content') if og_image else None
         
         # Extract title
         og_title = soup.find('meta', property='og:title')
-        title = og_title.attrs['content'] if og_title and 'content' in og_title.attrs else 'WhatsApp Group'
+        title = og_title.get('content') if og_title else 'WhatsApp Group'
         
         # Extract description
         og_desc = soup.find('meta', property='og:description')
-        description = og_desc.attrs['content'] if og_desc and 'content' in og_desc.attrs else 'Join this WhatsApp group'
+        description = og_desc.get('content') if og_desc else 'Join this WhatsApp group'
         
         # Fallback image if none found
         if not image_url:
@@ -368,15 +368,14 @@ def add_group():
         metadata = extract_group_metadata(url)
         
         # Create new group
-        new_group = WhatsAppGroup(
-            title=data.get('title') or metadata['title'],
-            description=data.get('description') or metadata['description'],
-            group_url=url,
-            image_url=data.get('image_url') or metadata['image_url'],
-            category=data.get('category', 'General'),
-            country=data.get('country', 'Global'),
-            member_count=data.get('member_count', 0)
-        )
+        new_group = WhatsAppGroup()
+        new_group.title = data.get('title') or metadata['title']
+        new_group.description = data.get('description') or metadata['description']
+        new_group.group_url = url
+        new_group.image_url = data.get('image_url') or metadata['image_url']
+        new_group.category = data.get('category', 'General')
+        new_group.country = data.get('country', 'Global')
+        new_group.member_count = data.get('member_count', 0)
         
         db.session.add(new_group)
         db.session.commit()
