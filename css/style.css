@@ -495,11 +495,20 @@ select:focus {
     }
 
     .join-btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.5rem;
-        border-radius: 4px;
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.6rem !important;
+        border-radius: 20px !important;
         margin-top: 5px;
-        width: 100%;
+        width: 100% !important;
+        background: linear-gradient(135deg, #25D366, #128C7E) !important;
+        color: white !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
     }
 
     .group-badges {
@@ -571,9 +580,19 @@ select:focus {
     }
 
     .join-btn {
-        padding: 0.35rem 0.6rem;
-        font-size: 0.7rem;
-        width: 100%;
+        padding: 0.5rem 1rem !important;
+        font-size: 0.75rem !important;
+        width: 100% !important;
+        border-radius: 25px !important;
+        background: linear-gradient(135deg, #25D366, #128C7E) !important;
+        color: white !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
     }
 
     .category-badge,
@@ -649,10 +668,19 @@ select:focus {
     }
 
     .join-btn {
-        padding: 0.25rem 0.4rem;
-        font-size: 0.6rem;
-        width: 100%;
-        border-radius: 4px;
+        padding: 0.4rem 0.7rem !important;
+        font-size: 0.65rem !important;
+        width: 100% !important;
+        border-radius: 18px !important;
+        background: linear-gradient(135deg, #25D366, #128C7E) !important;
+        color: white !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
     }
 
     .category-badge,
@@ -734,10 +762,19 @@ select:focus {
     }
 
     .join-btn {
-        padding: 0.2rem 0.3rem;
-        font-size: 0.5rem;
-        width: 100%;
-        border-radius: 3px;
+        padding: 0.35rem 0.6rem !important;
+        font-size: 0.55rem !important;
+        width: 100% !important;
+        border-radius: 15px !important;
+        background: linear-gradient(135deg, #25D366, #128C7E) !important;
+        color: white !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.2px !important;
+        box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3) !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
     }
 
     .category-badge,
