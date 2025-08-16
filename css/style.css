@@ -451,14 +451,19 @@ select:focus {
     }
 
     .group-card img {
-        height: 45px;
-        width: 45px;
+        height: 40px !important;
+        width: 40px !important;
+        min-height: 40px !important;
+        min-width: 40px !important;
+        max-height: 40px !important;
+        max-width: 40px !important;
         margin-bottom: 0.2rem;
-        border-radius: 50%;
+        border-radius: 50% !important;
         align-self: center;
-        object-fit: cover;
-        border: 2px solid #25d366;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+        object-fit: cover !important;
+        border: 2px solid #25d366 !important;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+        aspect-ratio: 1 / 1 !important;
     }
 
     .group-card h3 {
@@ -535,14 +540,19 @@ select:focus {
     }
 
     .group-card img {
-        height: 60px;
-        width: 60px;
+        height: 55px !important;
+        width: 55px !important;
+        min-height: 55px !important;
+        min-width: 55px !important;
+        max-height: 55px !important;
+        max-width: 55px !important;
         margin-bottom: 0.4rem;
         align-self: center;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #25d366;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        border: 2px solid #25d366 !important;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+        aspect-ratio: 1 / 1 !important;
     }
 
     .group-card h3 {
@@ -606,14 +616,19 @@ select:focus {
     }
 
     .group-card img {
-        height: 50px;
-        width: 50px;
+        height: 45px !important;
+        width: 45px !important;
+        min-height: 45px !important;
+        min-width: 45px !important;
+        max-height: 45px !important;
+        max-width: 45px !important;
         margin-bottom: 0.3rem;
         align-self: center;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #25d366;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        border: 2px solid #25d366 !important;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+        aspect-ratio: 1 / 1 !important;
     }
 
     .group-card h3 {
@@ -683,14 +698,19 @@ select:focus {
     }
 
     .group-card img {
-        height: 40px;
-        width: 40px;
+        height: 35px !important;
+        width: 35px !important;
+        min-height: 35px !important;
+        min-width: 35px !important;
+        max-height: 35px !important;
+        max-width: 35px !important;
         margin-bottom: 0.2rem;
         align-self: center;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #25d366;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        border: 2px solid #25d366 !important;
+        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+        aspect-ratio: 1 / 1 !important;
     }
 
     .group-card h3 {
@@ -763,13 +783,15 @@ body {
     margin: 0;
 }
 
-/* Base styles for all group card images - Professional round profile style */
+/* Base styles for all group card images - Perfect circle profile style */
 .group-card img, .card-image img {
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #25d366;
-    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #25d366 !important;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    aspect-ratio: 1 / 1 !important;
+    display: block !important;
 }
 
 .group-card img:hover, .card-image img:hover {
@@ -777,11 +799,15 @@ body {
     box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
 }
 
-/* Desktop and large screen image sizes */
+/* Desktop and large screen image sizes - Perfect circles */
 @media (min-width: 768px) {
     .group-card img, .card-image img {
-        height: 80px;
-        width: 80px;
+        height: 70px !important;
+        width: 70px !important;
+        min-height: 70px !important;
+        min-width: 70px !important;
+        max-height: 70px !important;
+        max-width: 70px !important;
         margin-bottom: 0.5rem;
         align-self: center;
     }
@@ -1914,13 +1940,18 @@ select:focus {
 }
 
 .card-image img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
+    max-width: 70px !important;
+    max-height: 70px !important;
+    object-fit: cover !important;
     transition: transform 0.3s ease;
-    border-radius: 50%;
-    border: 2px solid #25d366;
-    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+    border-radius: 50% !important;
+    border: 2px solid #25d366 !important;
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
+    aspect-ratio: 1 / 1 !important;
 }
 
 /* Error State Styles */
