@@ -230,6 +230,80 @@
                 color: green;
             }
 
+            /* Filter dropdown styles */
+            .filter-group .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .filter-group .dropdown-btn {
+                background: #128c7e;
+                color: white;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                min-width: 180px;
+                text-align: left;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 0.3s ease;
+            }
+
+            .filter-group .dropdown-btn:hover {
+                background: #25d366;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            .filter-group .dropdown-menu {
+                display: none;
+                position: absolute;
+                background: white;
+                min-width: 200px;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                border-radius: 8px;
+                padding: 8px 0;
+                list-style: none;
+                margin: 4px 0 0 0;
+                border: 1px solid #e0e0e0;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .filter-group .dropdown.active .dropdown-menu {
+                display: block;
+            }
+
+            .filter-group .dropdown-menu .filter-btn {
+                padding: 10px 16px;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+                border-bottom: 1px solid #f0f0f0;
+                color: #333;
+            }
+
+            .filter-group .dropdown-menu .filter-btn:last-child {
+                border-bottom: none;
+            }
+
+            .filter-group .dropdown-menu .filter-btn:hover {
+                background-color: #f8f9fa;
+                color: #128c7e;
+            }
+
+            .filter-group .dropdown-menu .filter-btn.active {
+                background-color: #128c7e;
+                color: white;
+            }
+
+            .filter-group .dropdown-menu .filter-btn.active:hover {
+                background-color: #25d366;
+            }
+
             .secondary-dropdown {
                 position: relative;
             }
@@ -2326,6 +2400,40 @@
                 document.addEventListener("click", (e) => {
                     if (!e.target.closest(".nav-dropdown")) {
                         dropdowns.forEach((dropdown) => {
+                            dropdown.classList.remove("active");
+                        });
+                    }
+                });
+
+                // Filter dropdown toggle functionality
+                const filterDropdowns = document.querySelectorAll(".filter-group .dropdown");
+                
+                filterDropdowns.forEach((dropdown) => {
+                    const dropBtn = dropdown.querySelector(".dropdown-btn");
+                    const dropMenu = dropdown.querySelector(".dropdown-menu");
+                    
+                    if (dropBtn && dropMenu) {
+                        dropBtn.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Close other filter dropdowns
+                            filterDropdowns.forEach((otherDropdown) => {
+                                if (otherDropdown !== dropdown) {
+                                    otherDropdown.classList.remove("active");
+                                }
+                            });
+                            
+                            // Toggle current dropdown
+                            dropdown.classList.toggle("active");
+                        });
+                    }
+                });
+
+                // Close filter dropdowns when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (!e.target.closest(".filter-group .dropdown")) {
+                        filterDropdowns.forEach((dropdown) => {
                             dropdown.classList.remove("active");
                         });
                     }
