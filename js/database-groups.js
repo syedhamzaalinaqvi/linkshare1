@@ -31,7 +31,10 @@ async function loadDatabaseGroups() {
             setTimeout(() => {
                 if (window.originalLoadGroups) {
                     console.log('[DB] Calling Firebase loadGroups after database check');
-                    window.originalLoadGroups('all', 'all', false);
+                    // Use current filter state if available, otherwise use defaults
+                    const currentTopic = window.currentTopic || 'all';
+                    const currentCountry = window.currentCountry || 'all';
+                    window.originalLoadGroups(currentTopic, currentCountry, false);
                 }
             }, 100);
             return [];
@@ -81,7 +84,10 @@ function renderDatabaseGroups(groups) {
         console.log('[DB] No database groups found, loading Firebase groups immediately');
         // Database is empty, load Firebase groups right away
         if (window.originalLoadGroups) {
-            window.originalLoadGroups('all', 'all', false);
+            // Use current filter state if available, otherwise use defaults
+            const currentTopic = window.currentTopic || 'all';
+            const currentCountry = window.currentCountry || 'all';
+            window.originalLoadGroups(currentTopic, currentCountry, false);
         }
         return;
     }
@@ -288,15 +294,19 @@ document.addEventListener('DOMContentLoaded', function() {
     window.loadGroups = function(topic, country, loadMore = false) {
         console.log(`[DB] Override loadGroups called with topic: ${topic}, country: ${country}, loadMore: ${loadMore}`);
         
+        // Store current filter state globally for Firebase config
+        window.currentTopic = topic || 'all';
+        window.currentCountry = country || 'all';
+        
         if (!loadMore) {
             // For initial load or filter changes, show database groups instantly
             console.log('[DB] Loading database groups for filter change');
             filterDatabaseGroups(topic || 'all', country || 'all');
         } else {
-            // For load more, fall back to Firebase
+            // For load more, fall back to Firebase with current filters
             console.log('[DB] Load More requested - trying Firebase groups');
             if (window.originalLoadGroups) {
-                window.originalLoadGroups(topic, country, true);
+                window.originalLoadGroups(topic || 'all', country || 'all', true);
             } else {
                 console.warn('[DB] Original loadGroups function not available');
             }

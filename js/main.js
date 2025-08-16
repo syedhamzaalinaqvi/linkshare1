@@ -389,6 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Update state and load groups
                 currentTopic = category;
+                window.currentTopic = category; // Store globally for Firebase config
                 loadGroups(category, currentCountry);
 
                 // Update dropdown to match selected category
@@ -436,6 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Update state and load groups
                     currentTopic = category;
+                    window.currentTopic = category; // Store globally for Firebase config
                     loadGroups(category, currentCountry);
 
                     // Close dropdown
@@ -479,6 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Update state and load groups
                     currentCountry = country;
+                    window.currentCountry = country; // Store globally for Firebase config
                     loadGroups(currentTopic, country);
 
                     // Close dropdown
