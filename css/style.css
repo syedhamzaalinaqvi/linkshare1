@@ -820,6 +820,22 @@ body {
     margin: 0;
 }
 
+/* Center-align card content to match centered images */
+.card-title,
+.card-description {
+    text-align: center !important;
+}
+
+.group-card h3,
+.group-card .card-title {
+    text-align: center !important;
+}
+
+.group-card p,
+.group-card .card-description {
+    text-align: center !important;
+}
+
 /* Base styles for all group card images - Perfect circle profile style */
 .group-card img, .card-image img {
     border-radius: 50% !important;
