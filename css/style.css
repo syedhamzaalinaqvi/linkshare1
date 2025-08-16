@@ -442,17 +442,12 @@ select:focus {
 /* Mobile-optimized group card styles - Compact Design */
 @media (max-width: 595px) {
     .group-card {
-        height: 200px !important;
-        padding: 0.2rem !important;
+        height: 220px;
+        padding: 0.3rem;
         display: flex;
         flex-direction: column;
         max-width: 340px;
         margin: 0 auto;
-    }
-    
-    .card-content {
-        padding: 0 0.3rem 0.3rem 0.3rem !important;
-        gap: 0.15rem !important;
     }
 
     .group-card img {
@@ -473,18 +468,18 @@ select:focus {
 
     .group-card h3 {
         font-size: 0.6rem;
-        margin-bottom: 0.1rem !important;
-        min-height: 1em !important;
+        margin-bottom: 0.15rem;
+        min-height: 1.2em;
         line-height: 1.1;
         text-align: center;
     }
 
     .group-card p {
         font-size: 0.5rem;
-        margin-bottom: 0.15rem !important;
+        margin-bottom: 5px;
         line-height: 1.1;
         -webkit-line-clamp: 2;
-        height: 2em !important;
+        height: 2.2em;
         text-align: center;
     }
 
@@ -545,17 +540,12 @@ select:focus {
     }
 
     .group-card {
-        height: 250px !important;
-        padding: 0.3rem !important;
+        height: 280px;
+        padding: 0.5rem;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
         box-sizing: border-box;
-    }
-    
-    .card-content {
-        padding: 0 0.4rem 0.4rem 0.4rem !important;
-        gap: 0.2rem !important;
     }
 
     .group-card img {
@@ -575,20 +565,18 @@ select:focus {
     }
 
     .group-card h3 {
-        font-size: 0.75rem;
-        min-height: 1.2em !important;
+        font-size: 0.8rem;
+        min-height: 1.6em;
         line-height: 1.2;
         text-align: center;
-        margin-bottom: 0.15rem !important;
     }
 
     .group-card p {
-        font-size: 0.6rem;
-        height: 2.2em !important;
+        font-size: 0.65rem;
+        height: 2.4em;
         -webkit-line-clamp: 2;
         line-height: 1.2;
         text-align: center;
-        margin-bottom: 0.2rem !important;
     }
 
     .join-btn {
@@ -635,18 +623,15 @@ select:focus {
     }
 
     .group-card {
-        height: 220px !important;
-        padding: 0.3rem !important;
+        height: 250px;
+        padding: 0.4rem;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
+        width: 100%;
+        max-width: 100%;
         box-sizing: border-box;
         margin: 0;
-    }
-    
-    .card-content {
-        padding: 0 0.3rem 0.3rem 0.3rem !important;
-        gap: 0.15rem !important;
     }
 
     .group-card img {
@@ -666,20 +651,20 @@ select:focus {
     }
 
     .group-card h3 {
-        font-size: 0.65rem;
-        min-height: 1.2em !important;
+        font-size: 0.7rem;
+        min-height: 1.4em;
         line-height: 1.2;
         text-align: center;
-        margin-bottom: 0.1rem !important;
+        margin-bottom: 0.2rem;
     }
 
     .group-card p {
-        font-size: 0.5rem;
-        height: 2em !important;
+        font-size: 0.55rem;
+        height: 2.2em;
         -webkit-line-clamp: 2;
         line-height: 1.1;
         text-align: center;
-        margin-bottom: 0.15rem !important;
+        margin-bottom: 0.3rem;
     }
 
     .join-btn {
@@ -729,18 +714,15 @@ select:focus {
     }
 
     .group-card {
-        height: 190px !important;
-        padding: 0.2rem !important;
+        height: 220px;
+        padding: 0.3rem;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
+        width: 100%;
+        max-width: 100%;
         box-sizing: border-box;
         margin: 0;
-    }
-    
-    .card-content {
-        padding: 0 0.25rem 0.25rem 0.25rem !important;
-        gap: 0.1rem !important;
     }
 
     .group-card img {
@@ -760,18 +742,18 @@ select:focus {
     }
 
     .group-card h3 {
-        font-size: 0.55rem;
-        min-height: 1em !important;
+        font-size: 0.6rem;
+        min-height: 1.2em;
         line-height: 1.1;
-        margin-bottom: 0.1rem !important;
+        margin-bottom: 0.15rem;
         text-align: center;
     }
 
     .group-card p {
-        font-size: 0.45rem;
-        height: 1.8em !important;
+        font-size: 0.5rem;
+        height: 2em;
         line-height: 1;
-        margin-bottom: 0.1rem !important;
+        margin-bottom: 0.2rem;
         text-align: center;
         -webkit-line-clamp: 2;
         display: -webkit-box;
@@ -836,51 +818,6 @@ body {
     max-width: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 0.5rem !important;
-}
-
-/* Compact card content styling */
-.card-content {
-    padding: 0 0.5rem 0.5rem 0.5rem !important;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem !important;
-}
-
-.card-title {
-    margin-bottom: 0.2rem !important;
-    font-size: 1rem !important;
-    line-height: 1.2 !important;
-    text-align: center;
-}
-
-.card-description {
-    margin-bottom: 0.3rem !important;
-    font-size: 0.85rem !important;
-    line-height: 1.3 !important;
-    text-align: center;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem !important;
-    color: #666 !important;
-    margin-bottom: 0.3rem !important;
-    padding: 0 !important;
-}
-
-.card-actions {
-    margin-top: 0 !important;
-    padding: 0 !important;
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
 }
 
 /* Base styles for all group card images - Perfect circle profile style */
@@ -2036,7 +1973,7 @@ select:focus {
     align-items: center;
     justify-content: center;
     background-color: transparent;
-    padding: 0.5rem 0 0.3rem 0;
+    padding: 1rem 0;
 }
 
 .card-image img {
