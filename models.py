@@ -1,7 +1,5 @@
-from flask_sqlalchemy import SQLAlchemy
+from app import db
 from datetime import datetime
-
-db = SQLAlchemy()
 
 class WhatsAppGroup(db.Model):
     __tablename__ = 'whatsapp_groups'

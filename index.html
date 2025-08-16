@@ -62,7 +62,6 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         />
-        
 
         <!-- Add structured data -->
         <script type="application/ld+json">
@@ -105,7 +104,8 @@
                 margin: 2rem 0 1rem;
             }
 
-            .blog-content ul, .blog-content ol {
+            .blog-content ul,
+            .blog-content ol {
                 margin: 1rem 0;
                 padding-left: 2rem;
             }
@@ -169,15 +169,16 @@
             }
 
             /* Secondary Menu Styles */
-            .temporary-menu , .secondary-menu {
-                
+            .temporary-menu,
+            .secondary-menu {
                 padding: 0.75rem 0;
                 margin-bottom: 1.5rem;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
                 border-radius: 10px;
             }
 
-            .temporary-nav-links , .secondary-nav-links {
+            .temporary-nav-links,
+            .secondary-nav-links {
                 display: flex;
                 list-style: none;
                 padding: 0;
@@ -186,7 +187,8 @@
                 gap: 15px;
             }
 
-            .temporary-nav-links , .secondary-nav-links li {
+            .temporary-nav-links,
+            .secondary-nav-links li {
                 position: relative;
             }
 
@@ -203,23 +205,24 @@
                 border: 1px solid rgba(255, 255, 255, 0.2);
                 background: linear-gradient(135deg, #128c7e, #25d366);
             }
-            
+
             .temporary-nav-links a {
                 display: block;
                 background: linear-gradient(135deg, #128c7e, #25d366);
-    padding: 4px 4px;
-    color:black;
-    text-decoration: none;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    font-size: 12px;
-    border-radius: 2px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: grey 1px 1px 5px 1px;
+                padding: 4px 4px;
+                color: black;
+                text-decoration: none;
+                font-weight: 700;
+                transition: all 0.3s ease;
+                font-size: 12px;
+                border-radius: 2px;
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: grey 1px 1px 5px 1px;
             }
 
-            .temporary-nav-links a:hover , .secondary-nav-links a:hover {
+            .temporary-nav-links a:hover,
+            .secondary-nav-links a:hover {
                 background: rgba(255, 255, 255, 0.2);
                 transform: translateY(-2px);
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -414,7 +417,6 @@
             margin-bottom: 2rem;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         }
-        
         .shortener-header {
             text-align: center;
             margin-bottom: 1.5rem;
@@ -631,7 +633,7 @@
 
             /* WhatsApp Guide Section Styles */
             .whatsapp-guide-section {
-                background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+                background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
                 padding: 4rem 0;
                 margin-top: 3rem;
                 position: relative;
@@ -639,7 +641,7 @@
             }
 
             .whatsapp-guide-section::before {
-                content: '';
+                content: "";
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -707,26 +709,33 @@
                 text-align: center;
                 box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
                 border: 1px solid rgba(255, 255, 255, 0.2);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
                 position: relative;
                 overflow: hidden;
             }
 
             .guide-card::before {
-                content: '';
+                content: "";
                 position: absolute;
                 top: 0;
                 left: 0;
                 right: 0;
                 height: 4px;
-                background: linear-gradient(90deg, #25D366, #128C7E, #25D366);
+                background: linear-gradient(90deg, #25d366, #128c7e, #25d366);
                 background-size: 200% 100%;
                 animation: shimmer 3s ease-in-out infinite;
             }
 
             @keyframes shimmer {
-                0%, 100% { background-position: 200% 0; }
-                50% { background-position: -200% 0; }
+                0%,
+                100% {
+                    background-position: 200% 0;
+                }
+                50% {
+                    background-position: -200% 0;
+                }
             }
 
             .guide-card:hover {
@@ -740,7 +749,7 @@
                 justify-content: center;
                 width: 60px;
                 height: 60px;
-                background: linear-gradient(135deg, #25D366, #128C7E);
+                background: linear-gradient(135deg, #25d366, #128c7e);
                 border-radius: 50%;
                 margin-bottom: 1.5rem;
                 box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
@@ -772,7 +781,7 @@
             }
 
             .feature-tag {
-                background: linear-gradient(135deg, #25D366, #128C7E);
+                background: linear-gradient(135deg, #25d366, #128c7e);
                 color: white;
                 padding: 0.3rem 0.8rem;
                 border-radius: 20px;
@@ -826,7 +835,7 @@
 
             .cta-btn.primary {
                 background: white;
-                color: #25D366;
+                color: #25d366;
             }
 
             .cta-btn.primary:hover {
@@ -852,25 +861,25 @@
                 .whatsapp-guide-section {
                     padding: 3rem 0;
                 }
-                
+
                 .guide-header h2 {
                     font-size: 2rem;
                 }
-                
+
                 .guide-grid {
                     grid-template-columns: 1fr;
                     gap: 1.5rem;
                 }
-                
+
                 .guide-card {
                     padding: 1.5rem;
                 }
-                
+
                 .cta-buttons {
                     flex-direction: column;
                     align-items: center;
                 }
-                
+
                 .cta-btn {
                     width: 100%;
                     max-width: 280px;
@@ -948,34 +957,78 @@
                 </li>
                 <li><a href="/add-group">Add Group</a></li>
                 <li class="nav-dropdown">
-                    <a href="#" class="dropbtn"> 🔥 Pro Unlocked  ▾</a>
+                    <a href="#" class="dropbtn"> 🔥 Pro Unlocked ▾</a>
                     <ul class="nav-dropdown-content">
                         <li><a href="/tiktok-live">TikTok Live</a></li>
                         <li><a href="/capcut-pro">CapCut Pro</a></li>
-                        <li><a href="/moviebox-premium">MovieBox Premium</a></li>
-                        <li><a href="/free-chatgpt-plus">Free ChatGPT Plus</a></li>
+                        <li>
+                            <a href="/moviebox-premium">MovieBox Premium</a>
+                        </li>
+                        <li>
+                            <a href="/free-chatgpt-plus">Free ChatGPT Plus</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-dropdown">
                     <a href="#" class="dropbtn">Tools ▾</a>
                     <ul class="nav-dropdown-content">
-                        <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
-                        <li><a href="/qr-code-generator">QR Code Generator</a></li>
-                        <li><a href="/qr-code-reader">QR Code Scanner/Reader</a></li>
-                        <li><a href="/short-url-generator">Short URL Generator</a></li>
-                        <li><a href="/m3u-playlist-viewer">M3U Playlist viewer</a></li>
-                        <li><a href="/document-converter">Document Converter</a></li>
-                        <li><a href="/math-problem-solver">Math Problem Solver</a></li>
+                        <li>
+                            <a href="/stylish-text-generator"
+                                >Stylish Text Generator</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/qr-code-generator">QR Code Generator</a>
+                        </li>
+                        <li>
+                            <a href="/qr-code-reader">QR Code Scanner/Reader</a>
+                        </li>
+                        <li>
+                            <a href="/short-url-generator"
+                                >Short URL Generator</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/m3u-playlist-viewer"
+                                >M3U Playlist viewer</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/document-converter">Document Converter</a>
+                        </li>
+                        <li>
+                            <a href="/math-problem-solver"
+                                >Math Problem Solver</a
+                            >
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-dropdown">
                     <a href="#" class="dropbtn">Blog ▾</a>
                     <ul class="nav-dropdown-content">
-                        <li><a href="/new-tools-update">New Tool updates</a></li>
-                        <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
-                        <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
-                        <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
-                        <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+                        <li>
+                            <a href="/new-tools-update">New Tool updates</a>
+                        </li>
+                        <li>
+                            <a href="/usa-whatsapp-group-links"
+                                >USA WhatsApp Group Links</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/active-pakistani-whatsapp-group-links"
+                                >Pakistani WhatsApp Group Links</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/indian-whatsapp-group-links"
+                                >Indian WhatsApp Group Links</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/how-to-join-whatsapp-groups"
+                                >How to Join WhatsApp Group</a
+                            >
+                        </li>
                     </ul>
                 </li>
                 <li><a href="/about">About</a></li>
@@ -1009,7 +1062,7 @@
                 ><img
                     src="https://cdn.prod.website-files.com/64ea57571d50b02423c4505d/64fb219ade937671b42e011e_capcut%20logo%20png.png"
                     alt="CapCut Pro Logo"
-                    style="width: 24px; height: 24px; margin-right: 10px;"
+                    style="width: 24px; height: 24px; margin-right: 10px"
                 />CapCut Pro</a
             >
         </header>
@@ -1018,16 +1071,14 @@
             <div class="container">
                 <ul class="temporary-nav-links">
                     <li>
-                        <a href="/capcut-pro"
-                            >🔥CapCut Pro</a>
+                        <a href="/capcut-pro">🔥CapCut Pro</a>
                     </li>
                     <li>
-                        <a href="/moviebox-premium"
-                            >🔥Moviebox Premium</a>
+                        <a href="/moviebox-premium">🔥Moviebox Premium</a>
                     </li>
                 </ul>
             </div>
-        </section> 
+        </section>
         <!-- Secondary Menu -->
         <section class="secondary-menu">
             <div class="container">
@@ -1122,21 +1173,33 @@
                         ></i>
                     </a>
                 </div>
-                  <!-- Promote Your Group Here in Featured Groups on Top Contact us -->
-                <h3 style="animation: wave 1s linear infinite; color: #e71c1c; font-weight: bold; text-align: center;">
+                <!-- Promote Your Group Here in Featured Groups on Top Contact us -->
+                <h3
+                    style="
+                        animation: wave 1s linear infinite;
+                        color: #e71c1c;
+                        font-weight: bold;
+                        text-align: center;
+                    "
+                >
                     Promote Your Group Here in Featured Groups on Top Contact us
                 </h3>
                 <style>
                     @keyframes wave {
-                        0% { transform: translateX(0); }
-                        50% { transform: translateX(-3px); }
-                        100% { transform: translateX(0); }
+                        0% {
+                            transform: translateX(0);
+                        }
+                        50% {
+                            transform: translateX(-3px);
+                        }
+                        100% {
+                            transform: translateX(0);
+                        }
                     }
                 </style>
 
                 <div class="manual-slider-container">
                     <div class="manual-slider" id="manualGroupSlider">
-                        
                         <!-- Manual Group Card 1 -->
                         <div class="manual-slide">
                             <div
@@ -1148,10 +1211,14 @@
                                 <span class="manual-slide-category"
                                     >Earning/Business</span
                                 >
-                                <span class="manual-slide-country">Pakistan</span>
+                                <span class="manual-slide-country"
+                                    >Pakistan</span
+                                >
                             </div>
                             <div class="manual-slide-content">
-                                <h3 class="manual-slide-title">YouTube Earnings</h3>
+                                <h3 class="manual-slide-title">
+                                    YouTube Earnings
+                                </h3>
                                 <a
                                     href="https://chat.whatsapp.com/C8ogOg5RBEjBW1rZF99DOC?mode=ac_t"
                                     class="manual-slide-join"
@@ -1960,21 +2027,29 @@
         <section class="seo-blog-section">
             <div class="container">
                 <h2>WhatsApp Group Links Guide</h2>
-                
+
                 <div class="blog-content">
                     <article>
                         <h3>What are WhatsApp Group Links?</h3>
-                        <p>WhatsApp group links are unique URLs that allow users to join WhatsApp groups directly from their browser or mobile device. These links are essential for expanding your network and connecting with like-minded individuals.</p>
-                        
+                        <p>
+                            WhatsApp group links are unique URLs that allow
+                            users to join WhatsApp groups directly from their
+                            browser or mobile device. These links are essential
+                            for expanding your network and connecting with
+                            like-minded individuals.
+                        </p>
+
                         <h3>Why Join WhatsApp Groups?</h3>
                         <ul>
-                            <li>Meet new people and expand your social circle</li>
+                            <li>
+                                Meet new people and expand your social circle
+                            </li>
                             <li>Share and receive valuable information</li>
                             <li>Find business opportunities and networking</li>
                             <li>Join communities based on your interests</li>
                             <li>Get real-time updates and news</li>
                         </ul>
-                        
+
                         <h3>How to Use WhatsApp Group Links?</h3>
                         <ol>
                             <li>Click on a group link from our collection</li>
@@ -1982,43 +2057,72 @@
                             <li>Join the group instantly</li>
                             <li>Start participating in group conversations</li>
                         </ol>
-                        
+
                         <h3>Types of WhatsApp Groups Available</h3>
                         <div class="group-types">
                             <div class="type-card">
                                 <h4>Community Groups</h4>
-                                <p>Join local communities, hobby groups, and interest-based chats</p>
+                                <p>
+                                    Join local communities, hobby groups, and
+                                    interest-based chats
+                                </p>
                             </div>
                             <div class="type-card">
                                 <h4>Business Groups</h4>
-                                <p>Network with professionals and find business opportunities</p>
+                                <p>
+                                    Network with professionals and find business
+                                    opportunities
+                                </p>
                             </div>
                             <div class="type-card">
                                 <h4>Education Groups</h4>
-                                <p>Study groups, learning communities, and educational resources</p>
+                                <p>
+                                    Study groups, learning communities, and
+                                    educational resources
+                                </p>
                             </div>
                             <div class="type-card">
                                 <h4>Entertainment Groups</h4>
-                                <p>Movie discussions, music sharing, and fun activities</p>
+                                <p>
+                                    Movie discussions, music sharing, and fun
+                                    activities
+                                </p>
                             </div>
                         </div>
-                        
+
                         <h3>Tips for Using WhatsApp Groups</h3>
                         <ul>
                             <li>Always check group rules before joining</li>
-                            <li>Be respectful and follow community guidelines</li>
+                            <li>
+                                Be respectful and follow community guidelines
+                            </li>
                             <li>Share valuable content with the group</li>
                             <li>Participate actively in discussions</li>
                             <li>Report any inappropriate behavior</li>
                         </ul>
-                        
+
                         <h3>How to Add Your Own Group</h3>
-                        <p>Want to share your WhatsApp group with others? Use our easy group submission form to add your group link to our collection. Make sure your group follows WhatsApp's terms and conditions.</p>
-                        
+                        <p>
+                            Want to share your WhatsApp group with others? Use
+                            our easy group submission form to add your group
+                            link to our collection. Make sure your group follows
+                            WhatsApp's terms and conditions.
+                        </p>
+
                         <div class="cta-section">
-                            <a href="/add-group" class="cta-button">Add Your Group</a>
-                            <a href="/active-pakistani-whatsapp-group-links" class="cta-button">Join Pakistani Groups</a>
-                            <a href="/usa-whatsapp-group-links" class="cta-button">Join USA Groups</a>
+                            <a href="/add-group" class="cta-button"
+                                >Add Your Group</a
+                            >
+                            <a
+                                href="/active-pakistani-whatsapp-group-links"
+                                class="cta-button"
+                                >Join Pakistani Groups</a
+                            >
+                            <a
+                                href="/usa-whatsapp-group-links"
+                                class="cta-button"
+                                >Join USA Groups</a
+                            >
                         </div>
                     </article>
                 </div>
@@ -2034,68 +2138,102 @@
                             <i class="fab fa-whatsapp"></i>
                         </div>
                         <h2>WhatsApp Group Links Guide</h2>
-                        <p>Everything you need to know about joining and sharing WhatsApp groups</p>
+                        <p>
+                            Everything you need to know about joining and
+                            sharing WhatsApp groups
+                        </p>
                     </div>
-                    
+
                     <div class="guide-grid">
                         <div class="guide-card">
                             <div class="card-icon">
                                 <i class="fas fa-search"></i>
                             </div>
                             <h3>How to Find Groups</h3>
-                            <p>Browse our extensive collection of categorized WhatsApp groups. Use filters to find groups that match your interests and location.</p>
+                            <p>
+                                Browse our extensive collection of categorized
+                                WhatsApp groups. Use filters to find groups that
+                                match your interests and location.
+                            </p>
                             <div class="card-features">
-                                <span class="feature-tag">Search by Category</span>
-                                <span class="feature-tag">Filter by Country</span>
+                                <span class="feature-tag"
+                                    >Search by Category</span
+                                >
+                                <span class="feature-tag"
+                                    >Filter by Country</span
+                                >
                                 <span class="feature-tag">Latest Groups</span>
                             </div>
                         </div>
-                        
+
                         <div class="guide-card">
                             <div class="card-icon">
                                 <i class="fas fa-users"></i>
                             </div>
                             <h3>How to Join Groups</h3>
-                            <p>Simply click on any group link to join instantly. Make sure you follow group rules and be respectful to all members.</p>
+                            <p>
+                                Simply click on any group link to join
+                                instantly. Make sure you follow group rules and
+                                be respectful to all members.
+                            </p>
                             <div class="card-features">
                                 <span class="feature-tag">One-Click Join</span>
                                 <span class="feature-tag">Instant Access</span>
                                 <span class="feature-tag">Active Groups</span>
                             </div>
                         </div>
-                        
+
                         <div class="guide-card">
                             <div class="card-icon">
                                 <i class="fas fa-plus-circle"></i>
                             </div>
                             <h3>How to Share Your Group</h3>
-                            <p>Submit your WhatsApp group to reach thousands of potential members. Fill out our simple form and get your group featured.</p>
+                            <p>
+                                Submit your WhatsApp group to reach thousands of
+                                potential members. Fill out our simple form and
+                                get your group featured.
+                            </p>
                             <div class="card-features">
                                 <span class="feature-tag">Free Submission</span>
                                 <span class="feature-tag">Quick Approval</span>
                                 <span class="feature-tag">More Members</span>
                             </div>
                         </div>
-                        
+
                         <div class="guide-card">
                             <div class="card-icon">
                                 <i class="fas fa-shield-alt"></i>
                             </div>
                             <h3>Safety Guidelines</h3>
-                            <p>Stay safe while joining groups. Verify group authenticity, respect privacy, and report any suspicious or inappropriate content.</p>
+                            <p>
+                                Stay safe while joining groups. Verify group
+                                authenticity, respect privacy, and report any
+                                suspicious or inappropriate content.
+                            </p>
                             <div class="card-features">
                                 <span class="feature-tag">Verified Groups</span>
-                                <span class="feature-tag">Privacy Protected</span>
-                                <span class="feature-tag">Community Moderated</span>
+                                <span class="feature-tag"
+                                    >Privacy Protected</span
+                                >
+                                <span class="feature-tag"
+                                    >Community Moderated</span
+                                >
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="guide-cta">
                         <h3>Ready to Get Started?</h3>
-                        <p>Join thousands of WhatsApp groups or share your own group with our community</p>
+                        <p>
+                            Join thousands of WhatsApp groups or share your own
+                            group with our community
+                        </p>
                         <div class="cta-buttons">
-                            <a href="#groups" class="cta-btn primary" onclick="scrollToGroups()">
+                            <a
+                                href="#groups"
+                                class="cta-btn primary"
+                                onclick="scrollToGroups()"
+                            >
                                 <i class="fas fa-th-list"></i>
                                 Browse Groups
                             </a>
@@ -2142,18 +2280,19 @@
         <script>
             // Scroll to groups function
             function scrollToGroups() {
-                const groupsSection = document.querySelector('.groups-section') || 
-                                    document.querySelector('#groups') || 
-                                    document.querySelector('.groups-container');
+                const groupsSection =
+                    document.querySelector(".groups-section") ||
+                    document.querySelector("#groups") ||
+                    document.querySelector(".groups-container");
                 if (groupsSection) {
-                    groupsSection.scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'start'
+                    groupsSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
                     });
                 } else {
                     // Fallback to scroll to top of main content
-                    document.querySelector('#main-content').scrollIntoView({ 
-                        behavior: 'smooth' 
+                    document.querySelector("#main-content").scrollIntoView({
+                        behavior: "smooth",
                     });
                 }
             }
@@ -2258,24 +2397,26 @@
         <script src="js/main.js"></script>
         <script>
             // Mobile Navigation Toggle
-            document.addEventListener('DOMContentLoaded', function() {
-                const navToggle = document.querySelector('.nav-toggle');
-                const navLinks = document.querySelector('.nav-links');
+            document.addEventListener("DOMContentLoaded", function () {
+                const navToggle = document.querySelector(".nav-toggle");
+                const navLinks = document.querySelector(".nav-links");
 
                 if (navToggle && navLinks) {
-                    navToggle.addEventListener('click', function() {
-                        navLinks.classList.toggle('active');
+                    navToggle.addEventListener("click", function () {
+                        navLinks.classList.toggle("active");
                     });
 
                     // Close menu when clicking outside
-                    document.addEventListener('click', function(e) {
-                        if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
-                            navLinks.classList.remove('active');
+                    document.addEventListener("click", function (e) {
+                        if (
+                            !navToggle.contains(e.target) &&
+                            !navLinks.contains(e.target)
+                        ) {
+                            navLinks.classList.remove("active");
                         }
                     });
                 }
             });
         </script>
-        
     </body>
 </html>
