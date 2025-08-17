@@ -258,13 +258,18 @@
             }
 
             .filter-group .dropdown-btn::before {
-                content: '';
+                content: "";
                 position: absolute;
                 top: 0;
                 left: -100%;
                 width: 100%;
                 height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.2),
+                    transparent
+                );
                 transition: left 0.5s;
             }
 
@@ -332,7 +337,7 @@
             }
 
             .filter-group .dropdown-menu .filter-btn::before {
-                content: '';
+                content: "";
                 position: absolute;
                 top: 0;
                 left: -100%;
@@ -370,12 +375,12 @@
                     padding: 8px 12px;
                     font-size: 12px;
                 }
-                
+
                 .filter-group .dropdown-menu {
                     min-width: 140px;
                     max-height: 200px;
                 }
-                
+
                 .filter-group .dropdown-menu .filter-btn {
                     padding: 6px 10px;
                     font-size: 12px;
@@ -388,7 +393,7 @@
                     padding: 6px 10px;
                     font-size: 11px;
                 }
-                
+
                 .filter-group .dropdown-menu {
                     min-width: 120px;
                     left: 0;
@@ -1256,7 +1261,7 @@
                     </li>
                     <li>
                         <a href="/active-pakistani-whatsapp-group-links"
-                            >🔥 Pakistani Whatsappp Groups link</a
+                            >🔥 Pakistani Whatsappp Groups</a
                         >
                     </li>
                 </ul>
@@ -1764,17 +1769,22 @@
             </section>
 
             <!-- adsence Banner ads here-->
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8130991342525434"
-                 crossorigin="anonymous"></script>
+            <script
+                async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8130991342525434"
+                crossorigin="anonymous"
+            ></script>
             <!-- linkshare banner horizontal ad -->
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-8130991342525434"
-                 data-ad-slot="4773775873"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
+            <ins
+                class="adsbygoogle"
+                style="display: block"
+                data-ad-client="ca-pub-8130991342525434"
+                data-ad-slot="4773775873"
+                data-ad-format="auto"
+                data-full-width-responsive="true"
+            ></ins>
             <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
+                (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
             <!-- Tools Section -->
             <section
@@ -2511,24 +2521,26 @@
                 });
 
                 // Filter dropdown toggle functionality
-                const filterDropdowns = document.querySelectorAll(".filter-group .dropdown");
-                
+                const filterDropdowns = document.querySelectorAll(
+                    ".filter-group .dropdown",
+                );
+
                 filterDropdowns.forEach((dropdown) => {
                     const dropBtn = dropdown.querySelector(".dropdown-btn");
                     const dropMenu = dropdown.querySelector(".dropdown-menu");
-                    
+
                     if (dropBtn && dropMenu) {
                         dropBtn.addEventListener("click", (e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            
+
                             // Close other filter dropdowns
                             filterDropdowns.forEach((otherDropdown) => {
                                 if (otherDropdown !== dropdown) {
                                     otherDropdown.classList.remove("active");
                                 }
                             });
-                            
+
                             // Toggle current dropdown
                             dropdown.classList.toggle("active");
                         });
@@ -2608,6 +2620,5 @@
         <script src="js/firebase-config.js"></script>
         <script src="js/database-groups.js"></script>
         <script src="js/main.js"></script>
-
     </body>
 </html>
