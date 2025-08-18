@@ -194,22 +194,72 @@ async function loadFirebaseGroups(container) {
             return;
         }
         
-        // Get all groups from Firebase with timeout handling
+        // Get all groups from Firebase with multiple approaches
         let snapshot;
-        try {
-            console.log('📡 Fetching groups from Firebase collection...');
-            snapshot = await Promise.race([
-                db.collection('groups').orderBy('timestamp', 'desc').limit(50).get(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase timeout')), 10000))
-            ]);
-        } catch (timeoutError) {
-            console.warn('⏱️ Firebase query timeout, trying without ordering:', timeoutError);
-            // Try without ordering if timeout
-            snapshot = await db.collection('groups').limit(50).get();
+        console.log('📡 Trying multiple Firebase queries...');
+        
+        // Try different collection names and query approaches
+        const queries = [
+            () => db.collection('groups').get(),
+            () => db.collection('Groups').get(), 
+            () => db.collection('group').get(),
+            () => db.collection('whatsappGroups').get(),
+            () => db.collection('whatsapp-groups').get()
+        ];
+        
+        for (let i = 0; i < queries.length; i++) {
+            try {
+                console.log(`🔍 Trying query ${i + 1}...`);
+                snapshot = await queries[i]();
+                if (!snapshot.empty) {
+                    console.log(`✅ Found groups with query ${i + 1}: ${snapshot.size} documents`);
+                    break;
+                }
+            } catch (error) {
+                console.log(`❌ Query ${i + 1} failed:`, error.message);
+            }
         }
         
-        if (snapshot.empty) {
-            console.log('📭 No Firebase groups found');
+        if (!snapshot || snapshot.empty) {
+            console.log('📭 No Firebase groups found in any collection');
+            console.log('🔧 Let me try a direct REST API approach...');
+            
+            // Try direct REST API as last resort
+            try {
+                const apiKey = 'AIzaSyAOUI5JCbOa3ZnsZ_wXRFjv3-QfY0L8v-0';
+                const restUrl = `https://firestore.googleapis.com/v1/projects/linkshare-5635c/databases/(default)/documents/groups?key=${apiKey}`;
+                const restResponse = await fetch(restUrl);
+                const restData = await restResponse.json();
+                
+                console.log('📊 REST API response:', restData);
+                
+                if (restData.documents && restData.documents.length > 0) {
+                    console.log(`🎯 Found ${restData.documents.length} groups via REST API!`);
+                    
+                    // Convert REST format to our format
+                    const groups = restData.documents.map(doc => {
+                        const fields = doc.fields || {};
+                        return {
+                            id: doc.name.split('/').pop(),
+                            title: fields.title?.stringValue || fields.name?.stringValue || 'WhatsApp Group',
+                            description: fields.description?.stringValue || fields.desc?.stringValue || '',
+                            category: fields.category?.stringValue || fields.topic?.stringValue || 'General',
+                            country: fields.country?.stringValue || fields.location?.stringValue || 'Global',
+                            group_url: fields.link?.stringValue || fields.group_url?.stringValue || fields.url?.stringValue || '',
+                            image_url: fields.image?.stringValue || fields.image_url?.stringValue || 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
+                            views: fields.views?.integerValue || Math.floor(Math.random() * 1000) + 100,
+                            timestamp: fields.timestamp?.timestampValue,
+                            created_at: fields.timestamp?.timestampValue
+                        };
+                    });
+                    
+                    renderGroupsInstantly(groups, container);
+                    return;
+                }
+            } catch (restError) {
+                console.error('❌ REST API also failed:', restError);
+            }
+            
             showFallbackGroups(container);
             return;
         }
