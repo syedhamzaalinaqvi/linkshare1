@@ -45,24 +45,15 @@ async function loadGroupsFast() {
             return;
         }
         
-        console.log('📡 Database empty, trying Firebase...');
+        console.log('📡 Database empty, showing empty state...');
         
-        // Database empty or failed, try Firebase
-        if (window.firebase && window.firebase.apps && window.firebase.apps.length > 0) {
-            await loadFirebaseGroups(groupsGrid);
-        } else {
-            // Firebase not ready, show fallback
-            showFallbackGroups(groupsGrid);
-        }
+        // Show empty state instead of trying Firebase
+        showEmptyState(groupsGrid);
         
     } catch (error) {
         console.error('❌ Fast loader error:', error);
-        // Try Firebase on any error
-        if (window.firebase && window.firebase.apps && window.firebase.apps.length > 0) {
-            await loadFirebaseGroups(groupsGrid);
-        } else {
-            showFallbackGroups(groupsGrid);
-        }
+        // Show error state instead of trying Firebase
+        showErrorState(groupsGrid);
     }
 }
 
@@ -198,19 +189,34 @@ async function loadFirebaseGroups(container) {
     }
 }
 
-// Show fallback groups when all else fails
-function showFallbackGroups(container) {
+// Show empty state when no groups in database
+function showEmptyState(container) {
     container.innerHTML = `
         <div class="no-groups-message">
             <div class="no-groups-icon">📱</div>
             <h3>No Groups Available</h3>
-            <p>Groups are loading... Please refresh the page or check back later.</p>
+            <p>No WhatsApp groups have been added yet. Be the first to add a group!</p>
+            <a href="/add-group" class="refresh-btn">
+                <i class="fas fa-plus"></i> Add First Group
+            </a>
+        </div>
+    `;
+    console.log('📝 Showing empty state');
+}
+
+// Show error state when loading fails
+function showErrorState(container) {
+    container.innerHTML = `
+        <div class="no-groups-message">
+            <div class="no-groups-icon">⚠️</div>
+            <h3>Loading Error</h3>
+            <p>There was a problem loading groups. Please try refreshing the page.</p>
             <button onclick="window.location.reload()" class="refresh-btn">
                 <i class="fas fa-refresh"></i> Refresh Page
             </button>
         </div>
     `;
-    console.log('📝 Showing fallback message');
+    console.log('📝 Showing error state');
 }
 
 // Initialize fast loading on page load
