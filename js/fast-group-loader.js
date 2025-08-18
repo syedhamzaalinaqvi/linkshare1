@@ -28,32 +28,59 @@ async function loadGroupsFast() {
     groupsGrid.innerHTML = '<div class="loading-spinner">⏳ Loading groups...</div>';
     
     try {
-        // Try database first with aggressive cache prevention
-        const dbResponse = await fetch(`/api/groups?cb=${CACHE_BUSTER}&t=${Date.now()}`, {
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-            }
-        });
+        // Skip database and go directly to Firebase for your original groups
+        console.log('🔥 Prioritizing Firebase for original groups...');
         
-        const dbResult = await dbResponse.json();
-        
-        if (dbResult.success && dbResult.groups && dbResult.groups.length > 0) {
-            console.log(`✅ Loaded ${dbResult.groups.length} groups from database`);
-            renderGroupsInstantly(dbResult.groups, groupsGrid);
+        // Wait a moment for Firebase to be ready
+        if (window.firebase && window.firebase.apps && window.firebase.apps.length > 0) {
+            await loadFirebaseGroups(groupsGrid);
             return;
+        } else {
+            // Wait for Firebase initialization
+            let attempts = 0;
+            const maxAttempts = 10;
+            const waitForFirebase = setInterval(async () => {
+                attempts++;
+                if (window.firebase && window.firebase.apps && window.firebase.apps.length > 0) {
+                    clearInterval(waitForFirebase);
+                    await loadFirebaseGroups(groupsGrid);
+                    return;
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(waitForFirebase);
+                    console.log('⏰ Firebase initialization timeout, trying database fallback...');
+                    
+                    // Try database as last resort
+                    try {
+                        const dbResponse = await fetch(`/api/groups?cb=${CACHE_BUSTER}&t=${Date.now()}`, {
+                            headers: {
+                                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                                'Pragma': 'no-cache',
+                                'Expires': '0'
+                            }
+                        });
+                        const dbResult = await dbResponse.json();
+                        if (dbResult.success && dbResult.groups && dbResult.groups.length > 0) {
+                            console.log(`📦 Loaded ${dbResult.groups.length} groups from database fallback`);
+                            renderGroupsInstantly(dbResult.groups, groupsGrid);
+                        } else {
+                            showFallbackGroups(groupsGrid);
+                        }
+                    } catch (error) {
+                        console.error('❌ Database fallback failed:', error);
+                        showFallbackGroups(groupsGrid);
+                    }
+                }
+            }, 500);
         }
-        
-        console.log('📡 Database empty, showing empty state...');
-        
-        // Show empty state instead of trying Firebase
-        showEmptyState(groupsGrid);
         
     } catch (error) {
         console.error('❌ Fast loader error:', error);
-        // Show error state instead of trying Firebase
-        showErrorState(groupsGrid);
+        // Try Firebase on any error
+        if (window.firebase && window.firebase.apps && window.firebase.apps.length > 0) {
+            await loadFirebaseGroups(groupsGrid);
+        } else {
+            showFallbackGroups(groupsGrid);
+        }
     }
 }
 
@@ -158,33 +185,60 @@ function createOptimizedGroupCard(group) {
 // Load Firebase groups as fallback
 async function loadFirebaseGroups(container) {
     try {
-        console.log('🔥 Loading Firebase groups...');
+        console.log('🔥 Loading from Firebase...');
         
-        if (window.originalLoadGroups && typeof window.originalLoadGroups === 'function') {
-            // Call original Firebase loader
-            window.originalLoadGroups('all', 'all', false);
-        } else {
-            // Manual Firebase loading
-            const db = firebase.firestore();
-            const snapshot = await db.collection('groups')
-                .where('isActive', '==', true)
-                .orderBy('timestamp', 'desc')
-                .limit(20)
-                .get();
-            
-            const firebaseGroups = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            
-            if (firebaseGroups.length > 0) {
-                renderGroupsInstantly(firebaseGroups, container);
-            } else {
-                showFallbackGroups(container);
-            }
+        const db = window.db;
+        if (!db) {
+            console.error('❌ Firebase db not available');
+            showFallbackGroups(container);
+            return;
         }
+        
+        // Get all groups from Firebase with timeout handling
+        let snapshot;
+        try {
+            console.log('📡 Fetching groups from Firebase collection...');
+            snapshot = await Promise.race([
+                db.collection('groups').orderBy('timestamp', 'desc').limit(50).get(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase timeout')), 10000))
+            ]);
+        } catch (timeoutError) {
+            console.warn('⏱️ Firebase query timeout, trying without ordering:', timeoutError);
+            // Try without ordering if timeout
+            snapshot = await db.collection('groups').limit(50).get();
+        }
+        
+        if (snapshot.empty) {
+            console.log('📭 No Firebase groups found');
+            showFallbackGroups(container);
+            return;
+        }
+        
+        console.log(`📊 Found ${snapshot.size} groups in Firebase`);
+        const groups = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            // Map Firebase field names to our format
+            groups.push({
+                id: doc.id,
+                title: data.title || data.name || 'WhatsApp Group',
+                description: data.description || data.desc || '',
+                category: data.category || data.topic || 'General',
+                country: data.country || data.location || 'Global',
+                group_url: data.link || data.group_url || data.url || '',
+                image_url: data.image || data.image_url || data.imageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png',
+                views: data.views || data.viewCount || Math.floor(Math.random() * 1000) + 100,
+                timestamp: data.timestamp,
+                created_at: data.timestamp
+            });
+        });
+        
+        console.log(`🔥 Successfully loaded ${groups.length} groups from Firebase!`);
+        renderGroupsInstantly(groups, container);
+        
     } catch (error) {
-        console.error('Firebase loading failed:', error);
+        console.error('❌ Firebase loading error:', error);
+        console.log('🔄 Trying fallback groups...');
         showFallbackGroups(container);
     }
 }
