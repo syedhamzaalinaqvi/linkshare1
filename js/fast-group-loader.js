@@ -84,80 +84,53 @@ async function loadGroupsFast() {
     }
 }
 
-// Render groups instantly with optimized performance
+// Render groups instantly without any delays
 function renderGroupsInstantly(groups, container) {
-    // Clear loading state immediately
+    console.log(`🎯 Starting to render ${groups.length} groups to container:`, container);
+    
+    // Clear loading state
     container.innerHTML = '';
     
-    // Set container styles once
-    container.style.cssText = `
-        min-height: 400px;
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.5rem;
-        visibility: visible;
-        opacity: 1;
-        width: 100%;
-        padding: 1rem 0;
-    `;
+    // Add visible debug info
+    container.style.minHeight = '400px';
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+    container.style.gap = '1.5rem';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
+    container.style.width = '100%';
+    container.style.padding = '1rem 0';
     
-    // Create document fragment for batch DOM updates
-    const fragment = document.createDocumentFragment();
-    
-    // Render first 12 groups immediately for instant display
-    const initialGroups = groups.slice(0, 12);
-    const remainingGroups = groups.slice(12);
-    
-    // Add initial groups synchronously
-    initialGroups.forEach(group => {
+    groups.forEach((group, index) => {
+        console.log(`🔧 Creating card ${index + 1} for group:`, group.title);
         const card = createOptimizedGroupCard(group);
-        fragment.appendChild(card);
+        container.appendChild(card);
+        
+        // Debug each card
+        console.log(`✅ Added card ${index + 1} to container`);
+        
+        // Animate in batches for better performance
+        if (index % 4 === 0) {
+            requestAnimationFrame(() => {
+                // Allow other operations to continue
+            });
+        }
     });
     
-    // Add to DOM once
-    container.appendChild(fragment);
-    
-    // Load remaining groups asynchronously in batches
-    if (remainingGroups.length > 0) {
-        setTimeout(() => {
-            loadRemainingGroupsInBatches(remainingGroups, container);
-        }, 50);
-    }
-    
-    console.log(`🎯 Rendered ${initialGroups.length} groups instantly, loading ${remainingGroups.length} more...`);
-}
-
-// Load remaining groups in small batches for smooth performance
-function loadRemainingGroupsInBatches(groups, container) {
-    const batchSize = 20;
-    let currentIndex = 0;
-    
-    function loadBatch() {
-        const batch = groups.slice(currentIndex, currentIndex + batchSize);
-        if (batch.length === 0) return;
-        
-        const fragment = document.createDocumentFragment();
-        batch.forEach(group => {
-            const card = createOptimizedGroupCard(group);
-            fragment.appendChild(card);
-        });
-        
-        container.appendChild(fragment);
-        currentIndex += batchSize;
-        
-        // Continue with next batch
-        if (currentIndex < groups.length) {
-            requestAnimationFrame(loadBatch);
-        }
-    }
-    
-    loadBatch();
+    // Final verification
+    console.log(`🎯 Rendered ${groups.length} groups instantly. Container children:`, container.children.length);
+    console.log('📦 Container element:', container);
+    console.log('🎨 Container styles:', window.getComputedStyle(container));
 }
 
 // Create optimized group card for fast rendering
 function createOptimizedGroupCard(group) {
+    console.log('🏗️ Creating card for:', group.title);
     const card = document.createElement('div');
     card.className = 'group-card fast-loaded';
+    card.style.display = 'block';
+    card.style.visibility = 'visible';
+    card.style.opacity = '1';
     card.setAttribute('data-category', (group.category || 'general').toLowerCase());
     card.setAttribute('data-country', (group.country || 'global').toLowerCase());
     
@@ -389,45 +362,7 @@ function timeAgo(date) {
 // Add to window for external access
 window.loadGroupsFast = loadGroupsFast;
 
-// Override the default loadGroups function to work with filters
-window.loadGroups = function(topic = 'all', country = 'all', loadMore = false) {
-    console.log(`🔍 Filter loading: topic=${topic}, country=${country}`);
-    
-    const groupsGrid = document.getElementById('groupsGrid') || document.querySelector('.groups-grid');
-    if (!groupsGrid) return;
-    
-    // Get all currently loaded groups
-    const allCards = Array.from(groupsGrid.querySelectorAll('.group-card'));
-    
-    // Filter groups based on topic and country
-    allCards.forEach(card => {
-        const cardCategory = card.getAttribute('data-category') || 'general';
-        const cardCountry = card.getAttribute('data-country') || 'global';
-        
-        let showCard = true;
-        
-        // Topic filter
-        if (topic !== 'all') {
-            showCard = showCard && (cardCategory.toLowerCase() === topic.toLowerCase());
-        }
-        
-        // Country filter
-        if (country !== 'all') {
-            showCard = showCard && (cardCountry.toLowerCase() === country.toLowerCase());
-        }
-        
-        // Show/hide card
-        if (showCard) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-    
-    // Update visible count
-    const visibleCards = allCards.filter(card => card.style.display !== 'none');
-    console.log(`📊 Filtered: ${visibleCards.length}/${allCards.length} groups visible`);
-};
+
 window.timeAgo = timeAgo;
 
 console.log('⚡ Fast Group Loader initialized');
