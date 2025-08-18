@@ -10,10 +10,18 @@ const CACHE_BUSTER = Date.now();
 async function loadGroupsFast() {
     console.log('🚀 Fast loader starting...');
     
-    const groupsGrid = document.getElementById('groupsGrid') || document.querySelector('.groups-grid');
+    let groupsGrid = document.getElementById('groupsGrid');
     if (!groupsGrid) {
-        console.warn('Groups grid not found');
-        return;
+        groupsGrid = document.querySelector('.groups-grid');
+    }
+    if (!groupsGrid) {
+        console.error('❌ Groups grid not found - creating one');
+        // Create the grid if it doesn't exist
+        const container = document.querySelector('.container') || document.querySelector('main') || document.body;
+        groupsGrid = document.createElement('div');
+        groupsGrid.id = 'groupsGrid';
+        groupsGrid.className = 'groups-grid';
+        container.appendChild(groupsGrid);
     }
     
     // Clear any existing content immediately
@@ -60,12 +68,28 @@ async function loadGroupsFast() {
 
 // Render groups instantly without any delays
 function renderGroupsInstantly(groups, container) {
+    console.log(`🎯 Starting to render ${groups.length} groups to container:`, container);
+    
     // Clear loading state
     container.innerHTML = '';
     
+    // Add visible debug info
+    container.style.minHeight = '400px';
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+    container.style.gap = '1.5rem';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
+    container.style.width = '100%';
+    container.style.padding = '1rem 0';
+    
     groups.forEach((group, index) => {
+        console.log(`🔧 Creating card ${index + 1} for group:`, group.title);
         const card = createOptimizedGroupCard(group);
         container.appendChild(card);
+        
+        // Debug each card
+        console.log(`✅ Added card ${index + 1} to container`);
         
         // Animate in batches for better performance
         if (index % 4 === 0) {
@@ -75,13 +99,20 @@ function renderGroupsInstantly(groups, container) {
         }
     });
     
-    console.log(`🎯 Rendered ${groups.length} groups instantly`);
+    // Final verification
+    console.log(`🎯 Rendered ${groups.length} groups instantly. Container children:`, container.children.length);
+    console.log('📦 Container element:', container);
+    console.log('🎨 Container styles:', window.getComputedStyle(container));
 }
 
 // Create optimized group card for fast rendering
 function createOptimizedGroupCard(group) {
+    console.log('🏗️ Creating card for:', group.title);
     const card = document.createElement('div');
     card.className = 'group-card fast-loaded';
+    card.style.display = 'block';
+    card.style.visibility = 'visible';
+    card.style.opacity = '1';
     card.setAttribute('data-category', (group.category || 'general').toLowerCase());
     card.setAttribute('data-country', (group.country || 'global').toLowerCase());
     
