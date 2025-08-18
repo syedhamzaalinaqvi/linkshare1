@@ -340,10 +340,20 @@ def get_groups():
     """Get all WhatsApp groups from database"""
     try:
         groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).all()
-        return jsonify([group.to_dict() for group in groups])
+        groups_data = [group.to_dict() for group in groups]
+        return jsonify({
+            'success': True,
+            'groups': groups_data,
+            'count': len(groups_data)
+        })
     except Exception as e:
         logger.error(f"Error getting groups: {e}")
-        return jsonify([])
+        return jsonify({
+            'success': False,
+            'groups': [],
+            'count': 0,
+            'error': str(e)
+        })
 
 @app.route('/api/groups', methods=['POST'])
 def add_group():

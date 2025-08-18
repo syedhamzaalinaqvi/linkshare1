@@ -11,7 +11,7 @@ async function loadDatabaseGroups() {
     try {
         console.log('[DB] Loading groups from database...');
         
-        const response = await fetch('/api/groups');
+        const response = await fetch('/api/groups?t=' + Date.now()); // Add timestamp to prevent caching
         const result = await response.json();
         
         if (result.success && result.groups && result.groups.length > 0) {
@@ -21,27 +21,32 @@ async function loadDatabaseGroups() {
             // If we're on the homepage, render the groups immediately  
             if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
                 renderDatabaseGroups(result.groups);
+                return result.groups;
             }
             
             return result.groups;
         } else {
             console.log('[DB] No database groups found, loading Firebase groups immediately');
             window.databaseGroups = [];
-            // Trigger Firebase loading immediately when database is empty
-            setTimeout(() => {
-                if (window.originalLoadGroups) {
-                    console.log('[DB] Calling Firebase loadGroups after database check');
-                    // Use current filter state if available, otherwise use defaults
-                    const currentTopic = window.currentTopic || 'all';
-                    const currentCountry = window.currentCountry || 'all';
-                    window.originalLoadGroups(currentTopic, currentCountry, false);
-                }
-            }, 100);
+            // Trigger Firebase loading immediately when database is empty - no delay
+            if (window.originalLoadGroups) {
+                console.log('[DB] Calling Firebase loadGroups after database check');
+                const currentTopic = window.currentTopic || 'all';
+                const currentCountry = window.currentCountry || 'all';
+                window.originalLoadGroups(currentTopic, currentCountry, false);
+            }
             return [];
         }
         
     } catch (error) {
         console.error('[DB] Error loading groups:', error);
+        // On error, immediately try Firebase
+        if (window.originalLoadGroups) {
+            console.log('[DB] Database error, falling back to Firebase');
+            const currentTopic = window.currentTopic || 'all';
+            const currentCountry = window.currentCountry || 'all';
+            window.originalLoadGroups(currentTopic, currentCountry, false);
+        }
         return [];
     }
 }
@@ -81,10 +86,11 @@ function renderDatabaseGroups(groups) {
     groupsGrid.innerHTML = '';
     
     if (groups.length === 0) {
+        // Show loading message instead of empty state
+        groupsGrid.innerHTML = '<div class="loading-message">Loading groups...</div>';
         console.log('[DB] No database groups found, loading Firebase groups immediately');
         // Database is empty, load Firebase groups right away
         if (window.originalLoadGroups) {
-            // Use current filter state if available, otherwise use defaults
             const currentTopic = window.currentTopic || 'all';
             const currentCountry = window.currentCountry || 'all';
             window.originalLoadGroups(currentTopic, currentCountry, false);
