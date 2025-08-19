@@ -166,9 +166,28 @@ async function loadGroups(
         }
         query = query.limit(12);
 
-        // Execute query
-        const querySnapshot = await query.get();
-        console.log(`📦 Loaded ${querySnapshot.docs.length} groups from Firebase`);
+        // Execute query with better timeout and source handling
+        console.log('🔄 Executing Firebase query...');
+        let querySnapshot;
+        try {
+            // Try server first with 8 second timeout
+            querySnapshot = await Promise.race([
+                query.get({ source: 'server' }),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Server timeout')), 8000)
+                )
+            ]);
+            console.log(`📦 Loaded ${querySnapshot.docs.length} groups from Firebase server`);
+        } catch (serverError) {
+            console.warn('⚠️ Server failed, trying cache:', serverError.message);
+            try {
+                querySnapshot = await query.get({ source: 'cache' });
+                console.log(`📂 Loaded ${querySnapshot.docs.length} groups from Firebase cache`);
+            } catch (cacheError) {
+                console.error('❌ Both server and cache failed:', cacheError);
+                throw new Error('Firebase completely unavailable');
+            }
+        }
 
         // Process results
         const groups = [];
