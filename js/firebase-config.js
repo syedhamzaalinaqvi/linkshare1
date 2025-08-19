@@ -62,15 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log("Firebase initialized successfully and global functions set");
         
-        // If we're on the home page, start loading groups immediately with current filters
-        if (document.querySelector('.groups-grid') && typeof loadGroups === 'function') {
-            setTimeout(() => {
-                // Use current filter state if available, otherwise use defaults
-                const currentTopic = window.currentTopic || 'all';
-                const currentCountry = window.currentCountry || 'all';
-                loadGroups(currentTopic, currentCountry);
-            }, 100);
-        }
+        // Initialize loading when DOM is ready - but don't auto-load to prevent conflicts
+        console.log("Firebase initialized - ready for manual loading");
     } catch (error) {
         console.error("Error initializing Firebase:", error);
         // Display error in UI if possible

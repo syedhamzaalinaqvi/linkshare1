@@ -1,10 +1,4 @@
-// Global variables
-const POSTS_PER_PAGE = 12;
-let lastDoc = null;
-let isLastPage = false;
-const groupContainer = document.querySelector(".groups-grid");
-const loadMoreBtn = document.querySelector("#loadMoreBtn");
-const searchInput = document.querySelector("#searchGroups");
+// Global variables - using unified loader
 let currentTopic = "all";
 let currentCountry = "all";
 
@@ -103,199 +97,22 @@ function createGroupCard(group) {
     return card;
 }
 
-// Function to update load more button visibility
+// Function to update load more button visibility - kept for compatibility
 function updateLoadMoreButton(totalGroups) {
-    if (loadMoreBtn) {
-        if (isLastPage || totalGroups < POSTS_PER_PAGE) {
-            loadMoreBtn.style.display = "none";
-        } else {
-            loadMoreBtn.style.display = "block";
-        }
-    }
+    // This is now handled by the unified loader but kept for compatibility
+    console.log('Load more button update handled by unified loader');
 }
 
-// Function to load groups
+// Function to load groups - now uses unified loader
 function loadGroups(
-    filterTopic = "all",
+    filterTopic = "all", 
     filterCountry = "all",
     loadMore = false,
 ) {
-    if (!groupContainer) return;
+    // Use the unified loader instead
+    return loadGroupsUnified(filterTopic, filterCountry, loadMore);
 
-    // Check if Firebase is initialized
-    if (!window.db) {
-        console.log("Firebase not initialized yet. Waiting...");
-        // Show loading message
-        groupContainer.innerHTML =
-            '<div class="loading">Connecting to database...</div>';
 
-        // Try again in 1 second
-        setTimeout(() => {
-            loadGroups(filterTopic, filterCountry, loadMore);
-        }, 1000);
-        return;
-    }
-
-    try {
-        console.log("Loading groups with filters:", {
-            filterTopic,
-            filterCountry,
-        });
-
-        if (!loadMore) {
-            // Display skeleton loading cards
-            groupContainer.innerHTML = "";
-            for (let i = 0; i < 6; i++) {
-                groupContainer.innerHTML += createLoadingSkeleton();
-            }
-            lastDoc = null;
-            isLastPage = false;
-        }
-
-        // Create base query
-        let baseQuery = window.db.collection("groups");
-
-        // For queries with filters, we'll use a different approach to avoid index issues
-        const hasTopicFilter = filterTopic && filterTopic !== "all";
-        const hasCountryFilter = filterCountry && filterCountry !== "all";
-
-        // First get all groups and apply filter in memory if using advanced filtering
-        if (
-            (hasTopicFilter && hasCountryFilter) ||
-            (hasTopicFilter && !hasCountryFilter) ||
-            (!hasTopicFilter && hasCountryFilter)
-        ) {
-            // Fetch all groups with a limit and apply filters in memory
-            baseQuery = baseQuery.orderBy("timestamp", "desc");
-
-            if (lastDoc && loadMore) {
-                baseQuery = baseQuery
-                    .startAfter(lastDoc)
-                    .limit(POSTS_PER_PAGE * 3); // Get more to ensure we have enough after filtering
-            } else {
-                baseQuery = baseQuery.limit(POSTS_PER_PAGE * 3); // Get more to ensure we have enough after filtering
-            }
-        } else {
-            // No filters, just apply ordering and pagination
-            baseQuery = baseQuery.orderBy("timestamp", "desc");
-
-            if (lastDoc && loadMore) {
-                baseQuery = baseQuery.startAfter(lastDoc).limit(POSTS_PER_PAGE);
-            } else {
-                baseQuery = baseQuery.limit(POSTS_PER_PAGE);
-            }
-        }
-
-        // Add cache settings to improve performance
-        const queryOptions = {
-            source: "default", // Use cache if available but verify with server
-        };
-
-        // Execute query with cache options
-        baseQuery
-            .get(queryOptions)
-            .then((querySnapshot) => {
-                // Clear container if not loading more
-                if (!loadMore) {
-                    groupContainer.innerHTML = "";
-                }
-
-                // Create array of groups
-                let groups = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    groups.push({
-                        id: doc.id,
-                        ...data,
-                    });
-                });
-
-                // Apply filters in memory since we've already fetched the data
-                const hasTopicFilter = filterTopic && filterTopic !== "all";
-                const hasCountryFilter =
-                    filterCountry && filterCountry !== "all";
-
-                // Apply category filter if needed
-                if (hasTopicFilter) {
-                    groups = groups.filter(
-                        (group) => group.category === filterTopic,
-                    );
-                }
-
-                // Apply country filter if needed
-                if (hasCountryFilter) {
-                    groups = groups.filter(
-                        (group) => group.country === filterCountry,
-                    );
-                }
-
-                // Limit the results to POSTS_PER_PAGE
-                const limitedGroups = groups.slice(0, POSTS_PER_PAGE);
-
-                // Show no results message if needed
-                if (limitedGroups.length === 0) {
-                    if (!loadMore) {
-                        groupContainer.innerHTML =
-                            '<div class="no-groups">No groups found matching your criteria</div>';
-                    }
-                    isLastPage = true;
-                    updateLoadMoreButton(0);
-                    return;
-                }
-
-                // Store the last document for pagination
-                if (querySnapshot.docs.length > 0) {
-                    lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-                }
-
-                // Check if this is the last page but always show the button initially
-                isLastPage = groups.length < POSTS_PER_PAGE; // More accurate last page check
-
-                // Apply search filter if needed
-                const searchTerm = searchInput?.value.toLowerCase();
-                if (searchTerm) {
-                    groups = limitedGroups.filter(
-                        (group) =>
-                            (group.title || "")
-                                .toLowerCase()
-                                .includes(searchTerm) ||
-                            (group.description || "")
-                                .toLowerCase()
-                                .includes(searchTerm),
-                    );
-                } else {
-                    groups = limitedGroups;
-                }
-
-                // Render groups efficiently
-                const fragment = document.createDocumentFragment();
-                groups.forEach((group) => {
-                    const card = createGroupCard(group);
-                    fragment.appendChild(card);
-                });
-                groupContainer.appendChild(fragment);
-
-                // Update load more button visibility
-                updateLoadMoreButton(groups.length);
-
-                console.log(`Rendered ${groups.length} groups`);
-            })
-            .catch((error) => {
-                console.error("Error loading groups:", error);
-                groupContainer.innerHTML = `<div class="error">
-                <p>Error loading groups: ${error.message}</p>
-                <button onclick="location.reload()" class="submit-btn">Retry</button>
-            </div>`;
-                updateLoadMoreButton(0);
-            });
-    } catch (error) {
-        console.error("Error loading groups:", error);
-        groupContainer.innerHTML = `<div class="error">
-            <p>Error loading groups: ${error.message}</p>
-            <button onclick="location.reload()" class="submit-btn">Retry</button>
-        </div>`;
-        updateLoadMoreButton(0);
-    }
 }
 
 // Event Listeners
@@ -313,14 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Check if database has priority - but still initialize app
-    if (window.databasePriority || window.databaseGroupsLoaded) {
-        console.log('[MAIN] Database has priority, but initializing app for fallback');
-        initializeApp();
-        // Don't return - let Firebase initialize as fallback
-    }
-    
-    // Start initialization process only if database groups haven't loaded
+    // Initialize app immediately
     setTimeout(checkFirebaseAndInitialize, 100);
 
     // Main app initialization
@@ -347,31 +157,25 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Initial load will be triggered by firebase-config.js when ready
+        // Load groups on initial page load
+        if (document.querySelector('.groups-grid')) {
+            console.log('🚀 Starting initial group load...');
+            setTimeout(() => {
+                loadGroupsUnified('all', 'all', false);
+            }, 200);
+        }
 
         // Load More button click handler with enhanced animation
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener("click", (e) => {
                 // Add loading class for animation
                 loadMoreBtn.classList.add("loading");
-                loadMoreBtn.innerHTML =
-                    '<i class="fas fa-sync"></i> Loading...';
+                loadMoreBtn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Loading...';
+                loadMoreBtn.disabled = true;
 
-                // Add a click animation
-                loadMoreBtn.style.transform = "scale(0.95)";
-
-                // Load content with minimal delay
-                setTimeout(() => {
-                    loadGroups(currentTopic, currentCountry, true);
-
-                    // Reset button after loading
-                    setTimeout(() => {
-                        loadMoreBtn.style.transform = "scale(1)";
-                        loadMoreBtn.classList.remove("loading");
-                        loadMoreBtn.innerHTML =
-                            '<i class="fas fa-sync"></i> Load More';
-                    }, 300);
-                }, 300);
+                // Use unified loader for load more
+                loadGroupsUnified(currentTopic, currentCountry, true);
             });
         }
 
@@ -390,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Update state and load groups
                 currentTopic = category;
                 window.currentTopic = category; // Store globally for Firebase config
-                loadGroups(category, currentCountry);
+                loadGroupsUnified(category, currentCountry, false);
 
                 // Update dropdown to match selected category
                 const dropdownBtn = document
@@ -438,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Update state and load groups
                     currentTopic = category;
                     window.currentTopic = category; // Store globally for Firebase config
-                    loadGroups(category, currentCountry);
+                    loadGroupsUnified(category, currentCountry, false);
 
                     // Close dropdown
                     btn.closest(".dropdown")?.classList.remove("active");
@@ -482,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Update state and load groups
                     currentCountry = country;
                     window.currentCountry = country; // Store globally for Firebase config
-                    loadGroups(currentTopic, country);
+                    loadGroupsUnified(currentTopic, country, false);
 
                     // Close dropdown
                     btn.closest(".dropdown")?.classList.remove("active");
@@ -520,11 +324,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Search input listener
+        const searchInput = document.getElementById('searchInput') || document.getElementById('searchGroups');
         if (searchInput) {
             searchInput.addEventListener(
                 "input",
                 debounce(() => {
-                    loadGroups(currentTopic, currentCountry);
+                    loadGroupsUnified(currentTopic, currentCountry, false);
                 }, 300),
             );
         }
@@ -1042,7 +847,7 @@ function showErrorState(message) {
         <div class="error-state" role="alert">
             <i class="fas fa-exclamation-circle"></i>
             <p>${message}</p>
-            <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
+            <button onclick="loadGroupsUnified(currentTopic, currentCountry, false)" class="retry-btn">
                 <i class="fas fa-redo"></i> Try Again
             </button>
         </div>
