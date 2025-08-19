@@ -154,8 +154,23 @@ async function loadGroupsUnified(topic = 'all', country = 'all', loadMore = fals
                 const data = await response.json();
                 if (data.groups && data.groups.length > 0) {
                     console.log(`📦 Loaded ${data.groups.length} groups from local API`);
-                    renderGroupsClean(data.groups, groupContainer, true);
-                    updateLoadMoreButton(data.groups.length);
+                    
+                    // Transform API data to match frontend expectations
+                    const transformedGroups = data.groups.map(group => ({
+                        id: group.id,
+                        title: group.title,
+                        description: group.description,
+                        link: group.group_url, // API uses group_url, frontend expects link
+                        image: group.image_url, // API uses image_url, frontend expects image
+                        category: group.category,
+                        country: group.country,
+                        views: group.member_count || 0, // Use member_count as views
+                        timestamp: group.created_at ? new Date(group.created_at) : new Date()
+                    }));
+                    
+                    console.log(`🔧 Transformed ${transformedGroups.length} groups for display`);
+                    renderGroupsClean(transformedGroups, groupContainer, true);
+                    updateLoadMoreButton(transformedGroups.length);
                     return;
                 }
             }
@@ -198,6 +213,7 @@ async function loadGroupsUnified(topic = 'all', country = 'all', loadMore = fals
             }
         ];
         
+        console.log(`🔧 Showing ${fallbackGroups.length} fallback groups`);
         renderGroupsClean(fallbackGroups, groupContainer, true);
         updateLoadMoreButton(fallbackGroups.length);
         
