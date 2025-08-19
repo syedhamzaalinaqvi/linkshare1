@@ -100,7 +100,9 @@ body {
 .nav-links a.active {
     color: var(--primary-color);
     background: rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid var(--primary-color) #25D366;
+    border-bottom: 1px solid var(--primary-color)
+#25D366
+;
     /* Optional: Adds a hover effect */
 }
 
@@ -196,7 +198,6 @@ body {
     color: var(--primary-color);
     transform: translateY(-2px);
 }
-
 /*all page header============*/
 .page-header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -372,612 +373,63 @@ select:focus {
 }
 
 
-/* Main grid container with overflow prevention */
 .groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(auto, 1fr)) !important;
+    gap: 2rem;
     padding: 1rem 0;
     width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
 }
 
-/* Ensure all grid items have equal width */
-.groups-grid > .group-card {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
+/* Force grid layout at different screen sizes */
+@media (min-width: 768px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
 }
 
-/* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(3, 1fr) !important;
     }
 }
 
-/* Medium devices (tablets, 768px to 991px) */
-@media (min-width: 768px) and (max-width: 991px) {
+@media (min-width: 1200px) {
     .groups-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1.2rem;
+        grid-template-columns: repeat(4, 1fr) !important;
     }
 }
 
-/* Small tablets (596px to 767px) */
-@media (min-width: 596px) and (max-width: 767px) {
+@media (min-width: 768px) {
     .groups-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-        max-width: 100%;
-        overflow-x: hidden;
     }
 }
 
-/* Mobile devices (up to 595px) - CONSOLIDATED RULE */
-@media screen and (max-width: 595px) {
+@media (min-width: 992px) {
     .groups-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 2px !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-        box-sizing: border-box !important;
-        padding: 1rem 2px !important;
-    }
-    
-    .group-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
-/* Mobile-optimized group card styles - Compact Design */
-@media (max-width: 595px) {
-    .group-card {
-        height: 220px;
-        padding: 0.3rem;
-        display: flex;
-        flex-direction: column;
-        max-width: 340px;
-        margin: 0 auto;
-    }
-
-    .group-card img {
-        height: 40px !important;
-        width: 40px !important;
-        min-height: 40px !important;
-        min-width: 40px !important;
-        max-height: 40px !important;
-        max-width: 40px !important;
-        margin-bottom: 0.2rem;
-        border-radius: 50% !important;
-        align-self: center;
-        object-fit: cover !important;
-        border: 2px solid #25d366 !important;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-        aspect-ratio: 1 / 1 !important;
-    }
-
-    .group-card h3 {
-        font-size: 0.6rem;
-        margin-bottom: 0.15rem;
-        min-height: 1.2em;
-        line-height: 1.1;
-        text-align: center;
-    }
-
-    .group-card p {
-        font-size: 0.5rem;
-        margin-bottom: 5px;
-        line-height: 1.1;
-        -webkit-line-clamp: 2;
-        height: 2.2em;
-        text-align: center;
-    }
-
-    .card-footer {
-        padding: 0.15rem 0.3rem;
-        font-size: 0.4rem;
-        margin-top: 5px;
-        text-align: center;
-    }
-
-    .views-count {
-        font-size: 0.4rem;
-    }
-
-    .join-btn {
-        padding: 0.4rem 0.8rem !important;
-        font-size: 0.6rem !important;
-        border-radius: 20px !important;
-        margin-top: 5px;
-        width: 100% !important;
-        background: linear-gradient(135deg, #25D366, #128C7E) !important;
-        color: white !important;
-        text-decoration: none !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.3px !important;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-        border: none !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .group-badges {
-        gap: 0.15rem;
-        top: 3px;
-        left: 3px;
-        right: 3px;
-        justify-content: center;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.08rem 0.15rem;
-        font-size: 0.35rem;
-        border-radius: 2px;
-    }
-
-    .card-actions {
-        padding: 0 0.3rem 0.3rem 0.3rem;
-    }
-}
-
-/* Extra small mobile optimization (480px to 595px) */
-@media (min-width: 480px) and (max-width: 595px) {
+@media (min-width: 1200px) {
     .groups-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 2px !important;
-        padding: 1rem 2px !important;
+        grid-template-columns: repeat(4, 1fr);
     }
-
-    .group-card {
-        height: 280px;
-        padding: 0.5rem;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box;
-    }
-
-    .group-card img {
-        height: 55px !important;
-        width: 55px !important;
-        min-height: 55px !important;
-        min-width: 55px !important;
-        max-height: 55px !important;
-        max-width: 55px !important;
-        margin-bottom: 0.4rem;
-        align-self: center;
-        border-radius: 50% !important;
-        object-fit: cover !important;
-        border: 2px solid #25d366 !important;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-        aspect-ratio: 1 / 1 !important;
-    }
-
-    .group-card h3 {
-        font-size: 0.8rem;
-        min-height: 1.6em;
-        line-height: 1.2;
-        text-align: center;
-    }
-
-    .group-card p {
-        font-size: 0.65rem;
-        height: 2.4em;
-        -webkit-line-clamp: 2;
-        line-height: 1.2;
-        text-align: center;
-    }
-
-    .join-btn {
-        padding: 0.5rem 1rem !important;
-        font-size: 0.75rem !important;
-        width: 100% !important;
-        border-radius: 25px !important;
-        background: linear-gradient(135deg, #25D366, #128C7E) !important;
-        color: white !important;
-        text-decoration: none !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.3px !important;
-        box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3) !important;
-        border: none !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.1rem 0.25rem;
-        font-size: 0.5rem;
-    }
-
-    .card-actions {
-        padding: 0 0.5rem 0.5rem 0.5rem;
-    }
-
-    .card-footer {
-        font-size: 0.6rem;
-        padding: 0.25rem 0.5rem;
-        text-align: center;
-    }
-}
-
-/* Small mobile devices (up to 479px) */
-@media (max-width: 479px) {
-    .groups-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 2px !important;
-        padding: 1rem 2px !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-    }
-
-    .group-card {
-        height: 250px;
-        padding: 0.4rem;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        margin: 0;
-    }
-
-    .group-card img {
-        height: 45px !important;
-        width: 45px !important;
-        min-height: 45px !important;
-        min-width: 45px !important;
-        max-height: 45px !important;
-        max-width: 45px !important;
-        margin-bottom: 0.3rem;
-        align-self: center;
-        border-radius: 50% !important;
-        object-fit: cover !important;
-        border: 2px solid #25d366 !important;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-        aspect-ratio: 1 / 1 !important;
-    }
-
-    .group-card h3 {
-        font-size: 0.7rem;
-        min-height: 1.4em;
-        line-height: 1.2;
-        text-align: center;
-        margin-bottom: 0.2rem;
-    }
-
-    .group-card p {
-        font-size: 0.55rem;
-        height: 2.2em;
-        -webkit-line-clamp: 2;
-        line-height: 1.1;
-        text-align: center;
-        margin-bottom: 0.3rem;
-    }
-
-    .join-btn {
-        padding: 0.4rem 0.7rem !important;
-        font-size: 0.65rem !important;
-        width: 100% !important;
-        border-radius: 18px !important;
-        background: linear-gradient(135deg, #25D366, #128C7E) !important;
-        color: white !important;
-        text-decoration: none !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.3px !important;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-        border: none !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.08rem 0.2rem;
-        font-size: 0.45rem;
-        margin: 0.05rem 0.1rem 0.05rem 0;
-    }
-
-    .card-actions {
-        padding: 0 0.4rem 0.4rem 0.4rem;
-        margin-top: auto;
-    }
-
-    .card-footer {
-        font-size: 0.5rem;
-        padding: 0.2rem 0.4rem;
-        text-align: center;
-        margin-top: 0.2rem;
-    }
-}
-
-/* Very small devices (up to 380px) */
-@media (max-width: 380px) {
-    .groups-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 2px !important;
-        padding: 1rem 2px !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-    }
-
-    .group-card {
-        height: 220px;
-        padding: 0.3rem;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        margin: 0;
-    }
-
-    .group-card img {
-        height: 35px !important;
-        width: 35px !important;
-        min-height: 35px !important;
-        min-width: 35px !important;
-        max-height: 35px !important;
-        max-width: 35px !important;
-        margin-bottom: 0.2rem;
-        align-self: center;
-        border-radius: 50% !important;
-        object-fit: cover !important;
-        border: 2px solid #25d366 !important;
-        box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-        aspect-ratio: 1 / 1 !important;
-    }
-
-    .group-card h3 {
-        font-size: 0.6rem;
-        min-height: 1.2em;
-        line-height: 1.1;
-        margin-bottom: 0.15rem;
-        text-align: center;
-    }
-
-    .group-card p {
-        font-size: 0.5rem;
-        height: 2em;
-        line-height: 1;
-        margin-bottom: 0.2rem;
-        text-align: center;
-        -webkit-line-clamp: 2;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .join-btn {
-        padding: 0.35rem 0.6rem !important;
-        font-size: 0.55rem !important;
-        width: 100% !important;
-        border-radius: 15px !important;
-        background: linear-gradient(135deg, #25D366, #128C7E) !important;
-        color: white !important;
-        text-decoration: none !important;
-        font-weight: 600 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.2px !important;
-        box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3) !important;
-        border: none !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.05rem 0.1rem;
-        font-size: 0.35rem;
-        margin: 0.05rem 0.1rem 0.05rem 0;
-    }
-
-    .card-actions {
-        padding: 0 0.3rem 0.3rem 0.3rem;
-        margin-top: auto;
-    }
-
-    .card-footer {
-        font-size: 0.4rem;
-        padding: 0.15rem 0.3rem;
-        text-align: center;
-        margin-top: 0.15rem;
-    }
-}
-
-/* Container and body width control to prevent horizontal scrolling */
-.container {
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
-body {
-    max-width: 100%;
-    overflow-x: hidden;
-    box-sizing: border-box;
-}
-
-/* Ensure all group cards have consistent width constraints */
-.group-card {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0;
-}
-
-/* Center-align card content to match centered images */
-.card-title,
-.card-description {
-    text-align: center !important;
-}
-
-.group-card h3,
-.group-card .card-title {
-    text-align: center !important;
-}
-
-.group-card p,
-.group-card .card-description {
-    text-align: center !important;
-}
-
-/* Base styles for all group card images - Perfect circle profile style */
-.group-card img, .card-image img {
-    border-radius: 50% !important;
-    object-fit: cover !important;
-    border: 2px solid #25d366 !important;
-    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-    aspect-ratio: 1 / 1 !important;
-    display: block !important;
-}
-
-.group-card img:hover, .card-image img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-}
-
-/* Desktop and large screen image sizes - Perfect circles */
-@media (min-width: 768px) {
-    .group-card img, .card-image img {
-        height: 70px !important;
-        width: 70px !important;
-        min-height: 70px !important;
-        min-width: 70px !important;
-        max-height: 70px !important;
-        max-width: 70px !important;
-        margin-bottom: 0.5rem;
-        align-self: center;
-    }
-}
-
-/* Fixed Add Group Button at Bottom - Large Centered Mobile Only */
-.fixed-add-group-btn {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #25D366;
-    color: white;
-    border: none;
-    padding: 18px 40px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    text-decoration: none;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-    z-index: 1000;
-    transition: all 0.3s ease;
-    min-width: 200px;
-}
-
-.fixed-add-group-btn:hover {
-    background: #128C7E;
-    transform: translateX(-50%) translateY(-3px);
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
-    color: white;
-    text-decoration: none;
-}
-
-.fixed-add-group-btn i {
-    margin-right: 10px;
-    font-size: 1.2rem;
-}
-
-/* Hide original hero button on mobile */
-@media (max-width: 768px) {
-    .hero-btn {
-        display: none !important;
-    }
-
-    /* Show centered fixed button on mobile */
-    .fixed-add-group-btn {
-        display: flex !important;
-    }
-}
-
-/* Responsive fixed button for smaller screens */
-@media (max-width: 480px) {
-    .fixed-add-group-btn {
-        bottom: 15px;
-        padding: 15px 30px;
-        font-size: 1rem;
-        border-radius: 25px;
-        min-width: 180px;
-    }
-
-    .fixed-add-group-btn i {
-        margin-right: 8px;
-        font-size: 1.1rem;
-    }
-}
-
-/* Tools Section Mobile Responsiveness */
-@media (max-width: 768px) {
-    .tools-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-        gap: 1rem !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .tools-grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
-}
-
-/* Filter Section Loading Fix */
-.filter-section {
-    opacity: 1;
-    visibility: visible;
-    animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; visibility: hidden; }
-    to { opacity: 1; visibility: visible; }
-}
-
-/* Search Box Responsive Fix */
-.search-bar {
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 
 /* Group Card Styles */
 .group-card {
     background: var(--white);
     border-radius: var(--radius);
-    padding: 1rem;
+    padding: 1.5rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
-    height: 350px;
+    height: 450px;
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: visible;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
 }
 
 /* Make sure that the layout is properly structured */
@@ -996,14 +448,13 @@ body {
     align-items: center;
     padding-top: 0.5rem;
     border-top: 1px solid #eee;
-    font-size: 9px;
+    font-size: 0.9rem;
     color: var(--gray);
     position: relative;
     background: var(--white);
-    padding: -0.5rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     z-index: 2;
     margin-top: -2.5rem;
-    bottom: 40px;
 }
 
 .group-card:hover {
@@ -1013,10 +464,10 @@ body {
 
 .group-card img {
     width: 100%;
-    height: 150px;
+    height: 180px;
     object-fit: cover;
     border-radius: var(--radius);
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
     position: relative;
 }
 
@@ -1056,9 +507,9 @@ body {
 }
 
 .group-card h3 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
     color: var(--text-color);
     font-weight: 600;
     display: -webkit-box;
@@ -1066,7 +517,7 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: auto;
-    min-height: 2.6em;
+    min-height: 2.8em;
 }
 
 .group-card p {
@@ -1088,7 +539,7 @@ body {
     padding: 0 1.5rem 1rem 1.5rem;
     position: relative;
     z-index: 2;
-    bottom: 70px;
+    bottom: 0;
     visibility: visible;
     display: block;
 }
@@ -1106,7 +557,7 @@ body {
 
 .filter-section {
     background: white;
-    padding: 30px;
+    padding: 15px;
     border-radius: var(--radius);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
@@ -1117,7 +568,7 @@ body {
     display: flex;
     align-items: center;
     background: var(--bg-light);
-    padding: 5px;
+    padding: 10px;
     border-radius: var(--radius);
     margin-bottom: 15px;
     position: relative;
@@ -1154,8 +605,8 @@ body {
     width: 100%;
     background: var(--bg-light);
     border: none;
-    padding: 10px;
-    font-size: 12px;
+    padding: 12px;
+    font-size: 16px;
     text-align: left;
     border-radius: var(--radius);
     cursor: pointer;
@@ -1175,7 +626,6 @@ body {
     width: 100%;
     display: none;
     z-index: 500;
-    font-size: 12px;
 }
 
 .dropdown-menu li {
@@ -1422,7 +872,11 @@ body {
     padding: 1.5rem;
 }
 
-/* Removed conflicting grid rule - handled by responsive system above */
+.groups-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0rem;
+}
 
 .groups-header {
     flex-direction: column;
@@ -1466,11 +920,28 @@ body {
     font-size: 1rem;
 }
 
-/* Group card base styles are handled above in main section */
+.group-card {
+    height: auto;
+    min-height: 450px;
+    padding-bottom: 4rem;
+}
 
-/* Card actions styles handled in main group card section above */
+.card-actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: var(--white);
+    border-top: 1px solid #eee;
+}
 
-/* Join button styles handled in main section and responsive breakpoints */
+.join-btn {
+    width: 100%;
+    margin: 0;
+    position: relative;
+    z-index: 2;
+}
 
 
 /* Loading Animation */
@@ -1490,86 +961,6 @@ body {
     background-size: 800px 104px;
     padding: 20px;
     text-align: center;
-}
-
-/* Enhanced Loading Styles for Group Image Extraction */
-.loading-preview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 12px;
-    border: 2px dashed #25D366;
-}
-
-.loading-preview p {
-    color: #25D366;
-    font-weight: 500;
-    margin: 0;
-    font-size: 14px;
-}
-
-/* Enhanced Preview Card Styles */
-.link-preview.enhanced {
-    transform: translateY(0);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.link-preview.enhanced:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.2) !important;
-}
-
-.preview-image .image-overlay {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(37, 211, 102, 0.9);
-    color: white;
-    padding: 8px;
-    border-radius: 50%;
-    font-size: 14px;
-    z-index: 2;
-}
-
-.preview-image .image-overlay.error {
-    background: rgba(220, 53, 69, 0.9);
-}
-
-.preview-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-    font-size: 13px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    background: rgba(38, 162, 105, 0.1);
-}
-
-.preview-status.success {
-    color: #26a269;
-    background: rgba(38, 162, 105, 0.1);
-}
-
-.preview-status.error {
-    color: #dc3545;
-    background: rgba(220, 53, 69, 0.1);
-}
-
-.preview-url {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #6c757d;
-    font-size: 12px;
-    margin-top: 8px;
-}
-
-.preview-url i {
-    color: #25D366;
     /*border-radius: 8px;*/
 }
 
@@ -1755,7 +1146,7 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 60px;
+    min-width: 100px;
 
 }
 
@@ -1878,7 +1269,7 @@ select:focus {
     border-radius: var(--radius);
     padding: 1.5rem;
     box-shadow: var(--shadow);
-    min-height: 350px;
+    min-height: 450px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1981,30 +1372,21 @@ select:focus {
     opacity: 1;
 }
 
-/* Fix for card image display - Professional profile style */
+/* Fix for card image display */
 .card-image {
-    height: auto;
-    overflow: visible;
+    height: 200px;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
-    padding: 1rem 0;
+    background-color: #f5f5f5;
 }
 
 .card-image img {
-    width: 70px !important;
-    height: 70px !important;
-    min-width: 70px !important;
-    min-height: 70px !important;
-    max-width: 70px !important;
-    max-height: 70px !important;
-    object-fit: cover !important;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.3s ease;
-    border-radius: 50% !important;
-    border: 2px solid #25d366 !important;
-    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3) !important;
-    aspect-ratio: 1 / 1 !important;
 }
 
 /* Error State Styles */
@@ -2130,7 +1512,7 @@ select:focus {
     .category-badge,
     .country-badge {
         padding: 0.3rem 0.6rem;
-        font-size: 10px;
+        font-size: 0.75rem;
     }
 
     .category-badge i,
@@ -2283,46 +1665,36 @@ select:focus {
         font-size: 0.95rem;
     }
 
+    .groups-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
     .group-card {
-        height: 350px;
-        min-height: 350px;
-        padding: 0.8rem;
+        height: auto;
+        min-height: 450px;
     }
 
     .group-card img {
-        height: 120px;
+        height: 160px;
     }
 
     .group-card h3 {
-        font-size: 0.9rem;
-        margin-bottom: 0.4rem;
-        line-height: 1.2;
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
     }
 
     .group-card p {
-        font-size: 10px;
-        margin-bottom: 0.6rem;
-        line-height: 1.3;
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
     }
 
     .card-footer {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
+        padding: 0.5rem 1rem;
     }
 
     .views-count {
-        font-size: 0.45rem;
-    }
-
-    .join-btn {
-        padding: 0.5rem 0.8rem;
         font-size: 0.8rem;
-    }
-
-    .category-badge,
-    .country-badge {
-        padding: 0.2rem 0.4rem;
-        font-size: 0.65rem;
     }
 }
 
@@ -2335,13 +1707,30 @@ select:focus {
     .form-container {
         padding: 1rem;
     }
+
+    .group-card {
+        padding: 1rem;
+    }
+
+    .group-badges {
+        gap: 0.4rem;
+    }
+
+    .category-badge,
+    .country-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .join-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
 }
 
 /* Content Page Styles */
 .content-section {
-    width: 90%
-        /*800px*/
-    ;
+    width: 90% /*800px*/;
     margin: 0 auto;
     padding: 1rem;
     background: var(--white);
@@ -2387,7 +1776,7 @@ select:focus {
 }
 
 .content-section a:hover {
-    color: var(--secondary-color);
+    color: var (--secondary-color);
     text-decoration: underline;
 }
 
@@ -2976,8 +2365,7 @@ select:focus {
     .modal-footer .views-count i {
         font-size: 0.9rem;
     }
-
-    /*  #player{
+  /*  #player{
         width: 80%;
         margin: auto;
     }*/
@@ -3311,73 +2699,3 @@ select:focus {
 }
 
 /* Style the form elements as needed */
-
-/* Duplicate mobile styles removed - handled by progressive responsive system above */
-/* Fast loader specific styles */
-.loading-spinner {
-    text-align: center;
-    padding: 3rem;
-    font-size: 1.2rem;
-    color: #25d366;
-    font-weight: 600;
-}
-
-.loading-message {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-    font-size: 1.1rem;
-}
-
-.no-groups-message {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    margin: 2rem 0;
-}
-
-.no-groups-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
-.no-groups-message h3 {
-    color: #333;
-    margin-bottom: 1rem;
-}
-
-.no-groups-message p {
-    color: #666;
-    margin-bottom: 2rem;
-}
-
-.refresh-btn {
-    background: #25d366;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.3s ease;
-}
-
-.refresh-btn:hover {
-    background: #128c7e;
-}
-
-.fast-loaded {
-    animation: fadeInUp 0.3s ease;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}

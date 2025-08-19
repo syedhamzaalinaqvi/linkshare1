@@ -27,8 +27,9 @@ function initGroupSlider() {
     if (typeof firebase !== 'undefined' && firebase.apps.length) {
         loadGroupsForSlider();
     } else {
-        // If Firebase isn't initialized, skip dummy groups - database groups will load
-        console.log("Firebase not initialized, waiting for database groups to load");
+        // If Firebase isn't initialized, load dummy groups
+        console.log("Firebase not initialized, loading dummy groups");
+        populateGroupSliderWithDummy();
     }
 }
 
