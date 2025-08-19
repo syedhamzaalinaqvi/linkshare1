@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Global variables
 const POSTS_PER_PAGE = 12;
 let lastDoc = null;
@@ -7,6 +8,11 @@ const loadMoreBtn = document.querySelector('#loadMoreBtn');
 const searchInput = document.querySelector('#searchGroups');
 let currentTopic = 'all';
 let currentCountry = 'all';
+=======
+// Global variables - using unified loader
+let currentTopic = "all";
+let currentCountry = "all";
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
 
 // Function to create a group card with lazy loading
 function createGroupCard(group) {
@@ -100,15 +106,27 @@ function createGroupCard(group) {
 
 // Function to update load more button visibility
 function updateLoadMoreButton(totalGroups) {
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
     if (loadMoreBtn) {
+<<<<<<< HEAD
         if (isLastPage || totalGroups < POSTS_PER_PAGE) {
             loadMoreBtn.style.display = 'none';
         } else {
             loadMoreBtn.style.display = 'block';
+=======
+        if (totalGroups >= 12) {
+            loadMoreBtn.style.display = 'block';
+            loadMoreBtn.classList.remove("loading");
+            loadMoreBtn.innerHTML = '<i class="fas fa-plus"></i> Load More Groups';
+            loadMoreBtn.disabled = false;
+        } else {
+            loadMoreBtn.style.display = 'none';
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
         }
     }
 }
 
+<<<<<<< HEAD
 // Function to load groups
 function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false) {
     if (!groupContainer) return;
@@ -123,13 +141,115 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
         setTimeout(() => {
             loadGroups(filterTopic, filterCountry, loadMore);
         }, 1000);
+=======
+// Main function to load groups from Firebase
+async function loadGroups(
+    filterTopic = "all", 
+    filterCountry = "all",
+    loadMore = false,
+) {
+    console.log(`🚀 Loading groups: topic=${filterTopic}, country=${filterCountry}, loadMore=${loadMore}`);
+    
+    const groupsGrid = document.getElementById('groupsGrid') || document.querySelector('.groups-grid');
+    if (!groupsGrid) {
+        console.error('Groups grid container not found');
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
         return;
     }
 
-    try {
-        console.log('Loading groups with filters:', { filterTopic, filterCountry });
+    // Show loading state if not loading more
+    if (!loadMore) {
+        groupsGrid.innerHTML = '<div class="loading-spinner">⏳ Loading groups...</div>';
+    }
 
+    try {
+<<<<<<< HEAD
+        console.log('Loading groups with filters:', { filterTopic, filterCountry });
+=======
+        // Wait for Firebase to be ready
+        if (!window.firebaseInitialized || !window.db) {
+            console.log('⏳ Waiting for Firebase initialization...');
+            let attempts = 0;
+            while ((!window.firebaseInitialized || !window.db) && attempts < 50) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
+            if (!window.firebaseInitialized || !window.db) {
+                throw new Error('Firebase not available');
+            }
+        }
+
+        // Build Firebase query
+        let query = window.db.collection('groups');
+        
+        // Apply filters
+        if (filterTopic !== 'all') {
+            query = query.where('category', '==', filterTopic);
+        }
+        if (filterCountry !== 'all') {
+            query = query.where('country', '==', filterCountry);
+        }
+
+        // Order by timestamp descending (newest first)
+        query = query.orderBy('timestamp', 'desc');
+        
+        // Add pagination
+        if (loadMore && window.lastDoc) {
+            query = query.startAfter(window.lastDoc);
+        }
+        query = query.limit(12);
+
+        // Execute query with better timeout and source handling
+        console.log('🔄 Executing Firebase query...');
+        let querySnapshot;
+        try {
+            // Try server first with 8 second timeout
+            querySnapshot = await Promise.race([
+                query.get({ source: 'server' }),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Server timeout')), 8000)
+                )
+            ]);
+            console.log(`📦 Loaded ${querySnapshot.docs.length} groups from Firebase server`);
+        } catch (serverError) {
+            console.warn('⚠️ Server failed, trying cache:', serverError.message);
+            try {
+                querySnapshot = await query.get({ source: 'cache' });
+                console.log(`📂 Loaded ${querySnapshot.docs.length} groups from Firebase cache`);
+            } catch (cacheError) {
+                console.error('❌ Both server and cache failed:', cacheError);
+                throw new Error('Firebase completely unavailable');
+            }
+        }
+
+        // Process results
+        const groups = [];
+        querySnapshot.forEach((doc) => {
+            groups.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
+
+        // Apply search filter
+        const searchInput = document.getElementById('searchInput') || document.getElementById('searchGroups');
+        const searchTerm = searchInput?.value?.toLowerCase();
+        const filteredGroups = searchTerm ? 
+            groups.filter(group => 
+                (group.title || '').toLowerCase().includes(searchTerm) ||
+                (group.description || '').toLowerCase().includes(searchTerm)
+            ) : groups;
+
+        // Store last document for pagination
+        if (querySnapshot.docs.length > 0) {
+            window.lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+        }
+
+        // Render groups
         if (!loadMore) {
+<<<<<<< HEAD
             // Display skeleton loading cards
             groupContainer.innerHTML = '';
             for (let i = 0; i < 6; i++) {
@@ -268,6 +388,39 @@ function loadGroups(filterTopic = 'all', filterCountry = 'all', loadMore = false
             <button onclick="location.reload()" class="submit-btn">Retry</button>
         </div>`;
         updateLoadMoreButton(0);
+=======
+            groupsGrid.innerHTML = '';
+        }
+
+        if (filteredGroups.length === 0 && !loadMore) {
+            groupsGrid.innerHTML = '<div class="no-groups">No groups found matching your criteria</div>';
+            updateLoadMoreButton(0);
+            return;
+        }
+
+        // Create and append group cards
+        filteredGroups.forEach(group => {
+            const card = createGroupCard(group);
+            groupsGrid.appendChild(card);
+        });
+
+        // Update load more button
+        updateLoadMoreButton(filteredGroups.length);
+        
+        console.log(`✅ Successfully displayed ${filteredGroups.length} groups (newest first)`);
+
+    } catch (error) {
+        console.error('❌ Error loading groups:', error);
+        groupsGrid.innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Unable to load groups. Please check your connection.</p>
+                <button onclick="loadGroups('${filterTopic}', '${filterCountry}', false)" class="retry-btn">
+                    <i class="fas fa-redo"></i> Try Again
+                </button>
+            </div>
+        `;
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
     }
 }
 
@@ -284,7 +437,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+<<<<<<< HEAD
     // Start initialization process
+=======
+    // Initialize app immediately
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
     setTimeout(checkFirebaseAndInitialize, 100);
 
     // Main app initialization
@@ -309,12 +466,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Initial load will be triggered by firebase-config.js when ready
+        // Load groups on initial page load
+        if (document.querySelector('.groups-grid')) {
+            console.log('🚀 Starting initial group load...');
+            setTimeout(() => {
+                loadGroups('all', 'all', false);
+            }, 200);
+        }
 
         // Load More button click handler with enhanced animation
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', (e) => {
                 // Add loading class for animation
+<<<<<<< HEAD
                 loadMoreBtn.classList.add('loading');
                 loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Loading...';
 
@@ -332,6 +497,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         loadMoreBtn.innerHTML = '<i class="fas fa-sync"></i> Load More';
                     }, 300);
                 }, 300);
+=======
+                loadMoreBtn.classList.add("loading");
+                loadMoreBtn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Loading...';
+                loadMoreBtn.disabled = true;
+
+                // Load more groups
+                loadGroups(currentTopic, currentCountry, true);
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
             });
         }
 
@@ -347,7 +520,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update state and load groups
                 currentTopic = category;
+<<<<<<< HEAD
                 loadGroups(category, currentCountry);
+=======
+                window.currentTopic = category; // Store globally for Firebase config
+                loadGroups(category, currentCountry, false);
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
 
                 // Update dropdown to match selected category
                 const dropdownBtn = document.querySelector('#topicFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
@@ -383,7 +561,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Update state and load groups
                     currentTopic = category;
+<<<<<<< HEAD
                     loadGroups(category, currentCountry);
+=======
+                    window.currentTopic = category; // Store globally for Firebase config
+                    loadGroups(category, currentCountry, false);
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
 
                     // Close dropdown
                     btn.closest('.dropdown')?.classList.remove('active');
@@ -418,7 +601,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Update state and load groups
                     currentCountry = country;
+<<<<<<< HEAD
                     loadGroups(currentTopic, country);
+=======
+                    window.currentCountry = country; // Store globally for Firebase config
+                    loadGroups(currentTopic, country, false);
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
 
                     // Close dropdown
                     btn.closest('.dropdown')?.classList.remove('active');
@@ -452,10 +640,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Search input listener
+        const searchInput = document.getElementById('searchInput') || document.getElementById('searchGroups');
         if (searchInput) {
+<<<<<<< HEAD
             searchInput.addEventListener('input', debounce(() => {
                 loadGroups(currentTopic, currentCountry);
             }, 300));
+=======
+            searchInput.addEventListener(
+                "input",
+                debounce(() => {
+                    loadGroups(currentTopic, currentCountry, false);
+                }, 300),
+            );
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
         }
 
         // Setup lazy loading
@@ -881,7 +1079,7 @@ function showErrorState(message) {
         <div class="error-state" role="alert">
             <i class="fas fa-exclamation-circle"></i>
             <p>${message}</p>
-            <button onclick="loadGroups(currentTopic, currentCountry)" class="retry-btn">
+            <button onclick="loadGroups(currentTopic, currentCountry, false)" class="retry-btn">
                 <i class="fas fa-redo"></i> Try Again
             </button>
         </div>

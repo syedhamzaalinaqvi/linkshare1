@@ -32,13 +32,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const db = firebase.firestore();
         
-        // Enable better offline support with cache
-        db.enablePersistence({ synchronizeTabs: true })
+        // Configure Firestore settings for better connectivity
+        db.settings({
+            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+            merge: true
+        });
+        
+        // Try to enable persistence with better error handling
+        db.enablePersistence({ synchronizeTabs: false })
+          .then(() => {
+            console.log('✅ Firestore persistence enabled');
+          })
           .catch(err => {
-            if (err.code == 'failed-precondition') {
-              console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-            } else if (err.code == 'unimplemented') {
-              console.log('The current browser does not support all of the features required to enable persistence');
+            if (err.code === 'failed-precondition') {
+              console.warn('⚠️ Persistence failed: Multiple tabs open');
+            } else if (err.code === 'unimplemented') {
+              console.warn('⚠️ Persistence not supported in this browser');
+            } else {
+              console.warn('⚠️ Persistence setup failed:', err);
             }
           });
         
@@ -57,17 +68,43 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addDoc = (collectionRef, data) => collectionRef.add(data);
         window.serverTimestamp = () => firebase.firestore.FieldValue.serverTimestamp();
         
+        // Test Firebase connection immediately
+        console.log('🔍 Testing Firebase connection...');
+        db.collection('groups').limit(1).get({ source: 'server' })
+          .then(snapshot => {
+            console.log('✅ Firebase connection successful!');
+            console.log(`📊 Test query returned ${snapshot.size} documents`);
+          })
+          .catch(error => {
+            console.error('❌ Firebase connection test failed:', error);
+            console.log('🔄 Attempting to use cache...');
+            return db.collection('groups').limit(1).get({ source: 'cache' });
+          })
+          .then(snapshot => {
+            if (snapshot) {
+              console.log(`📂 Cache query returned ${snapshot.size} documents`);
+            }
+          })
+          .catch(cacheError => {
+            console.error('❌ Cache also failed:', cacheError);
+          });
+        
         // Set flag to true
         window.firebaseInitialized = true;
         
         console.log("Firebase initialized successfully and global functions set");
         
+<<<<<<< HEAD
         // If we're on the home page, start loading groups immediately
         if (document.querySelector('.groups-grid') && typeof loadGroups === 'function') {
             setTimeout(() => {
                 loadGroups();
             }, 100);
         }
+=======
+        // Initialize loading when DOM is ready - but don't auto-load to prevent conflicts
+        console.log("Firebase initialized - ready for manual loading");
+>>>>>>> a746f97777ac15ef751e2f32c253550ee932efa6
     } catch (error) {
         console.error("Error initializing Firebase:", error);
         // Display error in UI if possible
