@@ -87,7 +87,12 @@ async function loadGroupsUnified(topic = 'all', country = 'all', loadMore = fals
             querySnapshot = await baseQuery.get({ source: 'server' });
         } catch (serverError) {
             console.log('⚠️ Server unavailable, trying cache...');
-            querySnapshot = await baseQuery.get({ source: 'cache' });
+            try {
+                querySnapshot = await baseQuery.get({ source: 'cache' });
+            } catch (cacheError) {
+                console.log('⚠️ Cache also unavailable, using fallback groups...');
+                throw new Error('Both server and cache unavailable');
+            }
         }
         
         // Process results
@@ -99,7 +104,12 @@ async function loadGroupsUnified(topic = 'all', country = 'all', loadMore = fals
             });
         });
         
-        console.log(`📦 Loaded ${groups.length} fresh groups from server`);
+        console.log(`📦 Loaded ${groups.length} groups from database`);
+        
+        // If no groups found and cache was used, throw error to trigger fallback
+        if (groups.length === 0) {
+            throw new Error('No groups found in database');
+        }
         
         // Apply search filter if active
         const searchInput = document.getElementById('searchInput') || document.getElementById('searchGroups');
@@ -135,6 +145,23 @@ async function loadGroupsUnified(topic = 'all', country = 'all', loadMore = fals
         
     } catch (error) {
         console.error('❌ Error loading groups:', error);
+        
+        // Try loading from local database API first
+        try {
+            console.log('🔄 Trying local database API...');
+            const response = await fetch('/api/groups?limit=12&cache=' + Date.now());
+            if (response.ok) {
+                const data = await response.json();
+                if (data.groups && data.groups.length > 0) {
+                    console.log(`📦 Loaded ${data.groups.length} groups from local API`);
+                    renderGroupsClean(data.groups, groupContainer, true);
+                    updateLoadMoreButton(data.groups.length);
+                    return;
+                }
+            }
+        } catch (apiError) {
+            console.log('⚠️ Local API also failed:', apiError.message);
+        }
         
         // Show fallback test groups for immediate display
         console.log('🔄 Loading fallback test groups...');

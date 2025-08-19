@@ -340,6 +340,81 @@ def get_groups():
     """Get all WhatsApp groups from database"""
     try:
         groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).all()
+        
+        # If no groups found, add some sample groups
+        if not groups:
+            logger.info("No groups found, adding sample groups...")
+            sample_groups = [
+                {
+                    'title': 'Tech Jobs & Career Opportunities',
+                    'description': 'Join our community for latest job postings, career advice, and networking opportunities in the tech industry.',
+                    'category': 'Jobs',
+                    'country': 'USA',
+                    'group_url': 'https://chat.whatsapp.com/sample1',
+                    'image_url': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+                    'member_count': 1250
+                },
+                {
+                    'title': 'Crypto Trading & Investment',
+                    'description': 'Discuss cryptocurrency trading strategies, market analysis, and investment opportunities.',
+                    'category': 'Business',
+                    'country': 'Global',
+                    'group_url': 'https://chat.whatsapp.com/sample2',
+                    'image_url': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+                    'member_count': 890
+                },
+                {
+                    'title': 'Dating & Relationships',
+                    'description': 'Connect with like-minded people, share experiences, and find meaningful relationships.',
+                    'category': 'Dating',
+                    'country': 'India',
+                    'group_url': 'https://chat.whatsapp.com/sample3',
+                    'image_url': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+                    'member_count': 2100
+                },
+                {
+                    'title': 'Gaming Community Hub',
+                    'description': 'Connect with fellow gamers, discuss latest games, tournaments, and gaming strategies.',
+                    'category': 'Gaming',
+                    'country': 'Global',
+                    'group_url': 'https://chat.whatsapp.com/sample4',
+                    'image_url': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+                    'member_count': 850
+                },
+                {
+                    'title': 'Educational Resources',
+                    'description': 'Share study materials, discuss academic topics, and help each other learn.',
+                    'category': 'Education',
+                    'country': 'Pakistan',
+                    'group_url': 'https://chat.whatsapp.com/sample5',
+                    'image_url': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+                    'member_count': 950
+                },
+                {
+                    'title': 'Music Lovers United',
+                    'description': 'Share your favorite music, discover new artists, and discuss all things music.',
+                    'category': 'Entertainment',
+                    'country': 'Global',
+                    'group_url': 'https://chat.whatsapp.com/sample6',
+                    'image_url': 'https://static.whatsapp.net/rsrc.php/v4/yo/r/J5gK5AgJ_L5.png',
+                    'member_count': 1100
+                }
+            ]
+            
+            for sample in sample_groups:
+                group = WhatsAppGroup()
+                group.title = sample['title']
+                group.description = sample['description']
+                group.category = sample['category']
+                group.country = sample['country']
+                group.group_url = sample['group_url']
+                group.image_url = sample['image_url']
+                group.member_count = sample['member_count']
+                db.session.add(group)
+            
+            db.session.commit()
+            groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).all()
+        
         groups_data = [group.to_dict() for group in groups]
         return jsonify({
             'success': True,
