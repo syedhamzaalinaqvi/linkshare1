@@ -62,9 +62,8 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
         />
-        
 
-        <!-- Add structured data -->
+        <!-- Add structured data add-->
         <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
@@ -105,7 +104,8 @@
                 margin: 2rem 0 1rem;
             }
 
-            .blog-content ul, .blog-content ol {
+            .blog-content ul,
+            .blog-content ol {
                 margin: 1rem 0;
                 padding-left: 2rem;
             }
@@ -169,15 +169,16 @@
             }
 
             /* Secondary Menu Styles */
-            .temporary-menu , .secondary-menu {
-                
+            .temporary-menu,
+            .secondary-menu {
                 padding: 0.75rem 0;
                 margin-bottom: 1.5rem;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
                 border-radius: 10px;
             }
 
-            .temporary-nav-links , .secondary-nav-links {
+            .temporary-nav-links,
+            .secondary-nav-links {
                 display: flex;
                 list-style: none;
                 padding: 0;
@@ -186,7 +187,8 @@
                 gap: 15px;
             }
 
-            .temporary-nav-links , .secondary-nav-links li {
+            .temporary-nav-links,
+            .secondary-nav-links li {
                 position: relative;
             }
 
@@ -203,28 +205,200 @@
                 border: 1px solid rgba(255, 255, 255, 0.2);
                 background: linear-gradient(135deg, #128c7e, #25d366);
             }
-            
+
             .temporary-nav-links a {
                 display: block;
                 background: linear-gradient(135deg, #128c7e, #25d366);
-    padding: 4px 4px;
-    color:black;
-    text-decoration: none;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    font-size: 12px;
-    border-radius: 2px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: grey 1px 1px 5px 1px;
+                padding: 4px 4px;
+                color: black;
+                text-decoration: none;
+                font-weight: 700;
+                transition: all 0.3s ease;
+                font-size: 12px;
+                border-radius: 2px;
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: grey 1px 1px 5px 1px;
             }
 
-            .temporary-nav-links a:hover , .secondary-nav-links a:hover {
+            .temporary-nav-links a:hover,
+            .secondary-nav-links a:hover {
                 background: rgba(255, 255, 255, 0.2);
                 transform: translateY(-2px);
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
                 border-color: green;
                 color: green;
+            }
+
+            /* Modern compact filter dropdown styles */
+            .filter-group .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
+            .filter-group .dropdown-btn {
+                background: linear-gradient(135deg, #128c7e, #25d366);
+                color: white;
+                padding: 10px 16px;
+                border: none;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 13px;
+                font-weight: 500;
+                min-width: 140px;
+                text-align: left;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 2px 8px rgba(18, 140, 126, 0.3);
+                backdrop-filter: blur(10px);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .filter-group .dropdown-btn::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.2),
+                    transparent
+                );
+                transition: left 0.5s;
+            }
+
+            .filter-group .dropdown-btn:hover::before {
+                left: 100%;
+            }
+
+            .filter-group .dropdown-btn:hover {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 6px 20px rgba(18, 140, 126, 0.4);
+            }
+
+            .filter-group .dropdown-btn i {
+                transition: transform 0.3s ease;
+                font-size: 12px;
+            }
+
+            .filter-group .dropdown.active .dropdown-btn i {
+                transform: rotate(180deg);
+            }
+
+            .filter-group .dropdown-menu {
+                display: none;
+                position: absolute;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                min-width: 160px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                border-radius: 16px;
+                padding: 6px;
+                list-style: none;
+                margin: 6px 0 0 0;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                max-height: 280px;
+                overflow-y: auto;
+                animation: dropdownSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            @keyframes dropdownSlide {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+
+            .filter-group .dropdown.active .dropdown-menu {
+                display: block;
+            }
+
+            .filter-group .dropdown-menu .filter-btn {
+                padding: 8px 12px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border-radius: 10px;
+                color: #333;
+                font-size: 13px;
+                margin: 2px 0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .filter-group .dropdown-menu .filter-btn::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, #128c7e, #25d366);
+                transition: left 0.3s ease;
+                z-index: -1;
+            }
+
+            .filter-group .dropdown-menu .filter-btn:hover::before {
+                left: 0;
+            }
+
+            .filter-group .dropdown-menu .filter-btn:hover {
+                color: white;
+                transform: translateX(4px);
+            }
+
+            .filter-group .dropdown-menu .filter-btn.active {
+                background: linear-gradient(135deg, #128c7e, #25d366);
+                color: white;
+                box-shadow: 0 2px 8px rgba(18, 140, 126, 0.3);
+            }
+
+            .filter-group .dropdown-menu .filter-btn.active:hover {
+                background: linear-gradient(135deg, #25d366, #128c7e);
+                transform: translateX(4px);
+            }
+
+            /* Responsive dropdown styles */
+            @media (max-width: 768px) {
+                .filter-group .dropdown-btn {
+                    min-width: 120px;
+                    padding: 8px 12px;
+                    font-size: 12px;
+                }
+
+                .filter-group .dropdown-menu {
+                    min-width: 140px;
+                    max-height: 200px;
+                }
+
+                .filter-group .dropdown-menu .filter-btn {
+                    padding: 6px 10px;
+                    font-size: 12px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .filter-group .dropdown-btn {
+                    min-width: 100px;
+                    padding: 6px 10px;
+                    font-size: 11px;
+                }
+
+                .filter-group .dropdown-menu {
+                    min-width: 120px;
+                    left: 0;
+                    right: auto;
+                }
             }
 
             .secondary-dropdown {
@@ -414,7 +588,6 @@
             margin-bottom: 2rem;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         }
-        
         .shortener-header {
             text-align: center;
             margin-bottom: 1.5rem;
@@ -629,6 +802,262 @@
                 background: #128c7e;
             }
 
+            /* WhatsApp Guide Section Styles */
+            .whatsapp-guide-section {
+                background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+                padding: 4rem 0;
+                margin-top: 3rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .whatsapp-guide-section::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+                opacity: 0.3;
+            }
+
+            .guide-content {
+                position: relative;
+                z-index: 2;
+            }
+
+            .guide-header {
+                text-align: center;
+                margin-bottom: 3rem;
+                color: white;
+            }
+
+            .guide-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 80px;
+                height: 80px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                margin-bottom: 1.5rem;
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .guide-icon i {
+                font-size: 2.5rem;
+                color: white;
+            }
+
+            .guide-header h2 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .guide-header p {
+                font-size: 1.2rem;
+                opacity: 0.9;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .guide-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+
+            .guide-card {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(15px);
+                border-radius: 20px;
+                padding: 2rem;
+                text-align: center;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .guide-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #25d366, #128c7e, #25d366);
+                background-size: 200% 100%;
+                animation: shimmer 3s ease-in-out infinite;
+            }
+
+            @keyframes shimmer {
+                0%,
+                100% {
+                    background-position: 200% 0;
+                }
+                50% {
+                    background-position: -200% 0;
+                }
+            }
+
+            .guide-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 40px rgba(37, 211, 102, 0.2);
+            }
+
+            .card-icon {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #25d366, #128c7e);
+                border-radius: 50%;
+                margin-bottom: 1.5rem;
+                box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            }
+
+            .card-icon i {
+                font-size: 1.5rem;
+                color: white;
+            }
+
+            .guide-card h3 {
+                font-size: 1.4rem;
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 1rem;
+            }
+
+            .guide-card p {
+                color: #666;
+                line-height: 1.6;
+                margin-bottom: 1.5rem;
+            }
+
+            .card-features {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
+            .feature-tag {
+                background: linear-gradient(135deg, #25d366, #128c7e);
+                color: white;
+                padding: 0.3rem 0.8rem;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+
+            .guide-cta {
+                text-align: center;
+                padding: 2rem;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .guide-cta h3 {
+                color: white;
+                font-size: 2rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+
+            .guide-cta p {
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 1.1rem;
+                margin-bottom: 2rem;
+            }
+
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .cta-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 1rem 2rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .cta-btn.primary {
+                background: white;
+                color: #25d366;
+            }
+
+            .cta-btn.primary:hover {
+                background: #f8f9fa;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            }
+
+            .cta-btn.secondary {
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+
+            .cta-btn.secondary:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-3px);
+                box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+            }
+
+            /* Mobile responsiveness for guide section */
+            @media (max-width: 768px) {
+                .whatsapp-guide-section {
+                    padding: 3rem 0;
+                }
+
+                .guide-header h2 {
+                    font-size: 2rem;
+                }
+
+                .guide-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1.5rem;
+                }
+
+                .guide-card {
+                    padding: 1.5rem;
+                }
+
+                .cta-buttons {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .cta-btn {
+                    width: 100%;
+                    max-width: 280px;
+                    justify-content: center;
+                }
+            }
+
             .manual-slider-controls {
                 display: flex;
                 justify-content: space-between;
@@ -699,34 +1128,78 @@
                 </li>
                 <li><a href="/add-group">Add Group</a></li>
                 <li class="nav-dropdown">
-                    <a href="#" class="dropbtn"> 🔥 Pro Unlocked  ▾</a>
+                    <a href="#" class="dropbtn"> 🔥 Pro Unlocked ▾</a>
                     <ul class="nav-dropdown-content">
                         <li><a href="/tiktok-live">TikTok Live</a></li>
                         <li><a href="/capcut-pro">CapCut Pro</a></li>
-                        <li><a href="/moviebox-premium">MovieBox Premium</a></li>
-                        <li><a href="/free-chatgpt-plus">Free ChatGPT Plus</a></li>
+                        <li>
+                            <a href="/moviebox-premium">MovieBox Premium</a>
+                        </li>
+                        <li>
+                            <a href="/free-chatgpt-plus">Free ChatGPT Plus</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-dropdown">
                     <a href="#" class="dropbtn">Tools ▾</a>
                     <ul class="nav-dropdown-content">
-                        <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
-                        <li><a href="/qr-code-generator">QR Code Generator</a></li>
-                        <li><a href="/qr-code-reader">QR Code Scanner/Reader</a></li>
-                        <li><a href="/short-url-generator">Short URL Generator</a></li>
-                        <li><a href="/m3u-playlist-viewer">M3U Playlist viewer</a></li>
-                        <li><a href="/document-converter">Document Converter</a></li>
-                        <li><a href="/math-problem-solver">Math Problem Solver</a></li>
+                        <li>
+                            <a href="/stylish-text-generator"
+                                >Stylish Text Generator</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/qr-code-generator">QR Code Generator</a>
+                        </li>
+                        <li>
+                            <a href="/qr-code-reader">QR Code Scanner/Reader</a>
+                        </li>
+                        <li>
+                            <a href="/short-url-generator"
+                                >Short URL Generator</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/m3u-playlist-viewer"
+                                >M3U Playlist viewer</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/document-converter">Document Converter</a>
+                        </li>
+                        <li>
+                            <a href="/math-problem-solver"
+                                >Math Problem Solver</a
+                            >
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-dropdown">
                     <a href="#" class="dropbtn">Blog ▾</a>
                     <ul class="nav-dropdown-content">
-                        <li><a href="/new-tools-update">New Tool updates</a></li>
-                        <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
-                        <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
-                        <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
-                        <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
+                        <li>
+                            <a href="/new-tools-update">New Tool updates</a>
+                        </li>
+                        <li>
+                            <a href="/usa-whatsapp-group-links"
+                                >USA WhatsApp Group Links</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/active-pakistani-whatsapp-group-links"
+                                >Pakistani WhatsApp Group Links</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/indian-whatsapp-group-links"
+                                >Indian WhatsApp Group Links</a
+                            >
+                        </li>
+                        <li>
+                            <a href="/how-to-join-whatsapp-groups"
+                                >How to Join WhatsApp Group</a
+                            >
+                        </li>
                     </ul>
                 </li>
                 <li><a href="/about">About</a></li>
@@ -760,7 +1233,7 @@
                 ><img
                     src="https://cdn.prod.website-files.com/64ea57571d50b02423c4505d/64fb219ade937671b42e011e_capcut%20logo%20png.png"
                     alt="CapCut Pro Logo"
-                    style="width: 24px; height: 24px; margin-right: 10px;"
+                    style="width: 24px; height: 24px; margin-right: 10px"
                 />CapCut Pro</a
             >
         </header>
@@ -769,16 +1242,14 @@
             <div class="container">
                 <ul class="temporary-nav-links">
                     <li>
-                        <a href="/capcut-pro"
-                            >🔥CapCut Pro</a>
+                        <a href="/capcut-pro">🔥CapCut Pro</a>
                     </li>
                     <li>
-                        <a href="/moviebox-premium"
-                            >🔥Moviebox Premium</a>
+                        <a href="/moviebox-premium">🔥Moviebox Premium</a>
                     </li>
                 </ul>
             </div>
-        </section> 
+        </section>
         <!-- Secondary Menu -->
         <section class="secondary-menu">
             <div class="container">
@@ -790,7 +1261,7 @@
                     </li>
                     <li>
                         <a href="/active-pakistani-whatsapp-group-links"
-                            >🔥 Pakistani Whatsappp Groups link</a
+                            >🔥 Pakistani Whatsappp Groups</a
                         >
                     </li>
                 </ul>
@@ -873,36 +1344,52 @@
                         ></i>
                     </a>
                 </div>
-                  <!-- Promote Your Group Here in Featured Groups on Top Contact us -->
-                <h3 style="animation: wave 1s linear infinite; color: #e71c1c; font-weight: bold; text-align: center;">
+                <!-- Promote Your Group Here in Featured Groups on Top Contact us -->
+                <h3
+                    style="
+                        animation: wave 1s linear infinite;
+                        color: #e71c1c;
+                        font-weight: bold;
+                        text-align: center;
+                    "
+                >
                     Promote Your Group Here in Featured Groups on Top Contact us
                 </h3>
                 <style>
                     @keyframes wave {
-                        0% { transform: translateX(0); }
-                        50% { transform: translateX(-3px); }
-                        100% { transform: translateX(0); }
+                        0% {
+                            transform: translateX(0);
+                        }
+                        50% {
+                            transform: translateX(-3px);
+                        }
+                        100% {
+                            transform: translateX(0);
+                        }
                     }
                 </style>
 
                 <div class="manual-slider-container">
                     <div class="manual-slider" id="manualGroupSlider">
-                        
                         <!-- Manual Group Card 1 -->
                         <div class="manual-slide">
                             <div
                                 class="manual-slide-img"
                                 style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/491886134_1044863904472593_3915055472667620973_n.jpg?ccb=11-4&oh=01_Q5Aa2AEM6D-QtI9MxvJAKUPg_68YGN7UYfRwBayGvEiejpE8Dg&oe=689B1D7B&_nc_sid=5e03e0&_nc_cat=102&quot;);
+                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/491886134_1044863904472593_3915055472667620973_n.jpg?ccb=11-4&oh=01_Q5Aa2QHfzK1rg284tspfPL5dacMQLX6ABRxQalRNbvBX4QIvYA&oe=68B06DBB&_nc_sid=5e03e0&_nc_cat=102&quot;);
                                 "
                             >
                                 <span class="manual-slide-category"
                                     >Earning/Business</span
                                 >
-                                <span class="manual-slide-country">Pakistan</span>
+                                <span class="manual-slide-country"
+                                    >Pakistan</span
+                                >
                             </div>
                             <div class="manual-slide-content">
-                                <h3 class="manual-slide-title">YouTube Earnings</h3>
+                                <h3 class="manual-slide-title">
+                                    YouTube Earnings
+                                </h3>
                                 <a
                                     href="https://chat.whatsapp.com/C8ogOg5RBEjBW1rZF99DOC?mode=ac_t"
                                     class="manual-slide-join"
@@ -911,34 +1398,13 @@
                             </div>
                         </div>
                         <!-- Manual Group Card 1 -->
-                        <div class="manual-slide">
-                            <div
-                                class="manual-slide-img"
-                                style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/343221603_1293591788251575_5551281772084202269_n.jpg?ccb=11-4&oh=01_Q5Aa2AGQJvLgtm7qOGCRKBTlUuhoPVPUtJZkjUrcqtlh5Ph92A&oe=68994D2E&_nc_sid=5e03e0&_nc_cat=110&quot;);
-                                "
-                            >
-                                <span class="manual-slide-category"
-                                    >Gaming</span
-                                >
-                                <span class="manual-slide-country">USA</span>
-                            </div>
-                            <div class="manual-slide-content">
-                                <h3 class="manual-slide-title">Gaming World</h3>
-                                <a
-                                    href="https://chat.whatsapp.com/invite/1Mjkc2luhhSEIjhJ3h4sh5"
-                                    class="manual-slide-join"
-                                    >Join Group</a
-                                >
-                            </div>
-                        </div>
 
                         <!-- Manual Group Card 2 -->
                         <div class="manual-slide">
                             <div
                                 class="manual-slide-img"
                                 style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/473398307_1014480350507996_983726194671410989_n.jpg?ccb=11-4&oh=01_Q5Aa2AEiDoNAfV1vrh6S4-NjxcYwzutkx_E1rWrmrOXTfJP_yg&oe=68997064&_nc_sid=5e03e0&_nc_cat=111&quot;);
+                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/473398307_1014480350507996_983726194671410989_n.jpg?ccb=11-4&oh=01_Q5Aa2QHQxHt_jZaqGoIXC6lQujE9T7PYnlYGGr5rrxPaAOFacQ&oe=68B04A64&_nc_sid=5e03e0&_nc_cat=111&quot;);
                                 "
                             >
                                 <span class="manual-slide-category"
@@ -963,7 +1429,7 @@
                             <div
                                 class="manual-slide-img"
                                 style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/424625634_407365281966026_8840792065896691261_n.jpg?ccb=11-4&oh=01_Q5Aa2AGcBIa_GXq5CCQ34b7kUzlRMtKJ_3yHup_I-lOw-DFD6g&oe=689C6116&_nc_sid=5e03e0&_nc_cat=104&quot;);
+                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/424625634_407365281966026_8840792065896691261_n.jpg?ccb=11-4&oh=01_Q5Aa2QFAtnJaQpNSgJNxKvo9-DucGZr_afEKLzGNezZuGXkojg&oe=68B05FD6&_nc_sid=5e03e0&_nc_cat=104&quot;);
                                 "
                             >
                                 <span class="manual-slide-category"
@@ -990,7 +1456,7 @@
                             <div
                                 class="manual-slide-img"
                                 style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/386451176_286293764215187_4239227016328392389_n.jpg?ccb=11-4&oh=01_Q5Aa2AHPCFR_XUWFYvMp6HBjISSP6iOFDYCs9PL78bRRsO6_uA&oe=6899E417&_nc_sid=5e03e0&_nc_cat=102&quot;);
+                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/386451176_286293764215187_4239227016328392389_n.jpg?ccb=11-4&oh=01_Q5Aa2QGrterNfv__LZyAbsje0PXpLlazUNUM5X7FjZxv4rY3jg&oe=68B04D97&_nc_sid=5e03e0&_nc_cat=102&quot;);
                                 "
                             >
                                 <span class="manual-slide-category"
@@ -1011,38 +1477,13 @@
                         </div>
 
                         <!-- Manual Group Card 5 -->
-                        <div class="manual-slide">
-                            <div
-                                class="manual-slide-img"
-                                style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/458398123_947229483988370_8895862626680518588_n.jpg?ccb=11-4&oh=01_Q5Aa2AGVIAuaxfzT6TsIbvyxJ8FxOFhaUZX8d72BECQ71ESxWg&oe=6899F0A0&_nc_sid=5e03e0&_nc_cat=101&quot;);
-                                "
-                            >
-                                <span class="manual-slide-category"
-                                    >Islamic</span
-                                >
-                                <span class="manual-slide-country"
-                                    >Pakistan</span
-                                >
-                            </div>
-                            <div class="manual-slide-content">
-                                <h3 class="manual-slide-title">
-                                    Islamic Video
-                                </h3>
-                                <a
-                                    href="https://chat.whatsapp.com/invite/JkbaHr6QfhA3QWv9wbpJvE"
-                                    class="manual-slide-join"
-                                    >Join Group</a
-                                >
-                            </div>
-                        </div>
 
                         <!-- Manual Group Card 6 -->
                         <div class="manual-slide">
                             <div
                                 class="manual-slide-img"
                                 style="
-                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/442506892_979466290605541_8517477440194276882_n.jpg?ccb=11-4&oh=01_Q5Aa2AHfW8IcTp3cylMgec4Y7t3hy16TmajsYlnpCzvThVsd9A&oe=6899EFEA&_nc_sid=5e03e0&_nc_cat=100&quot;);
+                                    background-image: url(&quot;https://pps.whatsapp.net/v/t61.24694-24/442506892_979466290605541_8517477440194276882_n.jpg?ccb=11-4&oh=01_Q5Aa2QFlcvfLaYnnOTDG_-D_zZRCtiVM8ThHx6tmc9U2uUCMpA&oe=68B0596A&_nc_sid=5e03e0&_nc_cat=100&quot;);
                                 "
                             >
                                 <span class="manual-slide-category">Music</span>
@@ -1271,7 +1712,7 @@
                 </div>
 
                 <!-- Groups Grid -->
-                <div class="groups-grid"></div>
+                <div id="groupsGrid" class="groups-grid"></div>
 
                 <!-- Load More Button -->
                 <div class="load-more-container">
@@ -1281,6 +1722,24 @@
                 </div>
             </section>
 
+            <!-- adsence Banner ads here-->
+            <script
+                async
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8130991342525434"
+                crossorigin="anonymous"
+            ></script>
+            <!-- linkshare banner horizontal ad -->
+            <ins
+                class="adsbygoogle"
+                style="display: block"
+                data-ad-client="ca-pub-8130991342525434"
+                data-ad-slot="4773775873"
+                data-ad-format="auto"
+                data-full-width-responsive="true"
+            ></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
             <!-- Tools Section -->
             <section
                 class="groups-section"
@@ -1707,25 +2166,51 @@
             </section>
         </main>
 
+        <!-- adsence ads here -->
+        <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8130991342525434"
+            crossorigin="anonymous"
+        ></script>
+        <!-- linkshare banner horizontal ad -->
+        <ins
+            class="adsbygoogle"
+            style="display: block"
+            data-ad-client="ca-pub-8130991342525434"
+            data-ad-slot="4773775873"
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+        ></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
         <!-- SEO Blog Section -->
         <section class="seo-blog-section">
             <div class="container">
                 <h2>WhatsApp Group Links Guide</h2>
-                
+
                 <div class="blog-content">
                     <article>
                         <h3>What are WhatsApp Group Links?</h3>
-                        <p>WhatsApp group links are unique URLs that allow users to join WhatsApp groups directly from their browser or mobile device. These links are essential for expanding your network and connecting with like-minded individuals.</p>
-                        
+                        <p>
+                            WhatsApp group links are unique URLs that allow
+                            users to join WhatsApp groups directly from their
+                            browser or mobile device. These links are essential
+                            for expanding your network and connecting with
+                            like-minded individuals.
+                        </p>
+
                         <h3>Why Join WhatsApp Groups?</h3>
                         <ul>
-                            <li>Meet new people and expand your social circle</li>
+                            <li>
+                                Meet new people and expand your social circle
+                            </li>
                             <li>Share and receive valuable information</li>
                             <li>Find business opportunities and networking</li>
                             <li>Join communities based on your interests</li>
                             <li>Get real-time updates and news</li>
                         </ul>
-                        
+
                         <h3>How to Use WhatsApp Group Links?</h3>
                         <ol>
                             <li>Click on a group link from our collection</li>
@@ -1733,45 +2218,192 @@
                             <li>Join the group instantly</li>
                             <li>Start participating in group conversations</li>
                         </ol>
-                        
+
                         <h3>Types of WhatsApp Groups Available</h3>
                         <div class="group-types">
                             <div class="type-card">
                                 <h4>Community Groups</h4>
-                                <p>Join local communities, hobby groups, and interest-based chats</p>
+                                <p>
+                                    Join local communities, hobby groups, and
+                                    interest-based chats
+                                </p>
                             </div>
                             <div class="type-card">
                                 <h4>Business Groups</h4>
-                                <p>Network with professionals and find business opportunities</p>
+                                <p>
+                                    Network with professionals and find business
+                                    opportunities
+                                </p>
                             </div>
                             <div class="type-card">
                                 <h4>Education Groups</h4>
-                                <p>Study groups, learning communities, and educational resources</p>
+                                <p>
+                                    Study groups, learning communities, and
+                                    educational resources
+                                </p>
                             </div>
                             <div class="type-card">
                                 <h4>Entertainment Groups</h4>
-                                <p>Movie discussions, music sharing, and fun activities</p>
+                                <p>
+                                    Movie discussions, music sharing, and fun
+                                    activities
+                                </p>
                             </div>
                         </div>
-                        
+
                         <h3>Tips for Using WhatsApp Groups</h3>
                         <ul>
                             <li>Always check group rules before joining</li>
-                            <li>Be respectful and follow community guidelines</li>
+                            <li>
+                                Be respectful and follow community guidelines
+                            </li>
                             <li>Share valuable content with the group</li>
                             <li>Participate actively in discussions</li>
                             <li>Report any inappropriate behavior</li>
                         </ul>
-                        
+
                         <h3>How to Add Your Own Group</h3>
-                        <p>Want to share your WhatsApp group with others? Use our easy group submission form to add your group link to our collection. Make sure your group follows WhatsApp's terms and conditions.</p>
-                        
+                        <p>
+                            Want to share your WhatsApp group with others? Use
+                            our easy group submission form to add your group
+                            link to our collection. Make sure your group follows
+                            WhatsApp's terms and conditions.
+                        </p>
+
                         <div class="cta-section">
-                            <a href="/add-group" class="cta-button">Add Your Group</a>
-                            <a href="/active-pakistani-whatsapp-group-links" class="cta-button">Join Pakistani Groups</a>
-                            <a href="/usa-whatsapp-group-links" class="cta-button">Join USA Groups</a>
+                            <a href="/add-group" class="cta-button"
+                                >Add Your Group</a
+                            >
+                            <a
+                                href="/active-pakistani-whatsapp-group-links"
+                                class="cta-button"
+                                >Join Pakistani Groups</a
+                            >
+                            <a
+                                href="/usa-whatsapp-group-links"
+                                class="cta-button"
+                                >Join USA Groups</a
+                            >
                         </div>
                     </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- WhatsApp Group Links Guide Section -->
+        <section class="whatsapp-guide-section">
+            <div class="container">
+                <div class="guide-content">
+                    <div class="guide-header">
+                        <div class="guide-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h2>WhatsApp Group Links Guide</h2>
+                        <p>
+                            Everything you need to know about joining and
+                            sharing WhatsApp groups
+                        </p>
+                    </div>
+
+                    <div class="guide-grid">
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3>How to Find Groups</h3>
+                            <p>
+                                Browse our extensive collection of categorized
+                                WhatsApp groups. Use filters to find groups that
+                                match your interests and location.
+                            </p>
+                            <div class="card-features">
+                                <span class="feature-tag"
+                                    >Search by Category</span
+                                >
+                                <span class="feature-tag"
+                                    >Filter by Country</span
+                                >
+                                <span class="feature-tag">Latest Groups</span>
+                            </div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>How to Join Groups</h3>
+                            <p>
+                                Simply click on any group link to join
+                                instantly. Make sure you follow group rules and
+                                be respectful to all members.
+                            </p>
+                            <div class="card-features">
+                                <span class="feature-tag">One-Click Join</span>
+                                <span class="feature-tag">Instant Access</span>
+                                <span class="feature-tag">Active Groups</span>
+                            </div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <h3>How to Share Your Group</h3>
+                            <p>
+                                Submit your WhatsApp group to reach thousands of
+                                potential members. Fill out our simple form and
+                                get your group featured.
+                            </p>
+                            <div class="card-features">
+                                <span class="feature-tag">Free Submission</span>
+                                <span class="feature-tag">Quick Approval</span>
+                                <span class="feature-tag">More Members</span>
+                            </div>
+                        </div>
+
+                        <div class="guide-card">
+                            <div class="card-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Safety Guidelines</h3>
+                            <p>
+                                Stay safe while joining groups. Verify group
+                                authenticity, respect privacy, and report any
+                                suspicious or inappropriate content.
+                            </p>
+                            <div class="card-features">
+                                <span class="feature-tag">Verified Groups</span>
+                                <span class="feature-tag"
+                                    >Privacy Protected</span
+                                >
+                                <span class="feature-tag"
+                                    >Community Moderated</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="guide-cta">
+                        <h3>Ready to Get Started?</h3>
+                        <p>
+                            Join thousands of WhatsApp groups or share your own
+                            group with our community
+                        </p>
+                        <div class="cta-buttons">
+                            <a
+                                href="#groups"
+                                class="cta-btn primary"
+                                onclick="scrollToGroups()"
+                            >
+                                <i class="fas fa-th-list"></i>
+                                Browse Groups
+                            </a>
+                            <a href="/add-group" class="cta-btn secondary">
+                                <i class="fas fa-plus"></i>
+                                Add Your Group
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1807,6 +2439,25 @@
         </button>
 
         <script>
+            // Scroll to groups function
+            function scrollToGroups() {
+                const groupsSection =
+                    document.querySelector(".groups-section") ||
+                    document.querySelector("#groups") ||
+                    document.querySelector(".groups-container");
+                if (groupsSection) {
+                    groupsSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                } else {
+                    // Fallback to scroll to top of main content
+                    document.querySelector("#main-content").scrollIntoView({
+                        behavior: "smooth",
+                    });
+                }
+            }
+
             // nav toggle open close script
             document.addEventListener("DOMContentLoaded", function () {
                 const navToggle = document.querySelector(".nav-toggle");
@@ -1836,6 +2487,42 @@
                 document.addEventListener("click", (e) => {
                     if (!e.target.closest(".nav-dropdown")) {
                         dropdowns.forEach((dropdown) => {
+                            dropdown.classList.remove("active");
+                        });
+                    }
+                });
+
+                // Filter dropdown toggle functionality
+                const filterDropdowns = document.querySelectorAll(
+                    ".filter-group .dropdown",
+                );
+
+                filterDropdowns.forEach((dropdown) => {
+                    const dropBtn = dropdown.querySelector(".dropdown-btn");
+                    const dropMenu = dropdown.querySelector(".dropdown-menu");
+
+                    if (dropBtn && dropMenu) {
+                        dropBtn.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            // Close other filter dropdowns
+                            filterDropdowns.forEach((otherDropdown) => {
+                                if (otherDropdown !== dropdown) {
+                                    otherDropdown.classList.remove("active");
+                                }
+                            });
+
+                            // Toggle current dropdown
+                            dropdown.classList.toggle("active");
+                        });
+                    }
+                });
+
+                // Close filter dropdowns when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (!e.target.closest(".filter-group .dropdown")) {
+                        filterDropdowns.forEach((dropdown) => {
                             dropdown.classList.remove("active");
                         });
                     }
@@ -1903,28 +2590,8 @@
         <!-- Our Scripts -->
         <script src="js/group-slider.js"></script>
         <script src="js/firebase-config.js"></script>
-
         <script src="js/main.js"></script>
-        <script>
-            // Mobile Navigation Toggle
-            document.addEventListener('DOMContentLoaded', function() {
-                const navToggle = document.querySelector('.nav-toggle');
-                const navLinks = document.querySelector('.nav-links');
-
-                if (navToggle && navLinks) {
-                    navToggle.addEventListener('click', function() {
-                        navLinks.classList.toggle('active');
-                    });
-
-                    // Close menu when clicking outside
-                    document.addEventListener('click', function(e) {
-                        if (!navToggle.contains(e.target) && !navLinks.contains(e.target)) {
-                            navLinks.classList.remove('active');
-                        }
-                    });
-                }
-            });
-        </script>
-        
+        <!-- Fast loader MUST be last to override other loaders -->
+        <script src="js/fast-group-loader.js"></script>
     </body>
 </html>

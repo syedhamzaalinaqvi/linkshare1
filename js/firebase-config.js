@@ -62,10 +62,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log("Firebase initialized successfully and global functions set");
         
-        // If we're on the home page, start loading groups immediately
+        // If we're on the home page, start loading groups immediately with current filters
         if (document.querySelector('.groups-grid') && typeof loadGroups === 'function') {
             setTimeout(() => {
-                loadGroups();
+                // Use current filter state if available, otherwise use defaults
+                const currentTopic = window.currentTopic || 'all';
+                const currentCountry = window.currentCountry || 'all';
+                loadGroups(currentTopic, currentCountry);
             }, 100);
         }
     } catch (error) {
