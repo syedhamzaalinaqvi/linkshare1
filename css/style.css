@@ -1176,6 +1176,10 @@ body {
     display: none;
     z-index: 500;
     font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
 .dropdown-menu li {
@@ -1191,7 +1195,11 @@ body {
 
 /* Show Dropdown */
 .dropdown.active .dropdown-menu {
-    display: block;
+    display: block !important;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    z-index: 1000;
 }
 
 /* Active Filter */
@@ -1347,10 +1355,17 @@ body {
         z-index: 999;
         overflow-y: auto;
         height: 100vh;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-20px);
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
     }
 
     .nav-links.active {
-        display: flex;
+        display: flex !important;
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
     }
 
     .nav-toggle {
