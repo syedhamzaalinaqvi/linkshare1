@@ -76,6 +76,36 @@ body {
     cursor: pointer;
 }
 
+/* Mobile Navigation Styles */
+@media (max-width: 868px) {
+    .nav-toggle {
+        display: block;
+    }
+    
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background-color: white;
+        box-shadow: var(--shadow);
+        padding: 1rem;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    }
+    
+    .nav-links.active {
+        display: flex !important;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
 .nav-links {
     display: flex;
     gap: 10px;
@@ -1168,14 +1198,17 @@ body {
     list-style: none;
     padding: 0;
     margin: 5px 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
     background: white;
     border-radius: var(--radius);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    position: absolute;
     width: 100%;
-    display: none;
-    z-index: 500;
     font-size: 12px;
+    z-index: 1000;
+    display: none;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
