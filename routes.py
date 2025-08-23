@@ -337,15 +337,27 @@ def extract_group_metadata(url):
 
 @app.route('/api/groups', methods=['GET'])
 def get_groups():
-    """Get all WhatsApp groups from database"""
+    """Get all WhatsApp groups from database with cache prevention"""
     try:
         groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).all()
         groups_data = [group.to_dict() for group in groups]
-        return jsonify({
+        
+        response = jsonify({
             'success': True,
             'groups': groups_data,
-            'count': len(groups_data)
+            'count': len(groups_data),
+            'timestamp': datetime.now().isoformat(),
+            'cache_buster': request.args.get('cb', 'none')
         })
+        
+        # Add aggressive cache prevention headers
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        response.headers['Last-Modified'] = datetime.now().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        response.headers['ETag'] = f'"groups-{datetime.now().timestamp()}-{len(groups_data)}"'
+        
+        return response
     except Exception as e:
         logger.error(f"Error getting groups: {e}")
         return jsonify({

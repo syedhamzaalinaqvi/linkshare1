@@ -3,12 +3,14 @@
  * Handles both database and Firebase groups with aggressive caching prevention
  */
 
-// Global cache buster
-const CACHE_BUSTER = Date.now();
+// Dynamic cache buster - generates new timestamp on each call
+function getCacheBuster() {
+    return Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
 
-// Fast group loading with cache prevention
+// Fast group loading with aggressive cache prevention
 async function loadGroupsFast() {
-    console.log('🚀 Fast loader starting...');
+    console.log('🚀 Fast loader starting with cache buster:', getCacheBuster());
     
     let groupsGrid = document.getElementById('groupsGrid');
     if (!groupsGrid) {
@@ -49,13 +51,17 @@ async function loadGroupsFast() {
                     clearInterval(waitForFirebase);
                     console.log('⏰ Firebase initialization timeout, trying database fallback...');
                     
-                    // Try database as last resort
+                    // Try database as last resort with fresh cache buster
                     try {
-                        const dbResponse = await fetch(`/api/groups?cb=${CACHE_BUSTER}&t=${Date.now()}`, {
+                        const cacheBuster = getCacheBuster();
+                        console.log('🔄 Database request with cache buster:', cacheBuster);
+                        const dbResponse = await fetch(`/api/groups?cb=${cacheBuster}&nocache=true&t=${Date.now()}`, {
+                            method: 'GET',
                             headers: {
                                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                                 'Pragma': 'no-cache',
-                                'Expires': '0'
+                                'Expires': '0',
+                                'If-None-Match': '*'
                             }
                         });
                         const dbResult = await dbResponse.json();

@@ -186,12 +186,12 @@ function loadGroups(
             }
         }
 
-        // Add cache settings to improve performance
+        // Add cache settings to bypass cache for real-time data
         const queryOptions = {
-            source: "default", // Use cache if available but verify with server
+            source: "server", // Always fetch from server, bypass cache
         };
 
-        // Execute query with cache options
+        // Execute query with fresh data options
         baseQuery
             .get(queryOptions)
             .then((querySnapshot) => {
@@ -490,34 +490,62 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Dropdown toggle functionality
+        // Enhanced dropdown toggle functionality with mobile support
         document.querySelectorAll(".dropdown").forEach((dropdown) => {
             const btn = dropdown.querySelector(".dropdown-btn");
             if (!btn) return;
 
+            // Remove any existing listeners to prevent conflicts
+            btn.replaceWith(btn.cloneNode(true));
+            const newBtn = dropdown.querySelector(".dropdown-btn");
+
             // Toggle dropdown
-            btn.addEventListener("click", (e) => {
+            newBtn.addEventListener("click", (e) => {
+                e.preventDefault();
                 e.stopPropagation();
+                console.log('🔽 Dropdown clicked:', dropdown);
+                
                 const wasActive = dropdown.classList.contains("active");
+                console.log('📊 Dropdown was active:', wasActive);
 
-                // Close all dropdowns
-                document
-                    .querySelectorAll(".dropdown")
-                    .forEach((d) => d.classList.remove("active"));
+                // Close all dropdowns first
+                document.querySelectorAll(".dropdown").forEach((d) => {
+                    d.classList.remove("active");
+                    console.log('🔒 Closed dropdown:', d);
+                });
 
-                // Toggle this dropdown
+                // Toggle this dropdown if it wasn't active
                 if (!wasActive) {
                     dropdown.classList.add("active");
+                    console.log('🔓 Opened dropdown:', dropdown);
                 }
             });
+            
+            // Handle touch events for mobile
+            newBtn.addEventListener("touchstart", (e) => {
+                e.stopPropagation();
+            }, { passive: true });
         });
 
-        // Close dropdowns when clicking outside
-        document.addEventListener("click", () => {
-            document
-                .querySelectorAll(".dropdown")
-                .forEach((d) => d.classList.remove("active"));
+        // Enhanced click outside handler
+        document.addEventListener("click", (e) => {
+            const clickedInsideDropdown = e.target.closest(".dropdown");
+            if (!clickedInsideDropdown) {
+                document.querySelectorAll(".dropdown").forEach((d) => {
+                    d.classList.remove("active");
+                });
+            }
         });
+        
+        // Additional touch handler for mobile
+        document.addEventListener("touchstart", (e) => {
+            const clickedInsideDropdown = e.target.closest(".dropdown");
+            if (!clickedInsideDropdown) {
+                document.querySelectorAll(".dropdown").forEach((d) => {
+                    d.classList.remove("active");
+                });
+            }
+        }, { passive: true });
 
         // Search input listener
         if (searchInput) {
