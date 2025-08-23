@@ -2731,23 +2731,45 @@
             })(); // Execute immediately
         </script>
 
-        <!-- Scroll to Top Script -->
+        <!-- Mobile Menu Toggle Script -->
         <script>
-            const scrollToTopBtn = document.querySelector(".scroll-to-top");
-
-            window.addEventListener("scroll", () => {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add("visible");
-                } else {
-                    scrollToTopBtn.classList.remove("visible");
+            // Mobile menu toggle
+            document.addEventListener('DOMContentLoaded', function() {
+                const menuToggle = document.querySelector('.menu-toggle');
+                const navLinks = document.querySelector('.nav-links');
+                
+                if (menuToggle && navLinks) {
+                    menuToggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        navLinks.classList.toggle('active');
+                    });
+                    
+                    // Close menu when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!e.target.closest('.nav-links') && !e.target.closest('.menu-toggle')) {
+                            navLinks.classList.remove('active');
+                        }
+                    });
                 }
-            });
+                
+                // Scroll to top button
+                const scrollToTopBtn = document.querySelector(".scroll-to-top");
+                if (scrollToTopBtn) {
+                    window.addEventListener("scroll", () => {
+                        if (window.pageYOffset > 300) {
+                            scrollToTopBtn.classList.add("visible");
+                        } else {
+                            scrollToTopBtn.classList.remove("visible");
+                        }
+                    });
 
-            scrollToTopBtn.addEventListener("click", () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth",
-                });
+                    scrollToTopBtn.addEventListener("click", () => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                        });
+                    });
+                }
             });
         </script>
         <script>
