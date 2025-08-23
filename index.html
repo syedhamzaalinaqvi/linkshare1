@@ -2475,13 +2475,16 @@
 
                 // Toggle mobile menu
                 function toggleMenu() {
-                    if (!navLinks) return;
+                    if (!navLinks || !navToggle) return;
                     
                     isMenuOpen = !isMenuOpen;
                     
                     if (isMenuOpen) {
                         // Open menu
                         navLinks.style.display = 'flex';
+                        // Change icon to 'times' (X)
+                        navToggle.innerHTML = '<i class="fas fa-times"></i>';
+                        
                         setTimeout(() => {
                             navLinks.classList.add('active');
                             document.body.style.overflow = 'hidden'; // Prevent scrolling
@@ -2489,6 +2492,8 @@
                     } else {
                         // Close menu
                         navLinks.classList.remove('active');
+                        // Change icon back to 'bars'
+                        navToggle.innerHTML = '<i class="fas fa-bars"></i>';
                         document.body.style.overflow = ''; // Re-enable scrolling
                         
                         // After transition completes, hide the menu
@@ -2500,9 +2505,7 @@
                     }
                     
                     // Toggle aria-expanded for accessibility
-                    if (navToggle) {
-                        navToggle.setAttribute('aria-expanded', isMenuOpen);
-                    }
+                    navToggle.setAttribute('aria-expanded', isMenuOpen);
                 }
 
                 // Add click event to menu toggle button
