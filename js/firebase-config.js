@@ -14,7 +14,7 @@ const firebaseConfig = {
 window.firebaseInitialized = false;
 
 // Initialize Firebase using regular script tags instead of modules
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     try {
         if (typeof firebase === 'undefined') {
             console.error("Firebase SDK not loaded. Make sure you've included the Firebase scripts.");
@@ -22,25 +22,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Only initialize once
+        let app;
         if (!firebase.apps || !firebase.apps.length) {
-            const app = firebase.initializeApp(firebaseConfig);
+            app = firebase.initializeApp(firebaseConfig);
             const analytics = firebase.analytics();
             console.log("Firebase app initialized");
         } else {
+            app = firebase.app();
             console.log("Firebase already initialized");
         }
         
         const db = firebase.firestore();
         
-        // Enable better offline support with cache
-        db.enablePersistence({ synchronizeTabs: true })
-          .catch(err => {
-            if (err.code == 'failed-precondition') {
-              console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-            } else if (err.code == 'unimplemented') {
-              console.log('The current browser does not support all of the features required to enable persistence');
-            }
-          });
+        // Configure Firestore to always fetch fresh data from the server
+        // This ensures new groups appear immediately across all devices/tabs
+        db.settings({
+            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+            experimentalForceLongPolling: true
+        });
+        
+        // Disable offline persistence to prevent caching issues
+        // This ensures all queries go to the server for fresh data
+        try {
+            // First disable network to clear any existing connections
+            await db.disableNetwork();
+            // Then re-enable network with fresh connection
+            await db.enableNetwork();
+            console.log('Firestore configured for fresh data (persistence disabled)');
+        } catch (err) {
+            console.error('Error configuring Firestore:', err);
+        }
         
         // Make db and Firebase functions available globally
         window.db = db;

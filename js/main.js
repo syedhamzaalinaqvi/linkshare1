@@ -183,9 +183,10 @@ function loadGroups(
             }
         }
 
-        // Add cache settings for reliable data loading
+        // Always fetch from server to ensure fresh data
         const queryOptions = {
-            source: "default", // Use cache first, then server if needed
+            source: 'server', // Always fetch from server, bypass cache
+            cache: 'reload'  // Force cache reload
         };
 
         // Execute query with fresh data options
