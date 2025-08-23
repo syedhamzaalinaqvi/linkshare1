@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const navToggle = document.getElementById('navToggle') || document.querySelector('.nav-toggle');
     const navLinks = document.querySelector('.nav-links');
     
+    console.log('🔍 Found elements:', { navToggle, navLinks });
+    
     if (navToggle && navLinks) {
         console.log('✅ Found nav elements, setting up mobile menu');
         
@@ -20,20 +22,47 @@ document.addEventListener('DOMContentLoaded', function() {
         newNavToggle.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            e.stopImmediatePropagation();
             
-            console.log('📱 Mobile menu toggle clicked');
+            console.log('📱 Mobile menu toggle clicked!');
             
             const isActive = navLinks.classList.contains('active');
             console.log('📱 Menu currently active:', isActive);
             
+            // Force toggle with visual feedback
             if (isActive) {
                 navLinks.classList.remove('active');
-                console.log('📱 Menu closed');
+                newNavToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                console.log('📱 Menu CLOSED');
             } else {
                 navLinks.classList.add('active');
-                console.log('📱 Menu opened');
+                newNavToggle.innerHTML = '<i class="fas fa-times"></i>';
+                console.log('📱 Menu OPENED');
             }
+            
+            // Add visual feedback
+            newNavToggle.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                newNavToggle.style.transform = 'scale(1)';
+            }, 150);
         });
+        
+        // Also handle double-tap on mobile
+        let tapCount = 0;
+        newNavToggle.addEventListener('touchend', function(e) {
+            tapCount++;
+            if (tapCount === 1) {
+                setTimeout(() => {
+                    if (tapCount === 1) {
+                        // Single tap - trigger click
+                        console.log('📱 Single tap detected');
+                        newNavToggle.click();
+                    }
+                    tapCount = 0;
+                }, 200);
+            }
+            e.preventDefault();
+        }, { passive: false });
         
         // Touch support for mobile
         newNavToggle.addEventListener('touchstart', function(e) {

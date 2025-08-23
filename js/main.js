@@ -186,9 +186,9 @@ function loadGroups(
             }
         }
 
-        // Add cache settings to bypass cache for real-time data
+        // Add cache settings for reliable data loading
         const queryOptions = {
-            source: "server", // Always fetch from server, bypass cache
+            source: "default", // Use cache first, then server if needed
         };
 
         // Execute query with fresh data options

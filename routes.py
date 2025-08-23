@@ -339,7 +339,7 @@ def extract_group_metadata(url):
 def get_groups():
     """Get all WhatsApp groups from database with cache prevention"""
     try:
-        groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).all()
+        groups = WhatsAppGroup.query.filter_by(is_active=True).order_by(WhatsAppGroup.created_at.desc()).limit(500).all()
         groups_data = [group.to_dict() for group in groups]
         
         response = jsonify({

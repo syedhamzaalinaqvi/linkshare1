@@ -39,15 +39,10 @@ async function loadGroupsRealtime() {
         const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',
-                'Expires': '0',
-                'If-None-Match': '*',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-Cache-Bypass': 'true',
-                'X-Fresh-Request': uniqueId
-            },
-            cache: 'no-store' // Fetch API cache prevention
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         });
         
         if (!response.ok) {
@@ -58,8 +53,17 @@ async function loadGroupsRealtime() {
         console.log('📊 REALTIME: Got fresh data:', result);
         
         if (result.success && result.groups && result.groups.length > 0) {
-            console.log(`✅ REALTIME: Rendering ${result.groups.length} fresh groups`);
-            renderGroupsInstantly(result.groups, groupsGrid);
+            console.log(`✅ REALTIME: Got ${result.groups.length} groups, sorting by date...`);
+            
+            // Sort groups by creation date (newest first)
+            const sortedGroups = result.groups.sort((a, b) => {
+                const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
+                const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
+                return dateB.getTime() - dateA.getTime();
+            });
+            
+            console.log(`✅ REALTIME: Rendering ${sortedGroups.length} sorted groups`);
+            renderGroupsInstantly(sortedGroups, groupsGrid);
             
             // Add visual indicator that data is fresh
             const indicator = document.createElement('div');
@@ -122,12 +126,21 @@ function createRealtimeGroupCard(group) {
     card.className = 'group-card realtime-loaded';
     card.setAttribute('data-group-id', group.id);
     
-    // Use reliable image or fallback
+    // Enhanced image handling with better fallbacks
     let imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-    if (group.image_url && group.image_url !== 'null' && group.image_url !== '') {
-        if (group.image_url.includes('wikimedia.org') || group.image_url.includes('wikipedia.org')) {
-            imageUrl = group.image_url;
-        }
+    
+    // Check if group has a valid image
+    if (group.image_url && 
+        group.image_url !== 'null' && 
+        group.image_url !== '' && 
+        group.image_url !== 'undefined' && 
+        group.image_url.length > 10) {
+        
+        // Use the group's image if it exists
+        imageUrl = group.image_url;
+        console.log(`🖼️ Using group image: ${imageUrl.substring(0, 50)}...`);
+    } else {
+        console.log(`📷 No valid image for group: ${group.title}, using default WhatsApp logo`);
     }
     
     // Format time display
