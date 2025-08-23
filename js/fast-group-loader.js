@@ -314,6 +314,126 @@ function showEmptyState(container) {
     console.log('📝 Showing empty state');
 }
 
+// Show beautiful loading animation when fallback is needed
+function showFallbackGroups(container) {
+    container.innerHTML = `
+        <div class="loading-animation" style="
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 4rem 2rem; min-height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px; color: white; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+        ">
+            <!-- Animated background -->
+            <div style="
+                position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="25" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+                animation: backgroundShift 10s ease-in-out infinite;
+            "></div>
+            
+            <!-- Main loading spinner -->
+            <div style="
+                width: 80px; height: 80px; margin-bottom: 2rem;
+                border: 4px solid rgba(255,255,255,0.3);
+                border-left: 4px solid #ffffff;
+                border-radius: 50%;
+                animation: spin 1.5s linear infinite;
+                position: relative; z-index: 2;
+            "></div>
+            
+            <!-- WhatsApp icon -->
+            <div style="
+                font-size: 3rem; margin-bottom: 1.5rem;
+                animation: bounce 2s ease-in-out infinite;
+                position: relative; z-index: 2;
+            ">💬</div>
+            
+            <!-- Loading text -->
+            <h3 style="
+                margin-bottom: 1rem; font-size: 1.8rem; font-weight: 600;
+                position: relative; z-index: 2;
+                animation: fadeInOut 2s ease-in-out infinite;
+            ">Finding WhatsApp Groups</h3>
+            
+            <p style="
+                margin-bottom: 2rem; opacity: 0.9;
+                position: relative; z-index: 2;
+                animation: pulse 3s ease-in-out infinite;
+            ">Discovering the best groups for you...</p>
+            
+            <!-- Progress dots -->
+            <div style="display: flex; gap: 8px; position: relative; z-index: 2;">
+                <div style="
+                    width: 12px; height: 12px; border-radius: 50%;
+                    background: rgba(255,255,255,0.8);
+                    animation: dotPulse 1.5s ease-in-out infinite;
+                "></div>
+                <div style="
+                    width: 12px; height: 12px; border-radius: 50%;
+                    background: rgba(255,255,255,0.8);
+                    animation: dotPulse 1.5s ease-in-out 0.2s infinite;
+                "></div>
+                <div style="
+                    width: 12px; height: 12px; border-radius: 50%;
+                    background: rgba(255,255,255,0.8);
+                    animation: dotPulse 1.5s ease-in-out 0.4s infinite;
+                "></div>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-20px); }
+                60% { transform: translateY(-10px); }
+            }
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0.7; }
+                50% { opacity: 1; }
+            }
+            @keyframes pulse {
+                0%, 100% { opacity: 0.8; }
+                50% { opacity: 1; }
+            }
+            @keyframes dotPulse {
+                0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+                40% { opacity: 1; transform: scale(1.2); }
+            }
+            @keyframes backgroundShift {
+                0%, 100% { transform: translateX(0) translateY(0); }
+                25% { transform: translateX(-10px) translateY(-10px); }
+                50% { transform: translateX(10px) translateY(10px); }
+                75% { transform: translateX(-5px) translateY(5px); }
+            }
+        </style>
+    `;
+    console.log('🎨 Showing beautiful loading animation');
+    
+    // Auto retry with fresh data after 3 seconds
+    setTimeout(async () => {
+        console.log('🔄 Auto-retrying with fresh API call...');
+        try {
+            const response = await fetch('/api/groups?fresh=1&t=' + Date.now());
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.groups && data.groups.length > 0) {
+                    renderGroupsInstantly(data.groups, container);
+                } else {
+                    showEmptyState(container);
+                }
+            }
+        } catch (error) {
+            console.log('🔄 Retry failed, showing empty state');
+            showEmptyState(container);
+        }
+    }, 3000);
+}
+
 // Show error state when loading fails
 function showErrorState(container) {
     container.innerHTML = `
