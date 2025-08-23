@@ -1,7 +1,7 @@
 import os
 import logging
 
-from flask import Flask
+from flask import Flask, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -48,3 +48,17 @@ with app.app_context():
     # Make sure to import the models here or their tables won't be created
     import models  # noqa: F401
     db.create_all()
+
+# Add cache control headers to prevent aggressive caching
+@app.after_request
+def after_request(response):
+    # Prevent caching for HTML, CSS, and JS files
+    if (response.content_type and 
+        ('text/html' in response.content_type or 
+         'text/css' in response.content_type or
+         'application/javascript' in response.content_type or
+         'text/javascript' in response.content_type)):
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response

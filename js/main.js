@@ -537,6 +537,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Setup lazy loading
         setupLazyLoading();
+        
+        // Remove any competing mobile menu handlers
+        const existingToggles = document.querySelectorAll('.nav-toggle');
+        existingToggles.forEach(toggle => {
+            // Remove all click listeners by cloning the element
+            const newToggle = toggle.cloneNode(true);
+            toggle.parentNode.replaceChild(newToggle, toggle);
+        });
     }
 });
 
