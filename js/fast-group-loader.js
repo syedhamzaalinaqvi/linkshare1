@@ -26,8 +26,8 @@ async function loadGroupsFast() {
         container.appendChild(groupsGrid);
     }
     
-    // Simple state - no loading animation
-    groupsGrid.innerHTML = '';
+    // Don't show "No Groups Found" initially - wait for actual data
+    groupsGrid.innerHTML = '<div style="height: 50px;"></div>'; // Small placeholder
     
     try {
         // Skip database and go directly to Firebase for your original groups
@@ -90,14 +90,23 @@ async function loadGroupsFast() {
     }
 }
 
-// Render groups instantly without any delays
+// Professional lazy loading with batches
+let allGroups = [];
+let currentBatch = 0;
+const BATCH_SIZE = 12; // Load 12 groups at a time
+let isLoading = false;
+
 function renderGroupsInstantly(groups, container) {
-    console.log(`🎯 Starting to render ${groups.length} groups to container:`, container);
+    console.log(`🎯 Setting up lazy loading for ${groups.length} groups`);
+    
+    // Store all groups for lazy loading
+    allGroups = groups;
+    currentBatch = 0;
     
     // Clear loading state
     container.innerHTML = '';
     
-    // Add visible debug info
+    // Set up container styles
     container.style.minHeight = '400px';
     container.style.display = 'grid';
     container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
@@ -107,26 +116,77 @@ function renderGroupsInstantly(groups, container) {
     container.style.width = '100%';
     container.style.padding = '1rem 0';
     
-    groups.forEach((group, index) => {
-        console.log(`🔧 Creating card ${index + 1} for group:`, group.title);
+    // Load first batch immediately
+    loadNextBatch(container);
+    
+    // Set up intersection observer for lazy loading
+    setupLazyLoading(container);
+}
+
+function loadNextBatch(container) {
+    if (isLoading || currentBatch * BATCH_SIZE >= allGroups.length) {
+        return;
+    }
+    
+    isLoading = true;
+    console.log(`⚡ Loading batch ${currentBatch + 1}`);
+    
+    const startIndex = currentBatch * BATCH_SIZE;
+    const endIndex = Math.min(startIndex + BATCH_SIZE, allGroups.length);
+    const batchGroups = allGroups.slice(startIndex, endIndex);
+    
+    // Create fragment for batch DOM updates
+    const fragment = document.createDocumentFragment();
+    
+    batchGroups.forEach((group, index) => {
         const card = createOptimizedGroupCard(group);
-        container.appendChild(card);
-        
-        // Debug each card
-        console.log(`✅ Added card ${index + 1} to container`);
-        
-        // Animate in batches for better performance
-        if (index % 4 === 0) {
-            requestAnimationFrame(() => {
-                // Allow other operations to continue
-            });
+        if (card) {
+            fragment.appendChild(card);
         }
     });
     
-    // Final verification
-    console.log(`🎯 Rendered ${groups.length} groups instantly. Container children:`, container.children.length);
-    console.log('📦 Container element:', container);
-    console.log('🎨 Container styles:', window.getComputedStyle(container));
+    // Add batch to container
+    container.appendChild(fragment);
+    
+    currentBatch++;
+    isLoading = false;
+    
+    console.log(`✅ Loaded batch ${currentBatch}, total cards: ${container.children.length}`);
+    
+    // Add loading trigger for next batch if needed
+    if (currentBatch * BATCH_SIZE < allGroups.length) {
+        addLoadingTrigger(container);
+    }
+}
+
+function setupLazyLoading(container) {
+    // Create intersection observer for lazy loading
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.classList.contains('loading-trigger')) {
+                loadNextBatch(container);
+                entry.target.remove(); // Remove the trigger
+            }
+        });
+    }, {
+        rootMargin: '200px' // Load when user is 200px away from trigger
+    });
+    
+    // Store observer for cleanup
+    container.lazyObserver = observer;
+}
+
+function addLoadingTrigger(container) {
+    const trigger = document.createElement('div');
+    trigger.className = 'loading-trigger';
+    trigger.style.height = '1px';
+    trigger.style.width = '100%';
+    container.appendChild(trigger);
+    
+    // Observe the trigger
+    if (container.lazyObserver) {
+        container.lazyObserver.observe(trigger);
+    }
 }
 
 // Create optimized group card for fast rendering
