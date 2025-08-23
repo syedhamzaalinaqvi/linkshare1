@@ -13,8 +13,8 @@ async function loadGroupsRealtime() {
         return;
     }
     
-    // Show immediate loading state
-    groupsGrid.innerHTML = '<div class="loading-spinner">🔄 Loading fresh groups...</div>';
+    // Show graceful loading state without immediate error
+    groupsGrid.innerHTML = '<div class="loading-spinner">🔄 Loading groups...</div>';
     
     try {
         // Generate unique cache buster for this exact request
@@ -52,7 +52,8 @@ async function loadGroupsRealtime() {
         const result = await response.json();
         console.log('📊 REALTIME: Got fresh data:', result);
         
-        if (result.success && result.groups && result.groups.length > 0) {
+        if (result.success && result.groups) {
+            if (result.groups.length > 0) {
             console.log(`✅ REALTIME: Got ${result.groups.length} groups, sorting by date...`);
             
             // Sort groups by creation date (newest first)
@@ -65,35 +66,54 @@ async function loadGroupsRealtime() {
             console.log(`✅ REALTIME: Rendering ${sortedGroups.length} sorted groups`);
             renderGroupsInstantly(sortedGroups, groupsGrid);
             
-            // Add visual indicator that data is fresh
-            const indicator = document.createElement('div');
-            indicator.style.cssText = `
-                position: fixed; top: 10px; right: 10px; 
-                background: #25d366; color: white; 
-                padding: 5px 10px; border-radius: 15px; 
-                font-size: 12px; z-index: 9999;
-                animation: fadeInOut 3s ease-in-out;
-            `;
-            indicator.textContent = '🔄 Fresh data loaded!';
-            document.body.appendChild(indicator);
-            setTimeout(() => indicator.remove(), 3000);
+            } else {
+                // Show friendly message for empty groups
+                groupsGrid.innerHTML = `
+                    <div class="empty-state" style="
+                        text-align: center; padding: 3rem; color: #666;
+                        background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+                        <h3 style="margin-bottom: 1rem; color: #333;">No Groups Found</h3>
+                        <p style="margin-bottom: 1.5rem;">Be the first to add a WhatsApp group!</p>
+                        <a href="/add-group" style="
+                            background: #25d366; color: white; padding: 12px 24px;
+                            border-radius: 25px; text-decoration: none; font-weight: 600;
+                            display: inline-block; transition: all 0.3s ease;
+                        ">Add First Group</a>
+                    </div>
+                `;
+                console.log('📭 No groups found, showing empty state');
+            }
         } else {
-            throw new Error('No groups data received');
+            throw new Error('Failed to load groups from server');
         }
         
     } catch (error) {
         console.error('❌ REALTIME: Failed to load groups:', error);
+        // Show more graceful fallback without alarming user
         groupsGrid.innerHTML = `
-            <div class="error-state">
-                <p>⚠️ Could not load fresh groups</p>
-                <p>Error: ${error.message}</p>
+            <div class="loading-fallback" style="
+                text-align: center; padding: 3rem; color: #666;
+                background: white; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            ">
+                <div style="font-size: 2rem; margin-bottom: 1rem;">🔄</div>
+                <h3 style="margin-bottom: 1rem; color: #333;">Loading Groups...</h3>
+                <p style="margin-bottom: 1.5rem;">Please wait while we fetch the latest groups</p>
                 <button onclick="loadGroupsRealtime()" style="
                     background: #25d366; color: white; 
-                    border: none; padding: 10px 20px; 
-                    border-radius: 5px; cursor: pointer; margin-top: 10px;
-                ">🔄 Try Again</button>
+                    border: none; padding: 12px 24px; 
+                    border-radius: 25px; cursor: pointer; font-weight: 600;
+                    transition: all 0.3s ease;
+                ">Refresh Groups</button>
             </div>
         `;
+        
+        // Auto retry after 2 seconds silently
+        setTimeout(() => {
+            console.log('🔄 Auto-retrying group load...');
+            loadGroupsRealtime();
+        }, 2000);
     }
 }
 
