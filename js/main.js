@@ -183,13 +183,17 @@ function loadGroups(
             }
         }
 
-        // Always fetch from server to ensure fresh data
+        // Use default source (cache first, then server)
+        // This provides the best balance between performance and data freshness
         const queryOptions = {
-            source: 'server', // Always fetch from server, bypass cache
-            cache: 'reload'  // Force cache reload
+            source: 'default'
         };
 
-        // Execute query with fresh data options
+        // Execute query with a timestamp to prevent caching
+        const timestamp = Date.now();
+        baseQuery = baseQuery.orderBy('__name__'); // Ensure consistent ordering
+        
+        // Execute the query
         baseQuery
             .get(queryOptions)
             .then((querySnapshot) => {

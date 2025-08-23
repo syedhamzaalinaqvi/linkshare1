@@ -34,23 +34,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         const db = firebase.firestore();
         
-        // Configure Firestore to always fetch fresh data from the server
-        // This ensures new groups appear immediately across all devices/tabs
-        db.settings({
-            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-            experimentalForceLongPolling: true
-        });
-        
-        // Disable offline persistence to prevent caching issues
-        // This ensures all queries go to the server for fresh data
+        // Configure Firestore with default settings and proper error handling
         try {
-            // First disable network to clear any existing connections
-            await db.disableNetwork();
-            // Then re-enable network with fresh connection
-            await db.enableNetwork();
-            console.log('Firestore configured for fresh data (persistence disabled)');
+            // Enable persistence with synchronization between tabs
+            await db.enablePersistence({ synchronizeTabs: true });
+            console.log('Firestore persistence enabled with tab synchronization');
+            
+            // Set cache settings to balance between performance and freshness
+            db.settings({
+                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+            });
+            
         } catch (err) {
-            console.error('Error configuring Firestore:', err);
+            console.warn('Could not enable Firestore persistence:', err);
+            // Continue without persistence if it fails
         }
         
         // Make db and Firebase functions available globally
