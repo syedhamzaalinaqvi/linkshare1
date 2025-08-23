@@ -143,11 +143,8 @@ function loadGroups(
         });
 
         if (!loadMore) {
-            // Display skeleton loading cards
-            groupContainer.innerHTML = "";
-            for (let i = 0; i < 6; i++) {
-                groupContainer.innerHTML += createLoadingSkeleton();
-            }
+            // Simple loading message
+            groupContainer.innerHTML = '<div class="simple-loading">Loading groups...</div>';
             lastDoc = null;
             isLastPage = false;
         }
@@ -325,27 +322,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Main app initialization
     function initializeApp() {
-        // Initialize mobile menu
-        const navToggle = document.querySelector(".nav-toggle");
-        const navLinks = document.querySelector(".nav-links");
-
-        if (navToggle && navLinks) {
-            navToggle.addEventListener("click", (e) => {
-                e.stopPropagation();
-                navLinks.classList.toggle("active");
-            });
-
-            // Close menu when clicking outside
-            document.addEventListener("click", (e) => {
-                if (
-                    navLinks.classList.contains("active") &&
-                    !navLinks.contains(e.target) &&
-                    e.target !== navToggle
-                ) {
-                    navLinks.classList.remove("active");
-                }
-            });
-        }
+        // Mobile menu is handled by universal-mobile-menu.js
+        console.log('✅ Main app initialized (mobile menu handled by universal script)');
 
         // Initial load will be triggered by firebase-config.js when ready
 
@@ -562,28 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Helper Functions
-function createLoadingSkeleton() {
-    return `
-        <div class="loading-skeleton">
-            <div class="skeleton-image pulse"></div>
-            <div class="skeleton-content">
-                <div class="skeleton-badges">
-                    <div class="skeleton-badge pulse"></div>
-                    <div class="skeleton-badge pulse"></div>
-                </div>
-                <div class="skeleton-title pulse"></div>
-                <div class="skeleton-description pulse"></div>
-                <div class="skeleton-description pulse"></div>
-                <div class="skeleton-button pulse"></div>
-            </div>
-            <div class="skeleton-footer">
-                <div class="skeleton-stat pulse"></div>
-                <div class="skeleton-stat pulse"></div>
-            </div>
-        </div>
-    `;
-}
+// Helper Functions - skeleton loading removed for simplicity
 
 function debounce(func, wait) {
     let timeout;

@@ -12,6 +12,28 @@
     --transition: all 0.3s ease;
 }
 
+/* Simple Loading Styles */
+.simple-loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.1rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.simple-loading::before {
+    content: "⏳";
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
 /* Base Styles */
 * {
     margin: 0;

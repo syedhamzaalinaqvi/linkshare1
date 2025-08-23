@@ -17,23 +17,32 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('✅ Found mobile menu elements, setting up...');
     
-    // Enhanced mobile menu toggle
+    // Enhanced mobile menu toggle - fixed icon management
     navToggle.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
-        console.log('📱 Mobile menu clicked');
+        console.log('Nav toggle clicked');
         
         const isActive = navLinks.classList.contains('active');
+        console.log('Nav links has active class:', isActive);
+        console.log('Nav links display style:', window.getComputedStyle(navLinks).display);
         
+        // Toggle the menu and manage icons properly
         if (isActive) {
             navLinks.classList.remove('active');
-            navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            console.log('📱 Mobile menu clicked');
             console.log('📱 Menu closed');
+            // Always show bars when closed - delay to ensure smooth transition
+            setTimeout(() => {
+                navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }, 50);
         } else {
             navLinks.classList.add('active');
-            navToggle.innerHTML = '<i class="fas fa-times"></i>';
+            console.log('📱 Mobile menu clicked');
             console.log('📱 Menu opened');
+            // Show X when opened
+            navToggle.innerHTML = '<i class="fas fa-times"></i>';
         }
         
         // Visual feedback
@@ -52,7 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.navbar') && navLinks.classList.contains('active')) {
             navLinks.classList.remove('active');
-            navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            setTimeout(() => {
+                navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }, 50);
             console.log('📱 Menu closed by outside click');
         }
     });
@@ -63,7 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function() {
             if (window.innerWidth <= 868) {
                 navLinks.classList.remove('active');
-                navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                setTimeout(() => {
+                    navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }, 50);
                 console.log('📱 Menu closed after link click');
             }
         });
@@ -73,7 +86,9 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         if (window.innerWidth > 868 && navLinks.classList.contains('active')) {
             navLinks.classList.remove('active');
-            navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            setTimeout(() => {
+                navToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }, 50);
         }
     });
     
