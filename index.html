@@ -2478,14 +2478,25 @@
                     if (!navLinks) return;
                     
                     isMenuOpen = !isMenuOpen;
-                    navLinks.classList.toggle("active", isMenuOpen);
                     
                     if (isMenuOpen) {
+                        // Open menu
                         navLinks.style.display = 'flex';
-                        document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
+                        setTimeout(() => {
+                            navLinks.classList.add('active');
+                            document.body.style.overflow = 'hidden'; // Prevent scrolling
+                        }, 10);
                     } else {
-                        navLinks.style.display = 'none';
+                        // Close menu
+                        navLinks.classList.remove('active');
                         document.body.style.overflow = ''; // Re-enable scrolling
+                        
+                        // After transition completes, hide the menu
+                        setTimeout(() => {
+                            if (!navLinks.classList.contains('active')) {
+                                navLinks.style.display = 'none';
+                            }
+                        }, 300); // Match this with your CSS transition time
                     }
                     
                     // Toggle aria-expanded for accessibility
