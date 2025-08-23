@@ -26,15 +26,8 @@ async function loadGroupsFast() {
         container.appendChild(groupsGrid);
     }
     
-    // Enhanced loading state with animation
-    groupsGrid.innerHTML = `
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Loading WhatsApp Groups...</div>
-            <div class="loading-dots">
-                <span></span><span></span><span></span>
-            </div>
-        </div>`;
+    // Simple state - no loading animation
+    groupsGrid.innerHTML = '';
     
     try {
         // Skip database and go directly to Firebase for your original groups
@@ -308,23 +301,17 @@ async function loadFirebaseGroups(container) {
 
 // Show empty state when no groups in database
 function showEmptyState(container) {
-    // Never show empty state immediately - keep loading
-    console.log('📝 Preventing empty state - groups may still be loading...');
-    
-    // Keep showing loading for a bit longer
-    setTimeout(() => {
-        container.innerHTML = `
-            <div class="no-groups-message">
-                <div class="no-groups-icon">📱</div>
-                <h3>No Groups Available</h3>
-                <p>No WhatsApp groups have been added yet. Be the first to add a group!</p>
-                <a href="/add-group" class="refresh-btn">
-                    <i class="fas fa-plus"></i> Add First Group
-                </a>
-            </div>
-        `;
-    }, 2000); // Delay showing empty state
-    console.log('📝 Empty state delayed');
+    container.innerHTML = `
+        <div class="no-groups-message">
+            <div class="no-groups-icon">📱</div>
+            <h3>No Groups Available</h3>
+            <p>No WhatsApp groups have been added yet. Be the first to add a group!</p>
+            <a href="/add-group" class="refresh-btn">
+                <i class="fas fa-plus"></i> Add First Group
+            </a>
+        </div>
+    `;
+    console.log('📝 Showing empty state');
 }
 
 // Show simple loading when fallback is needed
