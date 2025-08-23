@@ -1096,10 +1096,6 @@
                     margin-left: 0px;
                 }
             }
-            @media screen and (max-width: 768px) {
-                .secondary-menu {
-                }
-            }
         </style>
     </head>
     <body>
@@ -2581,14 +2577,12 @@
                 });
             }
             
-            // Initialize mobile menu when DOM is loaded
-            document.addEventListener('DOMContentLoaded', initMobileMenu);
-
-            // Navigation menu toggle script is now handled by initMobileMenu()
-            // This ensures we only have one implementation of the menu toggle functionality
-
-            // Filter dropdown toggle functionality
+            // Initialize everything when DOM is loaded
             document.addEventListener('DOMContentLoaded', function() {
+                // Initialize mobile menu
+                initMobileMenu();
+                
+                // Filter dropdown toggle functionality
                 const filterDropdowns = document.querySelectorAll(
                     ".filter-group .dropdown"
                 );
