@@ -184,14 +184,12 @@ function loadGroups(
         }
 
         // Use default source (cache first, then server)
-        // This provides the best balance between performance and data freshness
         const queryOptions = {
             source: 'default'
         };
 
-        // Execute query with a timestamp to prevent caching
-        const timestamp = Date.now();
-        baseQuery = baseQuery.orderBy('__name__'); // Ensure consistent ordering
+        // Remove the __name__ orderBy as it's not needed and requires an index
+        // Just use the timestamp for ordering which should already be indexed
         
         // Execute the query
         baseQuery
