@@ -13,6 +13,27 @@ const mergedResult = document.getElementById('mergedResult');
 const downloadButton = document.getElementById('downloadButton');
 const recentFilesList = document.getElementById('recentFilesList');
 
+// Load saved files from localStorage
+function loadSavedFiles() {
+    const savedFiles = localStorage.getItem('pdfMergerFiles');
+    if (savedFiles) {
+        const fileData = JSON.parse(savedFiles);
+        return fileData;
+    }
+    return [];
+}
+
+// Save files to localStorage
+function saveFilesToStorage(files) {
+    const fileData = files.map(file => ({
+        name: file.name,
+        size: file.size,
+        lastModified: file.lastModified,
+        type: file.type
+    }));
+    localStorage.setItem('pdfMergerFiles', JSON.stringify(fileData));
+}
+
 // Load recent files from localStorage
 let recentFiles = JSON.parse(localStorage.getItem('recentPdfMerges') || '[]');
 
@@ -58,11 +79,15 @@ function handleFiles(files) {
     }
 
     files.forEach(file => {
-        if (!pdfFiles.some(f => f.name === file.name)) {
-            pdfFiles.push(file);
-            addFileToList(file);
-        }
+        // Generate a unique ID for the file
+        const fileId = `${file.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const fileWithId = Object.assign(file, { id: fileId });
+        pdfFiles.push(fileWithId);
+        addFileToList(fileWithId);
     });
+    
+    // Save to localStorage
+    saveFilesToStorage(pdfFiles);
     
     updateButtons();
     if (pdfFiles.length >= 2) {
@@ -258,7 +283,7 @@ function updateFinalFileName() {
 
 mergedFileName.addEventListener('input', updateFinalFileName);
 
-// Download merged PDF using Blob and createObjectURL
+// Download merged PDF
 downloadButton.addEventListener('click', () => {
     if (mergedPdfBytes) {
         const fileName = updateFinalFileName();
@@ -296,6 +321,8 @@ clearButton.addEventListener('click', () => {
     mergedFileName.value = ''; // Clear the filename input
     updateFinalFileName(); // Reset the filename preview
     updateButtons();
+    // Clear localStorage
+    localStorage.removeItem('pdfMergerFiles');
 });
 
 // Initialize recent files list
@@ -327,6 +354,40 @@ scrollToTopBtn.addEventListener('click', () => {
     });
 });
 
-
-
-
+// Initialize page with saved files
+document.addEventListener('DOMContentLoaded', () => {
+    const savedFiles = loadSavedFiles();
+    if (savedFiles && savedFiles.length > 0) {
+        savedFiles.forEach(fileData => {
+            const fileId = `${fileData.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            const dummyFile = new File([], fileData.name, {
+                type: fileData.type,
+                lastModified: fileData.lastModified
+            });
+            Object.assign(dummyFile, { 
+                id: fileId,
+                size: fileData.size,
+                dummy: true // Mark as dummy file to indicate it needs to be replaced
+            });
+            pdfFiles.push(dummyFile);
+            addFileToList(dummyFile);
+        });
+        updateButtons();
+        if (pdfFiles.length >= 2) {
+            orderControls.style.display = 'block';
+        }
+        
+        // Show notice to user
+        const notice = document.createElement('div');
+        notice.className = 'restore-notice';
+        notice.innerHTML = `
+            <div style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 5px; margin: 1rem 0; text-align: center;">
+                Previous files have been restored. Please reselect them to continue.
+                <button onclick="this.parentElement.remove()" style="margin-left: 1rem; padding: 0.2rem 0.5rem; border: none; background: #856404; color: white; border-radius: 3px;">
+                    Dismiss
+                </button>
+            </div>
+        `;
+        fileList.insertBefore(notice, fileList.firstChild);
+    }
+});
