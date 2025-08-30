@@ -162,14 +162,36 @@ function updateRecentFiles() {
     recentFiles.forEach((merge, index) => {
         const item = document.createElement('div');
         item.className = 'recent-file-item';
+        
+        // Format date nicely
+        const mergeDate = new Date(merge.date);
+        const formattedDate = mergeDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
         item.innerHTML = `
-            <div class="delete-recent" onclick="deleteRecentMerge(${index})">
+            <div class="delete-recent" onclick="deleteRecentMerge(${index})" title="Delete this record">
                 <i class="fas fa-times"></i>
             </div>
-            <div><strong>${merge.files.length} files merged</strong></div>
-            <div class="date">${new Date(merge.date).toLocaleDateString()}</div>
-            <div>Total Size: ${merge.totalSize}</div>
-            <div class="files-list">${merge.files.join(', ')}</div>
+            <div class="merge-count">
+                <i class="fas fa-file-pdf"></i>
+                ${merge.files.length} files merged
+            </div>
+            <div class="merge-date">
+                <i class="far fa-clock"></i>
+                ${formattedDate}
+            </div>
+            <div class="merge-size">
+                <i class="fas fa-weight-hanging"></i>
+                ${merge.totalSize}
+            </div>
+            <div class="files-list">
+                ${merge.files.map(file => `<div>${file}</div>`).join('')}
+            </div>
         `;
         recentFilesList.appendChild(item);
     });
