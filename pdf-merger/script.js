@@ -49,12 +49,21 @@ fileInput.addEventListener('change', (e) => {
 });
 
 function handleFiles(files) {
+    // Show warning for very large files but don't prevent
+    const totalSize = files.reduce((total, file) => total + file.size, 0) / (1024 * 1024);
+    if (totalSize > 200) {
+        if (!confirm(`You are attempting to merge ${totalSize.toFixed(1)}MB of PDFs. This might take some time and could affect browser performance. Continue?`)) {
+            return;
+        }
+    }
+
     files.forEach(file => {
         if (!pdfFiles.some(f => f.name === file.name)) {
             pdfFiles.push(file);
             addFileToList(file);
         }
     });
+    
     updateButtons();
     if (pdfFiles.length >= 2) {
         orderControls.style.display = 'block';
@@ -156,6 +165,43 @@ document.getElementById('clearRecentBtn').addEventListener('click', () => {
     }
 });
 
+// Function to merge PDFs in chunks
+async function mergePDFsInChunks(pdfFiles) {
+    const CHUNK_SIZE = 50; // Process 50 pages at a time
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    let totalPages = 0;
+    let currentPage = 0;
+
+    // First count total pages
+    for (const file of pdfFiles) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        totalPages += pdf.getPageCount();
+    }
+
+    // Then merge PDFs in chunks
+    for (const file of pdfFiles) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
+        const pageIndices = pdf.getPageIndices();
+        
+        // Process pages in chunks
+        for (let i = 0; i < pageIndices.length; i += CHUNK_SIZE) {
+            const chunk = pageIndices.slice(i, i + CHUNK_SIZE);
+            const pages = await pdfDoc.copyPages(pdf, chunk);
+            
+            for (const page of pages) {
+                pdfDoc.addPage(page);
+                currentPage++;
+                progress.style.width = `${(currentPage / totalPages) * 100}%`;
+                // Allow UI to update
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+        }
+    }
+    return pdfDoc;
+}
+
 // Merge PDFs
 mergeButton.addEventListener('click', async () => {
     try {
@@ -164,28 +210,7 @@ mergeButton.addEventListener('click', async () => {
         mergeButton.disabled = true;
         clearButton.disabled = true;
 
-        const pdfDoc = await PDFLib.PDFDocument.create();
-        let totalPages = 0;
-        let currentPage = 0;
-
-        // First count total pages
-        for (const file of pdfFiles) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
-            totalPages += pdf.getPageCount();
-        }
-
-        // Then merge PDFs
-        for (const file of pdfFiles) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
-            const pages = await pdfDoc.copyPages(pdf, pdf.getPageIndices());
-            pages.forEach(page => {
-                pdfDoc.addPage(page);
-                currentPage++;
-                progress.style.width = `${(currentPage / totalPages) * 100}%`;
-            });
-        }
+        const pdfDoc = await mergePDFsInChunks(pdfFiles);
 
         mergedPdfBytes = await pdfDoc.save();
         
@@ -233,11 +258,31 @@ function updateFinalFileName() {
 
 mergedFileName.addEventListener('input', updateFinalFileName);
 
-// Download merged PDF
+// Download merged PDF using Blob and createObjectURL
 downloadButton.addEventListener('click', () => {
     if (mergedPdfBytes) {
         const fileName = updateFinalFileName();
-        download(mergedPdfBytes, fileName, "application/pdf");
+        
+        // Create blob from the PDF bytes
+        const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+        
+        // Create a temporary URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        
+        // Append to document, click, and cleanup
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }, 100);
     }
 });
 
