@@ -39,6 +39,7 @@ const flippedMap = {
 const styles = {
     blank: s => '\u3164\u200E\u200D',
     fullBlank: s => s.replace(/\S/g, 'ㅤ‎‍'),
+ upside: s => s.split('').reverse().map(c => ({a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'ʃ',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z'})[c.toLowerCase()] || c).join(''),
     neonGlow: s => `<span style="text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6, 0 0 25px #0073e6">${s}</span>`,
     glitch: s => s.split('').map(c => `${c}҉`).join(''),
     gaming1: s => `꧁ ${s} ꧂`,
@@ -70,7 +71,6 @@ const styles = {
         const flipped = s.toLowerCase().split('').map(c => flippedMap[c] || c).reverse().join('');
         return `<span style="display: inline-block; transform: rotate(180deg); background: linear-gradient(45deg, #FF79C6, #BD93F9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">${flipped}</span>`;
     },
-    upside: s => s.split('').reverse().map(c => ({a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'ʃ',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z'})[c.toLowerCase()] || c).join(''),
     circledLetters: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x24D0 : 0x24B6) + (c.toLowerCase().charCodeAt(0) - 97))),
     shadowText: s => `<span style="text-shadow: 3px 3px 5px rgba(0,0,0,0.5);">${s}</span>`,
     hollowText: s => `<span style="color: White; -webkit-background-clip: text; background: linear-gradient(45deg, #ff6ec7, #ff8a00); border: 2px solid #ff00ff; padding: 0 5px;">${s}</span>`,
