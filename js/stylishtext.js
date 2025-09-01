@@ -23,8 +23,20 @@ const bubbleMap = {
     'y': 'ⓨ', 'z': 'ⓩ'
 };
 
-const styles = {
+// Flipped character map for mirrored text
+const flippedMap = {
+    'a': 'ɐ', 'b': 'q', 'c': 'ɔ', 'd': 'p', 'e': 'ǝ', 'f': 'ɟ', 'g': 'ƃ',
+    'h': 'ɥ', 'i': 'ᴉ', 'j': 'ɾ', 'k': 'ʞ', 'l': 'l', 'm': 'ɯ', 'n': 'u',
+    'o': 'o', 'p': 'd', 'q': 'b', 'r': 'ɹ', 's': 's', 't': 'ʇ', 'u': 'n',
+    'v': 'ʌ', 'w': 'ʍ', 'x': 'x', 'y': 'ʎ', 'z': 'z',
+    '0': '0', '1': 'Ɩ', '2': 'ᄅ', '3': 'Ɛ', '4': 'ㄣ', '5': 'ϛ',
+    '6': '9', '7': 'ㄥ', '8': '8', '9': '6', '.': '˙', ',': '\'',
+    '!': '¡', '?': '¿', '"': '„', '\'': ',', '(': ')', ')': '(',
+    '[': ']', ']': '[', '{': '}', '}': '{', '<': '>', '>': '<',
+    '&': '⅋', '_': '‾', '∴': '∵', '⁂': '⁂', '☆': '★', '★': '☆'
+};
 
+const styles = {
     blank: s => '\u3164\u200E\u200D',
     fullBlank: s => s.replace(/\S/g, 'ㅤ‎‍'),
     neonGlow: s => `<span style="text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #0073e6, 0 0 20px #0073e6, 0 0 25px #0073e6">${s}</span>`,
@@ -48,6 +60,16 @@ const styles = {
     monospace: s => s.replace(/[a-z]/gi, c => String.fromCodePoint(c.charCodeAt(0) + (c < 'a' ? 0x1D670 - 65 : 0x1D68A - 97))),
     bubble: s => s.replace(/[a-z]/gi, c => "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ"[c.toLowerCase().charCodeAt(0) - 97] || c),
     tiny: s => s.replace(/[a-z]/gi, c => ({a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ғ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',q:'ǫ',r:'ʀ',s:'s',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',x:'x',y:'ʏ',z:'ᴢ'})[c.toLowerCase()] || c),
+    mirrored: s => {
+        // First flip the text horizontally
+        const flipped = s.toLowerCase().split('').map(c => flippedMap[c] || c).reverse().join('');
+        // Add CSS to rotate 180 degrees
+        return `<span style="display: inline-block; transform: rotate(180deg);">${flipped}</span>`;
+    },
+    mirroredFancy: s => {
+        const flipped = s.toLowerCase().split('').map(c => flippedMap[c] || c).reverse().join('');
+        return `<span style="display: inline-block; transform: rotate(180deg); background: linear-gradient(45deg, #FF79C6, #BD93F9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">${flipped}</span>`;
+    },
     upside: s => s.split('').reverse().map(c => ({a:'ɐ',b:'q',c:'ɔ',d:'p',e:'ǝ',f:'ɟ',g:'ƃ',h:'ɥ',i:'ᴉ',j:'ɾ',k:'ʞ',l:'ʃ',m:'ɯ',n:'u',o:'o',p:'d',q:'b',r:'ɹ',s:'s',t:'ʇ',u:'n',v:'ʌ',w:'ʍ',x:'x',y:'ʎ',z:'z'})[c.toLowerCase()] || c).join(''),
     circledLetters: s => s.replace(/[a-z]/gi, c => String.fromCharCode((c === c.toLowerCase() ? 0x24D0 : 0x24B6) + (c.toLowerCase().charCodeAt(0) - 97))),
     shadowText: s => `<span style="text-shadow: 3px 3px 5px rgba(0,0,0,0.5);">${s}</span>`,

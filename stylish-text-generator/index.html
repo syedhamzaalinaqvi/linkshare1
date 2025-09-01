@@ -77,18 +77,40 @@
       word-break: break-word;
     }
   
-    .style-box:hover {
+.style-box:hover {
       transform: translateY(-5px);
     }
-  
+
     .style-box strong {
       font-size: 1.1rem;
       color: #555;
       display: block;
       margin-bottom: 10px;
     }
-  
-    .copy-btn {
+
+    .style-box.mirrored-box {
+      background: linear-gradient(135deg, #f6f8f9 0%,#e5ebee 50%,#d7dee3 51%,#f5f7f9 100%);
+      border: 2px solid #128C7E;
+    }
+
+    .style-box.mirrored-box::before {
+      content: "📱 Flip phone to read";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #128C7E;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    .mirrored-text-container {
+      perspective: 1000px;
+      margin: 20px 0;
+    }    .copy-btn {
       position: absolute;
       top: 15px;
       right: 15px;
