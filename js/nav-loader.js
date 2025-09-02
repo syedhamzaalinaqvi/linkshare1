@@ -70,14 +70,32 @@ function initMobileMenu() {
 
     if (!navToggle || !navLinks) return;
 
+    // Function to close menu and restore scroll
+    function closeMenu() {
+        isMenuOpen = false;
+        navLinks.classList.remove('active');
+        navLinks.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // Function to open menu and prevent scroll
+    function openMenu() {
+        isMenuOpen = true;
+        navLinks.classList.add('active');
+        navLinks.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
     // Handle mobile menu toggle
     navToggle.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        isMenuOpen = !isMenuOpen;
-        navLinks.style.display = isMenuOpen ? 'flex' : 'none';
-        navLinks.classList.toggle('active');
-        document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+        
+        if (isMenuOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
     });
 
     // Handle dropdowns
@@ -101,12 +119,8 @@ function initMobileMenu() {
     // Close menu when clicking outside
     document.addEventListener('click', function(e) {
         if (!navLinks.contains(e.target) && !navToggle.contains(e.target)) {
-            isMenuOpen = false;
-            navLinks.classList.remove('active');
-            if (window.innerWidth < 992) {
-                navLinks.style.display = 'none';
-                // Reset body scroll when closing menu
-                document.body.style.overflow = '';
+            if (isMenuOpen && window.innerWidth < 992) {
+                closeMenu();
             }
         }
         
@@ -135,7 +149,9 @@ function initMobileMenu() {
     // Initial state based on screen size
     if (window.innerWidth >= 992) {
         navLinks.style.display = 'flex';
+        document.body.style.overflow = '';
     } else {
         navLinks.style.display = 'none';
+        document.body.style.overflow = '';
     }
 }
