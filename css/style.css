@@ -1386,7 +1386,7 @@ body {
 }
 
 /* Responsive Design Improvements */
-@media (max-width: 868px) {
+@media (max-width: 991px) {
     .nav-toggle {
         display: block;
         background: none;
