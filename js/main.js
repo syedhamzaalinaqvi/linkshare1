@@ -325,48 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Main app initialization
     function initializeApp() {
-        // Initialize mobile menu
-        const navToggle = document.querySelector('.nav-toggle');
-        const navLinks = document.querySelector('.nav-links');
-        
-        if (navToggle && navLinks) {
-            // Toggle mobile menu
-            navToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                navLinks.classList.toggle('active');
-                
-                // Toggle between menu and close icon
-                const icon = navToggle.querySelector('i');
-                if (icon) {
-                    if (navLinks.classList.contains('active')) {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-times');
-                    } else {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                }
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.nav-links') && !e.target.closest('.nav-toggle')) {
-                    navLinks.classList.remove('active');
-                    const icon = navToggle.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                }
-            });
-            
-            // Prevent clicks inside menu from closing it
-            navLinks.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        }
-        
-        console.log('✅ Main app initialized with mobile menu support');
+        console.log('✅ Main app initialized');
 
         // Initial load will be triggered by firebase-config.js when ready
 

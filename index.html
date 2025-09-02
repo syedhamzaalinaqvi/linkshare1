@@ -1099,8 +1099,7 @@
             }
         </style>
 
-            <!-- Navbar Loader Script -->
-    <script src="js/nav-loader.js"></script>
+  
     </head>
     <body>
         <!-- Add skip link for accessibility -->
@@ -2354,188 +2353,9 @@
                     });
                 }
             }
-            
-       //copy in clipboard paste here...................
-       
-            document.addEventListener("DOMContentLoaded", function () {
-                // Filter dropdown toggle functionality
-                const filterDropdowns = document.querySelectorAll(
-                    ".filter-group .dropdown"
-                );
-
-                filterDropdowns.forEach((dropdown) => {
-                    const dropBtn = dropdown.querySelector(".dropdown-btn");
-                    const dropMenu = dropdown.querySelector(".dropdown-menu");
-
-                    if (dropBtn && dropMenu) {
-                        dropBtn.addEventListener("click", function (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-
-                            // Toggle current dropdown
-                            const isActive = !dropdown.classList.contains("active");
-                            
-                            // Close other dropdowns
-                            filterDropdowns.forEach((otherDropdown) => {
-                                otherDropdown.classList.remove("active");
-                            });
-                            
-                            // Toggle current dropdown
-                            if (isActive) {
-                                dropdown.classList.add("active");
-                            }
-                        });
-                    }
-                });
-
-                // Close dropdowns when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest('.nav-dropdown') && !e.target.closest('.nav-toggle')) {
-                        dropdowns.forEach(dropdown => {
-                            dropdown.classList.remove('active');
-                            const content = dropdown.querySelector('.nav-dropdown-content');
-                            if (content) content.style.display = 'none';
-                        });
-                    }
-                    
-                    // Close mobile menu when clicking outside
-                    if (isMenuOpen && navLinks && !navLinks.contains(e.target) && 
-                        e.target !== navToggle && !(navToggle && navToggle.contains(e.target))) {
-                        isMenuOpen = false;
-                        navLinks.classList.remove('active');
-                        navLinks.style.display = 'none';
-                        document.body.style.overflow = '';
-                        if (navToggle) {
-                            navToggle.setAttribute('aria-expanded', 'false');
-                        }
-                    }
-                });
-
-                // Filter dropdown toggle functionality
-                const filterDropdowns = document.querySelectorAll(
-                    ".filter-group .dropdown"
-                );
-
-                filterDropdowns.forEach((dropdown) => {
-                    const dropBtn = dropdown.querySelector(".dropdown-btn");
-                    const dropMenu = dropdown.querySelector(".dropdown-menu");
-
-                    if (dropBtn && dropMenu) {
-                        dropBtn.addEventListener("click", function (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-
-                            console.log("Filter dropdown clicked", dropdown);
-
-                            // Close other filter dropdowns
-                            filterDropdowns.forEach((otherDropdown) => {
-                                if (otherDropdown !== dropdown) {
-                                    otherDropdown.classList.remove("active");
-                                }
-                            });
-
-                            // Toggle current dropdown
-                            dropdown.classList.toggle("active");
-
-                            // Force repaint to ensure the dropdown is visible
-                            dropdown.offsetHeight;
-
-                            // Debug - check if active class is applied
-                            console.log(
-                                "Dropdown has active class:",
-                                dropdown.classList.contains("active"),
-                            );
-                            console.log(
-                                "Dropdown menu display style:",
-                                window.getComputedStyle(dropMenu).display,
-                            );
-
-                            // Force display if active
-                            if (dropdown.classList.contains("active")) {
-                                dropMenu.style.display = "block";
-                            }
-                        });
-                    }
-                });
-
-                // Add click event listeners to filter buttons
-                document.querySelectorAll(".filter-btn").forEach((btn) => {
-                    btn.addEventListener("click", function (e) {
-                        e.stopPropagation(); // Prevent closing the dropdown immediately
-
-                        console.log(
-                            "Filter button clicked:",
-                            this.textContent.trim(),
-                        );
-
-                        // Remove active class from all buttons in this dropdown
-                        const parentDropdown = this.closest(".dropdown-menu");
-                        if (parentDropdown) {
-                            parentDropdown
-                                .querySelectorAll(".filter-btn")
-                                .forEach((filterBtn) => {
-                                    filterBtn.classList.remove("active");
-                                });
-                        }
-
-                        // Add active class to clicked button
-                        this.classList.add("active");
-                        console.log(
-                            "Button active state:",
-                            this.classList.contains("active"),
-                        );
-
-                        // Close the dropdown after a short delay
-                        setTimeout(() => {
-                            const dropdown = this.closest(".dropdown");
-                            if (dropdown) {
-                                console.log(
-                                    "Closing dropdown after filter selection",
-                                );
-                                dropdown.classList.remove("active");
-
-                                // Ensure the dropdown menu is hidden
-                                const dropMenu =
-                                    dropdown.querySelector(".dropdown-menu");
-                                if (dropMenu) {
-                                    setTimeout(() => {
-                                        // Double check that the dropdown is properly hidden
-                                        if (
-                                            !dropdown.classList.contains(
-                                                "active",
-                                            )
-                                        ) {
-                                            dropMenu.style.display = "none";
-                                        }
-                                    }, 300);
-                                }
-                            }
-                        }, 150);
-                    });
-                });
-
-                // Close filter dropdowns when clicking outside
-                document.addEventListener("click", function (e) {
-                    if (!e.target.closest(".filter-group .dropdown")) {
-                        filterDropdowns.forEach((dropdown) => {
-                            dropdown.classList.remove("active");
-
-                            // Ensure the dropdown menu is hidden
-                            const dropMenu = dropdown.querySelector(".dropdown-menu");
-                            if (dropMenu) {
-                                setTimeout(() => {
-                                    if (!dropdown.classList.contains("active")) {
-                                        dropMenu.style.display = "none";
-                                        console.log("Hiding dropdown menu from outside click");
-                                    }
-                                }, 300);
-                            }
-                        });
-                    }
-                });
-            }); // Close DOMContentLoaded event listener
-        </script>
-
+         </script>
+         
+      
         <!-- Scroll to Top Button Script -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -2558,14 +2378,6 @@
                 }
             });
         </script>
-        <!-- Newsletter Section -->
-        <news-letter></news-letter>
-
-        <!-- Font Awesome for newsletter icons -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-        
-        <!-- Newsletter Scripts -->
-        <script src="/js/newsletter.js"></script>
 
         <script>
             // Manual Slider JavaScript
@@ -2606,7 +2418,7 @@
         
         <!-- Firebase Configuration -->
         <script src="/js/firebase-config.js"></script>
-        
+        <script src="js/nav-loader.js"></script>
         <!-- Main Application Script -->
         <script src="/js/main.js"></script>
     </body>
