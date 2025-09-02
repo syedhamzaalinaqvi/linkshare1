@@ -66,6 +66,8 @@ body {
     align-items: center;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s ease;
+    min-height: 70px; /* Ensure consistent height */
 }
 
 .nav-brand {
@@ -98,10 +100,18 @@ body {
     cursor: pointer;
 }
 
+/* Desktop Navigation Styles */
+.nav-links {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+    z-index: 1000;
+}
+
 /* Mobile Navigation Styles */
-@media (max-width: 868px) {
+@media (max-width: 991px) {
     .nav-toggle {
-        display: block;
+        display: block !important;
     }
     
     .nav-links {
@@ -126,14 +136,6 @@ body {
         visibility: visible;
         transform: translateY(0);
     }
-}
-
-.nav-links {
-    display: flex;
-    gap: 10px;
-    list-style: none;
-    z-index: 1000;
-
 }
 
 .nav-links a {
