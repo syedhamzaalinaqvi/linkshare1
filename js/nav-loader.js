@@ -105,6 +105,8 @@ function initMobileMenu() {
             navLinks.classList.remove('active');
             if (window.innerWidth < 992) {
                 navLinks.style.display = 'none';
+                // Reset body scroll when closing menu
+                document.body.style.overflow = '';
             }
         }
         
