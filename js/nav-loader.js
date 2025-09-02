@@ -5,11 +5,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function loadNavbar() {
     try {
-        // Fetch the navbar content with cache
+        // Fetch the navbar content with no-cache to always get latest version
         const response = await fetch('/nav.html', {
-            cache: 'force-cache',
+            cache: 'no-store', // Don't use cache during development
             headers: {
-                'Cache-Control': 'max-age=3600'
+                'Pragma': 'no-cache',
+                'Cache-Control': 'no-cache'
             }
         });
         
@@ -22,10 +23,20 @@ async function loadNavbar() {
         temp.innerHTML = navContent;
         
         // Get the nav element from the loaded content
-        const navElement = temp.querySelector('nav');
+        const navElement = temp.querySelector('nav.navbar');
         
-        // Insert the navbar at the start of the body
-        document.body.insertAdjacentElement('afterbegin', navElement);
+        if (navElement) {
+            // Remove any existing navbar
+            const existingNav = document.querySelector('nav.navbar');
+            if (existingNav) {
+                existingNav.remove();
+            }
+            
+            // Insert the new navbar at the start of the body
+            document.body.insertAdjacentElement('afterbegin', navElement);
+        } else {
+            console.error('Navbar element not found in nav.html');
+        }
         
         // Set current page as active
         setActiveNavLink();
