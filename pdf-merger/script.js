@@ -350,13 +350,6 @@ clearButton.addEventListener('click', () => {
 // Initialize recent files list
 updateRecentFiles();
 
-// Mobile menu toggle
-const navToggle = document.querySelector('.nav-toggle');
-const navLinks = document.querySelector('.nav-links');
-
-navToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-});
 
 // Scroll to Top Button
 const scrollToTopBtn = document.querySelector('.scroll-to-top');

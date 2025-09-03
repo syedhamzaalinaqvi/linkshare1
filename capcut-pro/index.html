@@ -19,63 +19,15 @@
     <!-- Adsense Script-->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8130991342525434"
      crossorigin="anonymous"></script>
+      <!-- navbar -->
+        <script src="js/nav-loader.js"></script>
 </head>
 
 <body>
     <!-- Add skip link for accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <nav class="navbar" role="navigation" aria-label="Main navigation">
-        <a href="https://www.linkshare.online/" class="nav-brand">
-            <img src="/linkshare-favicon.png" class="logo" alt="LinkShare Logo">
-            <span class="nav-brand-link-text">LinkShare</span>
-        </a>
-
-        <button class="nav-toggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <ul class="nav-links">
-            <li><a href="https://www.linkshare.online/">Home</a></li>
-            <li><a href="/add-group">Add Group</a></li>
-            <li class="nav-dropdown">
-                <a href="#" class="dropbtn"> 🔥 Pro Unlocked  ▾</a>
-                <ul class="nav-dropdown-content">
-                    <li><a href="/tiktok-live">TikTok Live</a></li>
-                    <li><a href="/capcut-pro" class="active">CapCut Pro</a></li>
-                    <li><a href="/moviebox-premium">MovieBox Premium</a></li>
-                    <li><a href="/free-chatgpt-plus">Free ChatGPT Plus</a></li>
-                </ul>
-            </li>
-            <li class="nav-dropdown">
-                <a href="#" class="dropbtn">Tools ▾</a>
-                <ul class="nav-dropdown-content">
-                    <li><a href="/pdf-merger">Free Pdf Merger</a></li>
-                    <li><a href="/stylish-text-generator">Stylish Text Generator</a></li>
-                    <li><a href="/qr-code-generator">QR Code Generator</a></li>
-                    <li><a href="/qr-code-reader">QR Code Scanner/Reader</a></li>
-                    <li><a href="/short-url-generator">Short URL Generator</a></li>
-                    <li><a href="/m3u-playlist-viewer">M3U Playlist viewer</a></li>
-                    <li><a href="/document-converter">Document Converter</a></li>
-                    <li><a href="/math-problem-solver">Math Problem Solver</a></li>
-                </ul>
-            </li>
-            <li class="nav-dropdown">
-                <a href="#" class="dropbtn">Blog ▾</a>
-                <ul class="nav-dropdown-content">
-                    <li><a href="/new-tools-update">New Tools Updates</a></li>
-                    <li><a href="/usa-whatsapp-group-links">USA WhatsApp Group Links</a></li>
-                    <li><a href="/active-pakistani-whatsapp-group-links">Pakistani WhatsApp Group Links</a></li>
-                    <li><a href="/indian-whatsapp-group-links">Indian WhatsApp Group Links</a></li>
-                    <li><a href="/how-to-join-whatsapp-groups">How to Join WhatsApp Group</a></li>
-                </ul>
-            </li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
-            <li><a href="/privacy">Privacy</a></li>
-            <li><a href="/terms">Terms</a></li>
-        </ul>
-    </nav>
-
+  
     <main id="main-content">
         <section class="hero">
             <h1>CapCut Pro - Free CapCut Pro Features Unlocked</h1>
@@ -334,43 +286,7 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <script>
-        // nav toggle open close script
-        document.addEventListener("DOMContentLoaded", function () {
-            const navToggle = document.querySelector(".nav-toggle");
-            const navLinks = document.querySelector(".nav-links");
-            const dropdowns = document.querySelectorAll(".nav-dropdown");
-
-            navToggle.addEventListener("click", () => {
-                navLinks.classList.toggle("active");
-            });
-
-            dropdowns.forEach((dropdown) => {
-                const dropButton = dropdown.querySelector(".dropbtn");
-                dropButton.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    dropdown.classList.toggle("active");
-
-                    // Close other dropdowns
-                    dropdowns.forEach((otherDropdown) => {
-                        if (otherDropdown !== dropdown) {
-                            otherDropdown.classList.remove("active");
-                        }
-                    });
-                });
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener("click", (e) => {
-                if (!e.target.closest(".nav-dropdown")) {
-                    dropdowns.forEach((dropdown) => {
-                        dropdown.classList.remove("active");
-                    });
-                }
-            });
-        });
-    </script>
-
+   
     <!-- Scroll to Top Script -->
     <script>
         const scrollToTopBtn = document.querySelector(".scroll-to-top");
