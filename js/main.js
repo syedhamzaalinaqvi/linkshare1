@@ -1,5 +1,5 @@
 // Global variables
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 18;
 let lastDoc = null;
 let isLastPage = false;
 const groupContainer = document.querySelector(".groups-grid");
