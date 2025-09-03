@@ -508,14 +508,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Enhanced click outside handler
-        document.addEventListener("click", (e) => {
+       /* document.addEventListener("click", (e) => {
             const clickedInsideDropdown = e.target.closest(".dropdown");
             if (!clickedInsideDropdown) {
                 document.querySelectorAll(".dropdown").forEach((d) => {
                     d.classList.remove("active");
                 });
             }
-        });
+        });*/
         
         // Additional touch handler for mobile
         document.addEventListener("touchstart", (e) => {
