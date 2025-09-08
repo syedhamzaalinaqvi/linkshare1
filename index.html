@@ -2452,41 +2452,23 @@
             window.addEventListener('load', function() {
                 console.log('🚀 Page loaded - ensuring fresh data...');
                 
-                // Clear any browser storage that might cache groups
-                try {
-                    localStorage.removeItem('groupsCache');
-                    sessionStorage.clear();
-                    
-                    // Clear service worker cache if exists
-                    if ('caches' in window) {
-                        caches.keys().then(names => {
-                            names.forEach(name => {
-                                if (name.includes('groups') || name.includes('firebase')) {
-                                    caches.delete(name);
-                                }
-                            });
-                        });
-                    }
-                } catch(e) {
-                    console.warn('Cache clearing warning:', e);
-                }
+                // Smart initialization - no aggressive cache clearing
+                console.log('🧠 Using smart initialization...');
                 
-                // Force fresh data load after a brief delay
+                // Use smart loader that preserves user state
                 setTimeout(() => {
-                    if (window.loadGroupsOptimized) {
-                        console.log('⚡ Loading FRESH groups with optimized loader...');
+                    if (window.initializeSmartLoader) {
+                        console.log('⚡ Starting smart loader...');
+                        window.initializeSmartLoader();
+                    } else if (window.loadGroupsOptimized) {
+                        console.log('⚡ Fallback to optimized loader...');
                         window.loadGroupsOptimized();
                     }
-                }, 200);
+                }, 300);
             });
             
-            // Force fresh data when user returns to tab
-            document.addEventListener('visibilitychange', function() {
-                if (!document.hidden && window.loadGroupsOptimized) {
-                    console.log('👁️ Tab became visible - refreshing with fresh data...');
-                    setTimeout(() => window.clearGroupsCache(), 500);
-                }
-            });
+            // Smart visibility handling - managed by optimized loader
+            console.log('✨ Smart visibility handling enabled');
         </script>
     </body>
 </html>

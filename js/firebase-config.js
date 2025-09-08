@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         const db = firebase.firestore();
         
-// Configure Firestore with FRESH DATA PRIORITY to fix caching issues
+        // Configure Firestore with SMART CACHING for better performance
         try {
-            // IMPORTANT: NO PERSISTENCE for fresh data every time
-            // This fixes the caching issue you're experiencing
-            console.log('Firestore configured for FRESH DATA (no persistence)');
+            // Enable persistence but with smart refresh mechanism
+            await db.enablePersistence({ synchronizeTabs: true });
+            console.log('Firestore configured with SMART CACHING');
             
-            // Set cache settings to prioritize server data
+            // Set cache settings for optimal performance
             db.settings({
-                cacheSizeBytes: 1048576, // 1MB cache only
+                cacheSizeBytes: 5242880, // 5MB cache for better performance
                 ignoreUndefinedProperties: true
             });
             

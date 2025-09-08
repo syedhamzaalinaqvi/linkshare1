@@ -373,7 +373,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 // Use optimized loader if available, fallback to original
                 if (window.loadGroupsOptimized) {
-                    window.loadGroupsOptimized(category, currentCountry);
+                    const searchTerm = document.querySelector('#searchGroups')?.value || '';
+                    window.loadGroupsOptimized(category, currentCountry, searchTerm);
                 } else {
                     loadGroups(category, currentCountry);
                 }
@@ -427,7 +428,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     // Use optimized loader if available, fallback to original
                     if (window.loadGroupsOptimized) {
-                        window.loadGroupsOptimized(category, currentCountry);
+                        const searchTerm = document.querySelector('#searchGroups')?.value || '';
+                        window.loadGroupsOptimized(category, currentCountry, searchTerm);
                     } else {
                         loadGroups(category, currentCountry);
                     }
@@ -477,7 +479,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     // Use optimized loader if available, fallback to original
                     if (window.loadGroupsOptimized) {
-                        window.loadGroupsOptimized(currentTopic, country);
+                        const searchTerm = document.querySelector('#searchGroups')?.value || '';
+                        window.loadGroupsOptimized(currentTopic, country, searchTerm);
                     } else {
                         loadGroups(currentTopic, country);
                     }
@@ -552,7 +555,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 debounce(() => {
                     // Use optimized loader if available, fallback to original
                     if (window.loadGroupsOptimized) {
-                        window.loadGroupsOptimized(currentTopic, currentCountry);
+                        const searchTerm = searchInput.value || '';
+                        window.loadGroupsOptimized(currentTopic, currentCountry, searchTerm);
                     } else {
                         loadGroups(currentTopic, currentCountry);
                     }
