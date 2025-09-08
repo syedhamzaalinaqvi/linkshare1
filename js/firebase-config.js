@@ -34,20 +34,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         const db = firebase.firestore();
         
-        // Configure Firestore with default settings and proper error handling
+// Configure Firestore with FRESH DATA PRIORITY to fix caching issues
         try {
-            // Enable persistence with synchronization between tabs
-            await db.enablePersistence({ synchronizeTabs: true });
-            console.log('Firestore persistence enabled with tab synchronization');
+            // IMPORTANT: NO PERSISTENCE for fresh data every time
+            // This fixes the caching issue you're experiencing
+            console.log('Firestore configured for FRESH DATA (no persistence)');
             
-            // Set cache settings to balance between performance and freshness
+            // Set cache settings to prioritize server data
             db.settings({
-                cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+                cacheSizeBytes: 1048576, // 1MB cache only
+                ignoreUndefinedProperties: true
             });
             
         } catch (err) {
-            console.warn('Could not enable Firestore persistence:', err);
-            // Continue without persistence if it fails
+            console.warn('Firestore settings error:', err);
         }
         
         // Make db and Firebase functions available globally
@@ -70,14 +70,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         console.log("Firebase initialized successfully and global functions set");
         
-        // If we're on the home page, start loading groups immediately with current filters
-        if (document.querySelector('.groups-grid') && typeof loadGroups === 'function') {
+        // Trigger FAST loading with fresh data immediately
+        if (document.querySelector('.groups-grid')) {
+            console.log('🚀 Starting FAST fresh data loader...');
             setTimeout(() => {
-                // Use current filter state if available, otherwise use defaults
-                const currentTopic = window.currentTopic || 'all';
-                const currentCountry = window.currentCountry || 'all';
-                loadGroups(currentTopic, currentCountry);
-            }, 100);
+                // Use optimized fast loader instead of old loadGroups
+                if (typeof loadGroupsOptimized === 'function') {
+                    loadGroupsOptimized();
+                } else {
+                    // Fallback to current approach but with fresh data priority
+                    const currentTopic = window.currentTopic || 'all';
+                    const currentCountry = window.currentCountry || 'all';
+                    loadGroups(currentTopic, currentCountry);
+                }
+            }, 50);
         }
     } catch (error) {
         console.error("Error initializing Firebase:", error);

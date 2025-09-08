@@ -43,6 +43,14 @@
         <meta name="msvalidate.01" content="DF2117AB28E11C1B199752DCEC9CBBE0" />
         <!-- admitad -->
          <meta name="verify-admitad" content="3f4362bece" />
+         
+        <!-- CRITICAL: Prevent caching for fresh data every time -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="cache-control" content="no-cache">
+        <meta name="expires" content="0">
+        <meta name="pragma" content="no-cache">
         <!-- Adsense Script-->
         <script
             async
@@ -2418,9 +2426,67 @@
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
         
+        <!-- Optimized Loading Styles -->
+        <link rel="stylesheet" href="css/optimized-loading.css">
+        
         <!-- Firebase Configuration -->
-        <script src="/js/firebase-config.js"></script>
-        <!-- Main Application Script -->
-        <script src="/js/main.js"></script>
+        <script src="js/firebase-config.js"></script>
+        
+        <!-- OPTIMIZED: New fast loading system with cache busting -->
+        <script>
+            // Dynamic script loading with cache busting
+            const optimizedScript = document.createElement('script');
+            optimizedScript.src = 'js/optimized-group-loader.js?v=2.0&cb=' + Date.now();
+            optimizedScript.onload = function() {
+                console.log('⚡ Optimized loader loaded with cache buster: ' + Date.now());
+            };
+            document.head.appendChild(optimizedScript);
+        </script>
+        
+        <!-- Backup: Original scripts for fallback -->
+        <script src="js/main.js"></script>
+        
+        <!-- Force fresh data script -->
+        <script>
+            // CRITICAL: Force fresh data on every page load
+            window.addEventListener('load', function() {
+                console.log('🚀 Page loaded - ensuring fresh data...');
+                
+                // Clear any browser storage that might cache groups
+                try {
+                    localStorage.removeItem('groupsCache');
+                    sessionStorage.clear();
+                    
+                    // Clear service worker cache if exists
+                    if ('caches' in window) {
+                        caches.keys().then(names => {
+                            names.forEach(name => {
+                                if (name.includes('groups') || name.includes('firebase')) {
+                                    caches.delete(name);
+                                }
+                            });
+                        });
+                    }
+                } catch(e) {
+                    console.warn('Cache clearing warning:', e);
+                }
+                
+                // Force fresh data load after a brief delay
+                setTimeout(() => {
+                    if (window.loadGroupsOptimized) {
+                        console.log('⚡ Loading FRESH groups with optimized loader...');
+                        window.loadGroupsOptimized();
+                    }
+                }, 200);
+            });
+            
+            // Force fresh data when user returns to tab
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && window.loadGroupsOptimized) {
+                    console.log('👁️ Tab became visible - refreshing with fresh data...');
+                    setTimeout(() => window.clearGroupsCache(), 500);
+                }
+            });
+        </script>
     </body>
 </html>

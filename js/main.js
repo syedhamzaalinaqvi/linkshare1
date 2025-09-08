@@ -183,9 +183,9 @@ function loadGroups(
             }
         }
 
-        // Use default source (cache first, then server)
+        // FORCE FRESH DATA - Fix for caching issues
         const queryOptions = {
-            source: 'default'
+            source: 'server' // CRITICAL: Always get fresh data from server
         };
 
         // Remove the __name__ orderBy as it's not needed and requires an index
@@ -367,10 +367,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     .forEach((b) => b.classList.remove("active"));
                 btn.classList.add("active");
 
-                // Update state and load groups
+                // Update state and load groups with optimized loader
                 currentTopic = category;
                 window.currentTopic = category; // Store globally for Firebase config
-                loadGroups(category, currentCountry);
+                
+                // Use optimized loader if available, fallback to original
+                if (window.loadGroupsOptimized) {
+                    window.loadGroupsOptimized(category, currentCountry);
+                } else {
+                    loadGroups(category, currentCountry);
+                }
 
                 // Update dropdown to match selected category
                 const dropdownBtn = document
@@ -415,10 +421,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
                     }
 
-                    // Update state and load groups
+                    // Update state and load groups with optimized loader
                     currentTopic = category;
                     window.currentTopic = category; // Store globally for Firebase config
-                    loadGroups(category, currentCountry);
+                    
+                    // Use optimized loader if available, fallback to original
+                    if (window.loadGroupsOptimized) {
+                        window.loadGroupsOptimized(category, currentCountry);
+                    } else {
+                        loadGroups(category, currentCountry);
+                    }
 
                     // Close dropdown
                     btn.closest(".dropdown")?.classList.remove("active");
@@ -459,10 +471,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         dropdownBtn.innerHTML = `${btn.textContent} <i class="fas fa-chevron-down"></i>`;
                     }
 
-                    // Update state and load groups
+                    // Update state and load groups with optimized loader
                     currentCountry = country;
                     window.currentCountry = country; // Store globally for Firebase config
-                    loadGroups(currentTopic, country);
+                    
+                    // Use optimized loader if available, fallback to original
+                    if (window.loadGroupsOptimized) {
+                        window.loadGroupsOptimized(currentTopic, country);
+                    } else {
+                        loadGroups(currentTopic, country);
+                    }
 
                     // Close dropdown
                     btn.closest(".dropdown")?.classList.remove("active");
@@ -532,7 +550,12 @@ document.addEventListener("DOMContentLoaded", () => {
             searchInput.addEventListener(
                 "input",
                 debounce(() => {
-                    loadGroups(currentTopic, currentCountry);
+                    // Use optimized loader if available, fallback to original
+                    if (window.loadGroupsOptimized) {
+                        window.loadGroupsOptimized(currentTopic, currentCountry);
+                    } else {
+                        loadGroups(currentTopic, currentCountry);
+                    }
                 }, 300),
             );
         }
