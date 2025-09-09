@@ -88,56 +88,6 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
         if (!window.db || !window.firebaseInitialized) {
             throw new Error('Firebase not ready');
         }
-        
-        // AGGRESSIVE CACHE BUSTING - Force fresh data
-        console.log('🚨 FORCING FRESH DATA - Clearing all caches...');
-        
-        // Clear Firebase cache completely
-        try {
-            await window.db.clearPersistence();
-            console.log('✅ Firebase cache cleared');
-        } catch (error) {
-            console.log('⚠️ Could not clear Firebase cache (may already be cleared):', error.message);
-        }
-        
-        // Force terminate and restart Firebase
-        try {
-            await window.db.terminate();
-            window.db = firebase.firestore();
-            console.log('✅ Firebase restarted with fresh connection');
-        } catch (error) {
-            console.log('⚠️ Firebase restart warning:', error.message);
-        }
-        
-        // CLEAR ALL BROWSER CACHES
-        try {
-            // Clear service worker caches
-            if ('serviceWorker' in navigator && 'caches' in window) {
-                const cacheNames = await caches.keys();
-                await Promise.all(cacheNames.map(name => caches.delete(name)));
-                console.log('✅ Service worker caches cleared');
-            }
-            
-            // Clear local storage
-            localStorage.clear();
-            sessionStorage.clear();
-            console.log('✅ Browser storage cleared');
-            
-            // Clear IndexedDB if possible
-            if ('indexedDB' in window) {
-                try {
-                    indexedDB.deleteDatabase('firebase-heartbeat-database');
-                    indexedDB.deleteDatabase('firebase-app-check-database');
-                    indexedDB.deleteDatabase('firebaseLocalStorageDb');
-                    console.log('✅ IndexedDB cleared');
-                } catch (e) {
-                    console.log('⚠️ IndexedDB clear warning:', e.message);
-                }
-            }
-            
-        } catch (error) {
-            console.log('⚠️ Cache clearing warning:', error.message);
-        }
 
         let groups = [];
         
@@ -814,24 +764,22 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(initializeSmartLoader, 200);
 });
 
-// AGGRESSIVE visibility change handler - ALWAYS refresh for fresh data
+// Visibility change handler - refresh data when tab becomes active
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        console.log('👁️ Page became visible - FORCING FRESH DATA LOAD');
+        console.log('👁️ Page became visible - loading fresh data...');
         
-        // ALWAYS refresh data when page becomes visible - no time checks
-        console.log('🚀 FORCING fresh data load on visibility change...');
-        
-        // Get current search term from input
-        const searchInput = document.querySelector('#searchGroups');
-        const currentSearch = searchInput ? searchInput.value : '';
-        
-        // Force fresh load immediately
-        loadGroupsOptimized(
-            loadingState.currentFilter.topic,
-            loadingState.currentFilter.country,
-            currentSearch
-        );
+        // Refresh data when page becomes visible (but with small delay)
+        setTimeout(() => {
+            const searchInput = document.querySelector('#searchGroups');
+            const currentSearch = searchInput ? searchInput.value : '';
+            
+            loadGroupsOptimized(
+                loadingState.currentFilter.topic,
+                loadingState.currentFilter.country,
+                currentSearch
+            );
+        }, 500); // Small delay to let page settle
     }
 });
 
@@ -841,26 +789,3 @@ window.addEventListener('beforeunload', () => {
 });
 
 console.log('🚀 OPTIMIZED GROUP LOADER: Ready for fresh data loading!');
-
-// ULTIMATE FRESH DATA: Auto-refresh page if it's been open too long
-setInterval(() => {
-    const pageOpenTime = Date.now() - (window.pageLoadTime || Date.now());
-    const maxPageAge = 10 * 60 * 1000; // 10 minutes
-    
-    if (pageOpenTime > maxPageAge) {
-        console.log('🔄 Page has been open for too long, refreshing for fresh data...');
-        
-        // Save current state before refresh
-        const currentState = {
-            scrollPosition: window.pageYOffset,
-            filters: loadingState.currentFilter
-        };
-        sessionStorage.setItem('refreshState', JSON.stringify(currentState));
-        
-        // Force refresh
-        window.location.reload(true);
-    }
-}, 5 * 60 * 1000); // Check every 5 minutes
-
-// Track page load time
-window.pageLoadTime = Date.now();

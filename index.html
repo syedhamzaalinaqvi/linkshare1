@@ -44,17 +44,13 @@
         <!-- admitad -->
          <meta name="verify-admitad" content="3f4362bece" />
          
-        <!-- AGGRESSIVE: Prevent ALL caching for fresh data every time -->
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+        <!-- Reasonable cache prevention for fresh data -->
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
         <meta http-equiv="Pragma" content="no-cache">
-        <meta http-equiv="Expires" content="-1">
-        <meta name="cache-control" content="no-cache, no-store, must-revalidate, max-age=0">
-        <meta name="expires" content="-1">
+        <meta http-equiv="Expires" content="0">
+        <meta name="cache-control" content="no-cache">
+        <meta name="expires" content="0">
         <meta name="pragma" content="no-cache">
-        <meta http-equiv="Last-Modified" content="0">
-        <meta name="revisit-after" content="0">
-        <meta name="no-cache" content="true">
-        <meta name="no-store" content="true">
         <!-- Adsense Script-->
         <script
             async
@@ -1651,14 +1647,10 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
             
-            <!-- Load optimized group loader BEFORE other scripts - WITH CACHE BUSTERS -->
-            <script>
-                // Dynamic cache busters for fresh script loading
-                const cb = Date.now();
-                document.write('<script src="js/firebase-config.js?v=' + cb + '"><\/script>');
-                document.write('<script src="js/optimized-group-loader.js?v=' + cb + '"><\/script>');
-                document.write('<script src="js/main.js?v=' + cb + '"><\/script>');
-            </script>
+            <!-- Load optimized group loader BEFORE other scripts -->
+            <script src="js/firebase-config.js"></script>
+            <script src="js/optimized-group-loader.js"></script>
+            <script src="js/main.js"></script>
             <!-- Tools Section -->
             <section
                 class="groups-section"
