@@ -1,247 +1,932 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Cricket Score</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="🏏 Watch Asia Cup Live Cricket Scores & Updates! Get real-time cricket scores, Asia Cup matches, live commentary, player stats & match highlights. Updated every 30 seconds!" />
+    <meta name="keywords" content="Asia Cup live score, cricket live score, Asia Cup 2024, live cricket, cricket scores, Asia Cup matches, cricket updates, cricket commentary, Pakistan cricket, India cricket" />
+    <meta name="author" content="LinkShare" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="🏏 Asia Cup Live Cricket Scores - Real-time Updates | LinkShare" />
+    <meta property="og:description" content="Get live cricket scores for Asia Cup matches! Real-time updates, detailed scorecards, player stats & match commentary. Never miss a moment of Asia Cup action!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://www.linkshare.online/images/asia-cup-live-cricket.jpg" />
+    <meta property="og:url" content="https://www.linkshare.online/cricket-live-score/" />
+    <meta property="og:site_name" content="LinkShare" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="🏏 Asia Cup Live Cricket Scores - Real-time Updates | LinkShare" />
+    <meta name="twitter:description" content="Get live cricket scores for Asia Cup matches! Real-time updates, detailed scorecards, player stats & match commentary." />
+    <meta name="twitter:image" content="https://www.linkshare.online/images/asia-cup-live-cricket.jpg" />
+    
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="1 day" />
+    <meta http-equiv="Cache-Control" content="public, max-age=300" />
+    
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <title>🏏 Asia Cup Live Cricket Scores - Real-time Updates | LinkShare</title>
+    
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="../css/style.css?v=5.0&cache=20250909" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <!-- AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8130991342525434" crossorigin="anonymous"></script>
+    
+    <!-- Navbar Loader -->
+    <script src="../js/nav-loader.js"></script>
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        "name": "Asia Cup Live Cricket Scores",
+        "description": "Live cricket scores and updates for Asia Cup matches with real-time commentary and player statistics",
+        "startDate": "2024-08-30",
+        "location": {
+            "@type": "Place",
+            "name": "Asia Cup Venues"
+        },
+        "organizer": {
+            "@type": "Organization",
+            "name": "Asian Cricket Council"
+        },
+        "sport": "Cricket",
+        "url": "https://www.linkshare.online/cricket-live-score/"
     }
-
-    /* Floating Top Bar */
-    #liveTopBar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #ff5722;
-      color: white;
-      padding: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-      z-index: 9999;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Score Widget Container */
-    .score-widget {
-      max-width: 800px;
-      margin: 70px auto 20px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .score-widget h2 {
-      text-align: center;
-      color: #ff5722;
-      margin-bottom: 15px;
-    }
-
-    /* Filter Buttons */
-    .filters {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    .filters button {
-      background: #3a86ff;
-      color: white;
-      padding: 8px 16px;
-      margin: 0 5px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-    }
-
-    .filters button.active,
-    .filters button:hover {
-      background: #06d6a0;
-    }
-
-    /* Match Card */
-    .match-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #f9fafc;
-      margin: 10px 0;
-      padding: 15px;
-      border-radius: 10px;
-      border: 1px solid #e1e4e8;
-    }
-
-    .team-info {
-      display: flex;
-      align-items: center;
-    }
-
-    .team-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-
-    .match-details {
-      flex: 1;
-    }
-
-    .match-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #222;
-    }
-
-    .match-score {
-      font-size: 14px;
-      color: #3a86ff;
-    }
-
-    .match-status {
-      font-size: 13px;
-      color: #06d6a0;
-      margin-top: 5px;
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-      margin-top: 10px;
-      width: 100%;
-      height: 6px;
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 6px;
-      background-color: #3a86ff;
-      border-radius: 5px;
-      transition: width 0.3s;
-    }
-
-    .loading {
-      text-align: center;
-      font-size: 18px;
-      color: #999;
-    }
-  </style>
+    </script>
+    
+    <style>
+        /* Cricket Live Score Custom Styles */
+        :root {
+            --cricket-primary: #25D366;
+            --cricket-secondary: #128C7E;
+            --cricket-accent: #34B7F1;
+            --cricket-live: #e74c3c;
+            --cricket-upcoming: #f39c12;
+            --cricket-completed: #27ae60;
+            --asia-cup-gold: #FFD700;
+            --asia-cup-blue: #1E3A8A;
+        }
+        
+        /* Page Header Styles */
+        .page-header {
+            background: linear-gradient(135deg, var(--cricket-secondary) 0%, var(--cricket-primary) 100%);
+            color: white;
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Live Score Bar */
+        .live-score-bar {
+            position: sticky;
+            top: 80px;
+            background: linear-gradient(90deg, var(--cricket-live), #c0392b);
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+            z-index: 100;
+            margin-bottom: 2rem;
+            animation: pulse-glow 2s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            from { box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3); }
+            to { box-shadow: 0 4px 30px rgba(231, 76, 60, 0.6); }
+        }
+        
+        /* Featured Asia Cup Section */
+        .asia-cup-featured {
+            background: linear-gradient(135deg, var(--asia-cup-blue), var(--asia-cup-gold));
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            color: white;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .asia-cup-featured h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Match Filter Buttons */
+        .match-filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--gray-light);
+            color: var(--text-color);
+        }
+        
+        .filter-btn.active {
+            background: var(--cricket-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        /* Enhanced Match Cards */
+        .matches-container {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .match-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            border-left: 4px solid var(--cricket-primary);
+        }
+        
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .match-card.live {
+            border-left-color: var(--cricket-live);
+            background: linear-gradient(to right, rgba(231, 76, 60, 0.05), white);
+        }
+        
+        .match-card.upcoming {
+            border-left-color: var(--cricket-upcoming);
+        }
+        
+        .match-card.completed {
+            border-left-color: var(--cricket-completed);
+        }
+        
+        .match-header {
+            background: var(--gray-light);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .match-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--cricket-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .match-subtitle {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .match-body {
+            padding: 1.5rem;
+        }
+        
+        .teams-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .team-flag {
+            width: 40px;
+            height: 30px;
+            border-radius: 4px;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .team-info h4 {
+            font-size: 1rem;
+            margin: 0;
+            color: var(--cricket-secondary);
+        }
+        
+        .team-score {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--cricket-primary);
+        }
+        
+        .match-status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        
+        .match-status.live {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--cricket-live);
+            animation: live-pulse 2s infinite;
+        }
+        
+        .match-status.upcoming {
+            background: rgba(243, 156, 18, 0.1);
+            color: var(--cricket-upcoming);
+        }
+        
+        .match-status.completed {
+            background: rgba(39, 174, 96, 0.1);
+            color: var(--cricket-completed);
+        }
+        
+        @keyframes live-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .match-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-item .label {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-item .value {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--cricket-secondary);
+            margin-top: 2px;
+        }
+        
+        /* Progress Bar */
+        .overs-progress {
+            margin-top: 1rem;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cricket-primary), var(--cricket-secondary));
+            transition: width 0.5s ease;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .teams-section {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .match-details {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .asia-cup-featured h2 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Loading States */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid var(--cricket-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
+    <!-- Navigation will be loaded here -->
+    <div id="header"></div>
 
-  <!-- Floating Live Score Bar -->
-  <div id="liveTopBar">Fetching Live Scores...</div>
-
-  <!-- Main Widget -->
-  <div class="score-widget">
-    <h2>🏏 Live Cricket Scores</h2>
-    <div class="filters">
-      <button class="filter-btn active" data-filter="live">Live</button>
-      <button class="filter-btn" data-filter="upcoming">Upcoming</button>
-      <button class="filter-btn" data-filter="completed">Completed</button>
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>🏏 Asia Cup Live Cricket Scores</h1>
+        <p>Real-time updates • Live commentary • Complete scorecards</p>
     </div>
-    <div id="liveScores" class="loading">Fetching live matches...</div>
-  </div>
 
-  <script>
-    const API_KEY = "b43dd0b5-ccbf-4bb9-af24-dc9596b80f87";
-    const API_URL = `https://api.cricapi.com/v1/currentMatches?apikey=${API_KEY}&offset=0`;
+    <!-- Live Score Bar -->
+    <div class="live-score-bar" id="liveScoreBar">
+        <i class="fas fa-spinner fa-spin"></i> Fetching live scores...
+    </div>
 
-    let matches = [];
-    const scoreContainer = document.getElementById("liveScores");
-    const topBar = document.getElementById("liveTopBar");
+    <main class="page-container">
+        <!-- Featured Asia Cup Section -->
+        <div class="asia-cup-featured">
+            <h2>🏆 Asia Cup 2024 - Featured Matches</h2>
+            <p>Don't miss the most exciting cricket tournament in Asia! Live scores, ball-by-ball commentary, and comprehensive match analysis.</p>
+            <div id="asiaCupMatches" class="asia-cup-matches">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading Asia Cup matches...</p>
+                </div>
+            </div>
+        </div>
 
-    async function fetchLiveScores() {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        matches = data.data || [];
-        renderMatches("live");
+        <!-- Match Filters -->
+        <div class="match-filters">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-globe"></i> All Matches
+            </button>
+            <button class="filter-btn" data-filter="live">
+                <i class="fas fa-circle" style="color: #e74c3c;"></i> Live
+            </button>
+            <button class="filter-btn" data-filter="upcoming">
+                <i class="fas fa-clock" style="color: #f39c12;"></i> Upcoming
+            </button>
+            <button class="filter-btn" data-filter="completed">
+                <i class="fas fa-check-circle" style="color: #27ae60;"></i> Completed
+            </button>
+        </div>
 
-        // Show top bar score if there's at least one match
-        if (matches.length > 0) {
-          const m = matches[0];
-          const score = m.score && m.score.length > 0 
-            ? `${m.score[0].r}/${m.score[0].w} (${m.score[0].o} ov)`
-            : "Live Score Not Available";
-          topBar.innerHTML = `🔥 ${m.name} → ${score}`;
-        } else {
-          topBar.innerHTML = "🏏 No Live Matches Right Now";
+        <!-- Matches Container -->
+        <div class="matches-container" id="matchesContainer">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Loading cricket matches...</p>
+            </div>
+        </div>
+
+        <!-- Additional Cricket Information -->
+        <div class="content-section" style="margin-top: 3rem;">
+            <h2>🏏 Live Cricket Scores & Updates</h2>
+            <p>Stay updated with the latest cricket scores from around the world! Our live cricket score service provides real-time updates for all major cricket tournaments including Asia Cup, IPL, PSL, BBL, CPL, and international matches.</p>
+            
+            <h3>📊 Features:</h3>
+            <ul>
+                <li><strong>Real-time Updates:</strong> Live scores updated every 30 seconds</li>
+                <li><strong>Comprehensive Coverage:</strong> All international and domestic cricket matches</li>
+                <li><strong>Detailed Scorecards:</strong> Ball-by-ball commentary and player statistics</li>
+                <li><strong>Match Analysis:</strong> Expert insights and match predictions</li>
+                <li><strong>Mobile Optimized:</strong> Perfect viewing experience on all devices</li>
+            </ul>
+
+            <h3>🏆 Tournament Coverage:</h3>
+            <div class="tournament-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <div class="tournament-card" style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: var(--cricket-secondary); margin-bottom: 0.5rem;">🏆 Asia Cup</h4>
+                    <p style="font-size: 0.9rem; color: #666;">Complete coverage of Asia Cup matches</p>
+                </div>
+                <div class="tournament-card" style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: var(--cricket-secondary); margin-bottom: 0.5rem;">🇮🇳 IPL</h4>
+                    <p style="font-size: 0.9rem; color: #666;">Indian Premier League live scores</p>
+                </div>
+                <div class="tournament-card" style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: var(--cricket-secondary); margin-bottom: 0.5rem;">🇵🇰 PSL</h4>
+                    <p style="font-size: 0.9rem; color: #666;">Pakistan Super League updates</p>
+                </div>
+                <div class="tournament-card" style="background: white; padding: 1rem; border-radius: 8px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h4 style="color: var(--cricket-secondary); margin-bottom: 0.5rem;">🌍 International</h4>
+                    <p style="font-size: 0.9rem; color: #666;">Test, ODI & T20I match scores</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo-container">
+                    <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
+                    <h3>LinkShare</h3>
+                </div>
+                <div class="footer-tagline">
+                    <p>Your ultimate destination for live cricket scores and updates</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 LinkShare. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Cricket Live Score Application
+        class CricketLiveScore {
+            constructor() {
+                this.API_KEY = "b43dd0b5-ccbf-4bb9-af24-dc9596b80f87";
+                this.BASE_URL = "https://api.cricapi.com/v1";
+                this.matches = [];
+                this.currentFilter = 'all';
+                this.refreshInterval = null;
+                
+                // DOM Elements
+                this.liveScoreBar = document.getElementById('liveScoreBar');
+                this.matchesContainer = document.getElementById('matchesContainer');
+                this.asiaCupMatches = document.getElementById('asiaCupMatches');
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    this.setupEventListeners();
+                    await this.fetchMatches();
+                    this.startAutoRefresh();
+                } catch (error) {
+                    console.error('Failed to initialize cricket live score:', error);
+                    this.showError('Failed to load cricket data');
+                }
+            }
+            
+            setupEventListeners() {
+                // Filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.renderMatches();
+                    });
+                });
+                
+                // Scroll to top functionality
+                const scrollBtn = document.querySelector('.scroll-to-top');
+                if (scrollBtn) {
+                    window.addEventListener('scroll', () => {
+                        if (window.pageYOffset > 300) {
+                            scrollBtn.classList.add('visible');
+                        } else {
+                            scrollBtn.classList.remove('visible');
+                        }
+                    });
+                    
+                    scrollBtn.addEventListener('click', () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                }
+            }
+            
+            async fetchMatches() {
+                try {
+                    const currentMatchesUrl = `${this.BASE_URL}/currentMatches?apikey=${this.API_KEY}&offset=0`;
+                    const response = await fetch(currentMatchesUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        this.matches = data.data || [];
+                        this.updateLiveScoreBar();
+                        this.renderMatches();
+                        this.renderAsiaCupSection();
+                    } else {
+                        throw new Error(data.reason || 'API returned error status');
+                    }
+                } catch (error) {
+                    console.error('Error fetching matches:', error);
+                    this.showError('Failed to load cricket matches. Please try again later.');
+                }
+            }
+            
+            updateLiveScoreBar() {
+                const liveMatches = this.matches.filter(match => 
+                    match.matchStarted && !match.matchEnded
+                );
+                
+                if (liveMatches.length > 0) {
+                    const match = liveMatches[0];
+                    const scoreText = this.getScoreText(match);
+                    this.liveScoreBar.innerHTML = `
+                        <i class="fas fa-circle" style="color: #e74c3c; animation: blink 1s infinite;"></i>
+                        <strong>LIVE:</strong> ${match.name} - ${scoreText}
+                    `;
+                } else {
+                    this.liveScoreBar.innerHTML = `
+                        <i class="fas fa-clock"></i> 
+                        No live matches currently. Check upcoming matches below!
+                    `;
+                }
+            }
+            
+            renderAsiaCupSection() {
+                const asiaCupMatches = this.matches.filter(match => 
+                    match.name.toLowerCase().includes('asia cup') ||
+                    match.matchType === 'ODI' ||
+                    match.matchType === 'T20I'
+                ).slice(0, 3);
+                
+                if (asiaCupMatches.length > 0) {
+                    let html = '<div class="asia-cup-grid" style="display: grid; gap: 1rem; margin-top: 1rem;">';
+                    
+                    asiaCupMatches.forEach(match => {
+                        const statusClass = this.getMatchStatusClass(match);
+                        const scoreText = this.getScoreText(match);
+                        
+                        html += `
+                            <div class="match-card ${statusClass}" style="margin: 0;">
+                                <div class="match-header">
+                                    <div class="match-title">${match.name}</div>
+                                    <div class="match-subtitle">${match.venue || 'Venue TBA'} • ${match.date || 'Date TBA'}</div>
+                                </div>
+                                <div class="match-body">
+                                    <div class="teams-section">
+                                        ${this.renderTeams(match)}
+                                    </div>
+                                    <div class="match-status ${statusClass}">
+                                        ${match.status || 'Status Unknown'}
+                                    </div>
+                                    ${scoreText !== 'No score available' ? `
+                                        <div class="overs-progress">
+                                            ${this.renderProgressBar(match)}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    this.asiaCupMatches.innerHTML = html;
+                } else {
+                    this.asiaCupMatches.innerHTML = `
+                        <div class="no-matches" style="text-align: center; padding: 2rem; color: white;">
+                            <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.7;"></i>
+                            <p>No featured matches available at the moment</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            renderMatches() {
+                const filteredMatches = this.filterMatches();
+                
+                if (filteredMatches.length === 0) {
+                    this.matchesContainer.innerHTML = `
+                        <div class="no-matches" style="text-align: center; padding: 3rem; background: white; border-radius: 12px; box-shadow: var(--shadow);">
+                            <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                            <h3 style="color: var(--cricket-secondary); margin-bottom: 0.5rem;">No matches found</h3>
+                            <p style="color: #666;">No ${this.currentFilter} matches available right now.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                filteredMatches.forEach(match => {
+                    html += this.renderMatchCard(match);
+                });
+                
+                this.matchesContainer.innerHTML = html;
+            }
+            
+            renderMatchCard(match) {
+                const statusClass = this.getMatchStatusClass(match);
+                const scoreText = this.getScoreText(match);
+                const teams = this.renderTeams(match);
+                
+                return `
+                    <div class="match-card ${statusClass}">
+                        <div class="match-header">
+                            <div class="match-title">${match.name}</div>
+                            <div class="match-subtitle">
+                                ${match.venue || 'Venue TBA'} • ${match.matchType || 'Format TBA'} • ${match.date || 'Date TBA'}
+                            </div>
+                        </div>
+                        <div class="match-body">
+                            <div class="teams-section">
+                                ${teams}
+                            </div>
+                            
+                            <div class="match-status ${statusClass}">
+                                ${match.status || 'Status Unknown'}
+                            </div>
+                            
+                            ${this.renderMatchDetails(match)}
+                            
+                            ${scoreText !== 'No score available' ? `
+                                <div class="overs-progress">
+                                    ${this.renderProgressBar(match)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderTeams(match) {
+                const teams = match.teams || [];
+                if (teams.length < 2) {
+                    return '<p>Team information not available</p>';
+                }
+                
+                const team1 = teams[0];
+                const team2 = teams[1];
+                
+                // Get team scores
+                const team1Score = this.getTeamScore(match, team1);
+                const team2Score = this.getTeamScore(match, team2);
+                
+                return `
+                    <div class="team">
+                        <img class="team-flag" src="${this.getCountryFlag(team1)}" alt="${team1}" onerror="this.src='https://flagsapi.com/XX/shiny/64.png'" />
+                        <div class="team-info">
+                            <h4>${team1}</h4>
+                            <div class="team-score">${team1Score}</div>
+                        </div>
+                    </div>
+                    <div class="team">
+                        <img class="team-flag" src="${this.getCountryFlag(team2)}" alt="${team2}" onerror="this.src='https://flagsapi.com/XX/shiny/64.png'" />
+                        <div class="team-info">
+                            <h4>${team2}</h4>
+                            <div class="team-score">${team2Score}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderMatchDetails(match) {
+                const details = [];
+                
+                if (match.venue) {
+                    details.push({ label: 'Venue', value: match.venue });
+                }
+                
+                if (match.matchType) {
+                    details.push({ label: 'Format', value: match.matchType });
+                }
+                
+                if (match.series) {
+                    details.push({ label: 'Series', value: match.series });
+                }
+                
+                if (match.tossWinner && match.tossChoice) {
+                    details.push({ label: 'Toss', value: `${match.tossWinner} (${match.tossChoice})` });
+                }
+                
+                if (details.length === 0) return '';
+                
+                return `
+                    <div class="match-details">
+                        ${details.map(detail => `
+                            <div class="detail-item">
+                                <div class="label">${detail.label}</div>
+                                <div class="value">${detail.value}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            renderProgressBar(match) {
+                if (!match.score || match.score.length === 0) return '';
+                
+                const currentInning = match.score[0];
+                if (!currentInning.o) return '';
+                
+                const overs = parseFloat(currentInning.o);
+                const maxOvers = match.matchType === 'T20' || match.matchType === 'T20I' ? 20 : 50;
+                const progress = Math.min((overs / maxOvers) * 100, 100);
+                
+                return `
+                    <div class="progress-label">
+                        <span>Overs</span>
+                        <span>${overs}/${maxOvers}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                `;
+            }
+            
+            getMatchStatusClass(match) {
+                if (match.matchStarted && !match.matchEnded) return 'live';
+                if (match.matchEnded) return 'completed';
+                return 'upcoming';
+            }
+            
+            getScoreText(match) {
+                if (!match.score || match.score.length === 0) {
+                    return 'No score available';
+                }
+                
+                const currentInning = match.score[0];
+                return `${currentInning.r || 0}/${currentInning.w || 0} (${currentInning.o || 0} ov)`;
+            }
+            
+            getTeamScore(match, teamName) {
+                if (!match.score || match.score.length === 0) {
+                    return '-';
+                }
+                
+                const teamScore = match.score.find(score => score.inning === teamName);
+                if (teamScore) {
+                    return `${teamScore.r || 0}/${teamScore.w || 0} (${teamScore.o || 0})`;
+                }
+                
+                return '-';
+            }
+            
+            getCountryFlag(teamName) {
+                const flagMap = {
+                    'Pakistan': 'https://flagsapi.com/PK/shiny/64.png',
+                    'India': 'https://flagsapi.com/IN/shiny/64.png',
+                    'Sri Lanka': 'https://flagsapi.com/LK/shiny/64.png',
+                    'Bangladesh': 'https://flagsapi.com/BD/shiny/64.png',
+                    'Afghanistan': 'https://flagsapi.com/AF/shiny/64.png',
+                    'Australia': 'https://flagsapi.com/AU/shiny/64.png',
+                    'England': 'https://flagsapi.com/GB/shiny/64.png',
+                    'South Africa': 'https://flagsapi.com/ZA/shiny/64.png',
+                    'New Zealand': 'https://flagsapi.com/NZ/shiny/64.png',
+                    'West Indies': 'https://flagsapi.com/JM/shiny/64.png',
+                    'Zimbabwe': 'https://flagsapi.com/ZW/shiny/64.png'
+                };
+                
+                return flagMap[teamName] || 'https://flagsapi.com/XX/shiny/64.png';
+            }
+            
+            filterMatches() {
+                if (this.currentFilter === 'all') return this.matches;
+                
+                return this.matches.filter(match => {
+                    switch (this.currentFilter) {
+                        case 'live':
+                            return match.matchStarted && !match.matchEnded;
+                        case 'upcoming':
+                            return !match.matchStarted;
+                        case 'completed':
+                            return match.matchEnded;
+                        default:
+                            return true;
+                    }
+                });
+            }
+            
+            startAutoRefresh() {
+                // Refresh every 30 seconds
+                this.refreshInterval = setInterval(() => {
+                    this.fetchMatches();
+                }, 30000);
+            }
+            
+            showError(message) {
+                this.matchesContainer.innerHTML = `
+                    <div class="error-state" style="text-align: center; padding: 3rem; background: rgba(231, 76, 60, 0.1); border-radius: 12px; border: 1px solid rgba(231, 76, 60, 0.2);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #e74c3c; margin-bottom: 1rem;"></i>
+                        <h3 style="color: #e74c3c; margin-bottom: 0.5rem;">Error Loading Data</h3>
+                        <p style="color: #666; margin-bottom: 1rem;">${message}</p>
+                        <button onclick="cricketApp.fetchMatches()" style="background: #e74c3c; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-refresh"></i> Try Again
+                        </button>
+                    </div>
+                `;
+                
+                this.liveScoreBar.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Unable to load live scores
+                `;
+            }
         }
-      } catch (error) {
-        scoreContainer.innerHTML = "<p>Failed to fetch scores. Try again later.</p>";
-        console.error("Error fetching scores:", error);
-      }
-    }
-
-    function renderMatches(filter) {
-      let html = "";
-
-      const filtered = matches.filter(match => {
-        if (filter === "live") return match.matchStarted && !match.matchEnded;
-        if (filter === "upcoming") return !match.matchStarted;
-        if (filter === "completed") return match.matchEnded;
-        return true;
-      });
-
-      if (filtered.length === 0) {
-        scoreContainer.innerHTML = `<p>No ${filter} matches available right now.</p>`;
-        return;
-      }
-
-      filtered.forEach(match => {
-        const team1 = match.teams[0] || "Team A";
-        const team2 = match.teams[1] || "Team B";
-        const score = match.score && match.score.length > 0 
-          ? `${match.score[0].inning}: ${match.score[0].r}/${match.score[0].w} (${match.score[0].o} ov)`
-          : "Score not available";
-        const overs = match.score && match.score.length > 0 ? match.score[0].o : 0;
-        const progress = overs ? Math.min((overs / 20) * 100, 100) : 0;
-
-        html += `
-          <div class="match-card">
-            <div class="team-info">
-              <img class="team-logo" src="https://flagsapi.com/IN/shiny/64.png" alt="${team1}" />
-              <img class="team-logo" src="https://flagsapi.com/PK/shiny/64.png" alt="${team2}" />
-            </div>
-            <div class="match-details">
-              <div class="match-title">${match.name}</div>
-              <div class="match-score">${score}</div>
-              <div class="match-status">${match.status}</div>
-              <div class="progress-bar">
-                <div class="progress" style="width:${progress}%;"></div>
-              </div>
-            </div>
-          </div>
+        
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.cricketApp = new CricketLiveScore();
+        });
+        
+        // Add some CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0.3; }
+            }
+            
+            .scroll-to-top {
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: var(--cricket-primary);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                cursor: pointer;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1000;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            }
+            
+            .scroll-to-top.visible {
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .scroll-to-top:hover {
+                background: var(--cricket-secondary);
+                transform: translateY(-2px);
+            }
         `;
-      });
-
-      scoreContainer.innerHTML = html;
-    }
-
-    // Filter Buttons
-    document.querySelectorAll(".filter-btn").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        renderMatches(button.dataset.filter);
-      });
-    });
-
-    // Fetch initial scores
-    fetchLiveScores();
-
-    // Auto-refresh every 30 seconds
-    setInterval(fetchLiveScores, 30000);
-  </script>
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
