@@ -12,30 +12,36 @@
     --transition: all 0.3s ease;
 }
 
-/* Enhanced Loading Styles - PERFECTLY Centered on ALL devices */
+/* SIMPLE CENTERED LOADING - Works on ALL devices */
 .simple-loading,
 .optimized-loading,
 .loading,
 .no-groups,
 .error-state {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1000 !important;
+    
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 3rem 1rem;
-    min-height: 200px;
-    width: 100% !important;
-    font-size: 1.2rem;
-    color: #666;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
-    margin: 1rem auto !important;
-    max-width: 500px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+    
+    padding: 2rem 1.5rem !important;
+    min-height: 120px !important;
+    width: 90% !important;
+    max-width: 400px !important;
+    
+    font-size: 1.1rem !important;
+    color: #666 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    
+    margin: 0 !important;
 }
 
 .simple-loading::before,
@@ -83,58 +89,31 @@
     to { transform: rotate(360deg); }
 }
 
-/* Mobile optimization for PERFECT centering on all devices */
+/* Mobile styles - already centered with fixed positioning */
 @media (max-width: 768px) {
     .simple-loading,
     .optimized-loading,
     .loading,
     .no-groups,
     .error-state {
-        padding: 2rem 1rem !important;
-        min-height: 150px !important;
+        width: 95% !important;
+        max-width: 350px !important;
+        padding: 1.5rem 1rem !important;
         font-size: 1rem !important;
-        margin: 1rem auto !important;
-        max-width: calc(100vw - 2rem) !important;
-        width: calc(100vw - 2rem) !important;
-        position: relative !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-    }
-    
-    .simple-loading::before,
-    .optimized-loading::before {
-        font-size: 1.5rem !important;
-        margin-bottom: 0.5rem !important;
-        display: block !important;
-    }
-    
-    .no-groups::before,
-    .error-state::before {
-        font-size: 2rem !important;
-        margin-bottom: 0.5rem !important;
-        display: block !important;
     }
 }
 
-/* Extra small mobile devices */
 @media (max-width: 480px) {
     .simple-loading,
     .optimized-loading,
     .loading,
     .no-groups,
     .error-state {
-        padding: 1.5rem 0.5rem !important;
-        min-height: 120px !important;
+        width: 90% !important;
+        max-width: 300px !important;
+        padding: 1rem 0.8rem !important;
         font-size: 0.9rem !important;
-        margin: 0.5rem auto !important;
-        max-width: calc(100vw - 1rem) !important;
-        width: calc(100vw - 1rem) !important;
-        border-radius: 8px !important;
+        min-height: 100px !important;
     }
 }
 

@@ -647,46 +647,17 @@ function initializeSmartLoader() {
     
     const savedState = restoreUserState();
     
-    if (savedState && Date.now() - savedState.lastFreshLoad < CONFIG.FRESH_DATA_INTERVAL) {
-        console.log('🚀 Restoring user session...');
-        
-        // Restore filters if they exist
-        if (savedState.currentFilter) {
-            loadingState.currentFilter = savedState.currentFilter;
-            
-            // Update UI filters to match saved state - with delay to ensure DOM is ready
-            setTimeout(() => {
-                updateUIFilters(savedState.currentFilter);
-            }, 300);
-            
-            // Try again after a longer delay in case elements weren't ready
-            setTimeout(() => {
-                updateUIFilters(savedState.currentFilter);
-            }, 1000);
-        }
-        
-        // Load groups with saved filters
-        loadGroupsOptimized(
-            loadingState.currentFilter.topic,
-            loadingState.currentFilter.country,
-            loadingState.currentFilter.search
-        );
-        
-        // Restore scroll position after a brief delay
-        if (savedState.userPosition > 0) {
-            setTimeout(() => {
-                window.scrollTo({
-                    top: savedState.userPosition,
-                    behavior: 'smooth'
-                });
-            }, 1000);
-        }
-    } else {
-        console.log('🆕 Loading fresh data...');
-        // Clear old state and load fresh
-        sessionStorage.removeItem(CONFIG.STATE_STORAGE_KEY);
-        loadGroupsOptimized();
-    }
+    // ALWAYS load ALL groups by default - no filter persistence
+    console.log('🆕 Loading ALL groups by default (no filters)...');
+    
+    // Clear any saved state to prevent auto-selection
+    sessionStorage.removeItem(CONFIG.STATE_STORAGE_KEY);
+    
+    // Reset to default state
+    loadingState.currentFilter = { topic: 'all', country: 'all', search: '' };
+    
+    // Load ALL groups without any filters
+    loadGroupsOptimized('all', 'all', '');
 }
 
 /**
