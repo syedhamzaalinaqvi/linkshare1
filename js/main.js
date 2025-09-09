@@ -183,10 +183,12 @@ function loadGroups(
             }
         }
 
-        // FORCE FRESH DATA - Fix for caching issues
+        // FORCE FRESH DATA - Always get latest groups
         const queryOptions = {
-            source: 'server' // CRITICAL: Always get fresh data from server
+            source: 'server' // CRITICAL: Always get fresh data from server, no cache
         };
+        
+        console.log('🔄 [main.js] Using server source for fresh data');
 
         // Remove the __name__ orderBy as it's not needed and requires an index
         // Just use the timestamp for ordering which should already be indexed
@@ -1100,27 +1102,33 @@ function showNotification(message, type) {
     }, 3000);
 }
 
-// Helper function for time formatting
+// Helper function for time formatting - FIXED
 function timeAgo(date) {
     try {
-        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-
-        let interval = seconds / 31536000;
-        if (interval > 1) return Math.floor(interval) + " years ago";
-
-        interval = seconds / 2592000;
-        if (interval > 1) return Math.floor(interval) + " months ago";
-
-        interval = seconds / 86400;
-        if (interval > 1) return Math.floor(interval) + " days ago";
-
-        interval = seconds / 3600;
-        if (interval > 1) return Math.floor(interval) + " hours ago";
-
-        interval = seconds / 60;
-        if (interval > 1) return Math.floor(interval) + " minutes ago";
-
-        return Math.floor(seconds) + " seconds ago";
+        const now = new Date();
+        const targetDate = new Date(date);
+        const seconds = Math.floor((now - targetDate) / 1000);
+        
+        console.log('🕰️ [main.js] Time calculation:', { now, targetDate, seconds });
+        
+        if (seconds < 30) return "Just now";
+        if (seconds < 60) return Math.floor(seconds) + " seconds ago";
+        
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return minutes === 1 ? "1 minute ago" : minutes + " minutes ago";
+        
+        const hours = Math.floor(seconds / 3600);
+        if (hours < 24) return hours === 1 ? "1 hour ago" : hours + " hours ago";
+        
+        const days = Math.floor(seconds / 86400);
+        if (days < 30) return days === 1 ? "1 day ago" : days + " days ago";
+        
+        const months = Math.floor(seconds / 2592000);
+        if (months < 12) return months === 1 ? "1 month ago" : months + " months ago";
+        
+        const years = Math.floor(seconds / 31536000);
+        return years === 1 ? "1 year ago" : years + " years ago";
+        
     } catch (error) {
         console.error("Error calculating time ago:", error);
         return "Recently added";

@@ -230,15 +230,13 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             console.log('🚀 FAST: Using category-first strategy to avoid index issues...');
             
             try {
-                // Use cache-first approach for better speed
-                const query = window.db.collection('groups')
-                    .where('category', '==', topic)
-                    .orderBy('timestamp', 'desc')
-                    .limit(100); // Limit to improve speed
-                    
-                const snapshot = await query.get({ source: 'cache' }).catch(() => 
-                    query.get({ source: 'server' })
-                );
+            // ALWAYS get fresh data from server - no cache
+            const query = window.db.collection('groups')
+                .where('category', '==', topic)
+                .orderBy('timestamp', 'desc')
+                .limit(200);
+                
+            const snapshot = await query.get({ source: 'server' });
                 
                 console.log(`📊 Category query returned ${snapshot.size} documents`);
                 
@@ -258,15 +256,13 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             } catch (error) {
                 console.warn('⚠️ Category filter failed, trying country filter:', error.message);
                 
-                // Fallback: try country filter instead
+                // Fallback: try country filter instead - FRESH from server
                 const query = window.db.collection('groups')
                     .where('country', '==', country)
                     .orderBy('timestamp', 'desc')
                     .limit(100);
                     
-                const snapshot = await query.get({ source: 'cache' }).catch(() => 
-                    query.get({ source: 'server' })
-                );
+                const snapshot = await query.get({ source: 'server' });
                 
                 snapshot.forEach(doc => {
                     const data = doc.data();
@@ -280,17 +276,15 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             }
             
         } else if (topic !== 'all') {
-            // Only category filter - use caching for speed
-            console.log('⚡ FAST: Category-only filter with caching...');
+            // Only category filter - FRESH from server
+            console.log('⚡ FRESH: Category-only filter from server...');
             
             const query = window.db.collection('groups')
                 .where('category', '==', topic)
                 .orderBy('timestamp', 'desc')
-                .limit(200); // Increased limit for single filter
+                .limit(200);
                 
-            const snapshot = await query.get({ source: 'cache' }).catch(() => 
-                query.get({ source: 'server' })
-            );
+            const snapshot = await query.get({ source: 'server' });
             
             snapshot.forEach(doc => {
                 allGroups.push({
@@ -302,17 +296,15 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             console.log(`🎯 Category filter returned ${allGroups.length} groups`);
             
         } else if (country !== 'all') {
-            // Only country filter - use caching for speed
-            console.log('⚡ FAST: Country-only filter with caching...');
+            // Only country filter - FRESH data from server
+            console.log('⚡ FRESH: Country-only filter from server...');
             
             const query = window.db.collection('groups')
                 .where('country', '==', country)
                 .orderBy('timestamp', 'desc')
-                .limit(200); // Increased limit for single filter
+                .limit(200);
                 
-            const snapshot = await query.get({ source: 'cache' }).catch(() => 
-                query.get({ source: 'server' })
-            );
+            const snapshot = await query.get({ source: 'server' });
             
             snapshot.forEach(doc => {
                 allGroups.push({
@@ -324,16 +316,14 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             console.log(`🌍 Country filter returned ${allGroups.length} groups`);
             
         } else {
-            // No filters - get recent groups with aggressive caching
-            console.log('⚡ FAST: Getting recent groups with smart caching...');
+            // No filters - get FRESH recent groups from server
+            console.log('⚡ FRESH: Getting recent groups from server...');
             
             const query = window.db.collection('groups')
                 .orderBy('timestamp', 'desc')
-                .limit(300); // Reasonable limit for speed
+                .limit(300);
                 
-            const snapshot = await query.get({ source: 'cache' }).catch(() => 
-                query.get({ source: 'server' })
-            );
+            const snapshot = await query.get({ source: 'server' });
             
             snapshot.forEach(doc => {
                 allGroups.push({
@@ -629,14 +619,31 @@ async function loadMoreGroups() {
  * UTILITY FUNCTIONS
  */
 function formatTimeAgo(date) {
-    const seconds = Math.floor((new Date() - date) / 1000);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
     
-    if (seconds < 60) return 'Just now';
-    if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
-    if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
-    if (seconds < 2592000) return Math.floor(seconds / 86400) + ' days ago';
-    if (seconds < 31536000) return Math.floor(seconds / 2592000) + ' months ago';
-    return Math.floor(seconds / 31536000) + ' years ago';
+    console.log('🕰️ Time calculation:', { now, date, seconds });
+    
+    if (seconds < 30) return 'Just now'; // Only show 'just now' for less than 30 seconds
+    if (seconds < 60) return Math.floor(seconds) + ' seconds ago';
+    if (seconds < 3600) {
+        const minutes = Math.floor(seconds / 60);
+        return minutes === 1 ? '1 minute ago' : minutes + ' minutes ago';
+    }
+    if (seconds < 86400) {
+        const hours = Math.floor(seconds / 3600);
+        return hours === 1 ? '1 hour ago' : hours + ' hours ago';
+    }
+    if (seconds < 2592000) {
+        const days = Math.floor(seconds / 86400);
+        return days === 1 ? '1 day ago' : days + ' days ago';
+    }
+    if (seconds < 31536000) {
+        const months = Math.floor(seconds / 2592000);
+        return months === 1 ? '1 month ago' : months + ' months ago';
+    }
+    const years = Math.floor(seconds / 31536000);
+    return years === 1 ? '1 year ago' : years + ' years ago';
 }
 
 /**
