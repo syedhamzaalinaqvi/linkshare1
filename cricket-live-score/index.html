@@ -508,11 +508,28 @@
         // Cricket Live Score Application
         class CricketLiveScore {
             constructor() {
-                this.API_KEY = "b43dd0b5-ccbf-4bb9-af24-dc9596b80f87";
-                this.BASE_URL = "https://api.cricapi.com/v1";
+                // Multiple API configurations for fallback
+                this.apiConfigs = [
+                    {
+                        name: 'CricAPI Primary',
+                        key: 'b43dd0b5-ccbf-4bb9-af24-dc9596b80f87',
+                        baseUrl: 'https://api.cricapi.com/v1',
+                        endpoint: 'currentMatches'
+                    },
+                    {
+                        name: 'CricData Backup',
+                        key: 'test-key',
+                        baseUrl: 'https://cricdata.org/api',
+                        endpoint: 'matches'
+                    }
+                ];
+                
+                this.currentApiIndex = 0;
                 this.matches = [];
                 this.currentFilter = 'all';
                 this.refreshInterval = null;
+                this.retryCount = 0;
+                this.maxRetries = 3;
                 
                 // DOM Elements
                 this.liveScoreBar = document.getElementById('liveScoreBar');
@@ -562,27 +579,82 @@
             }
             
             async fetchMatches() {
+                // Try current API
+                const success = await this.tryFetchFromCurrentApi();
+                
+                if (!success) {
+                    // Try fallback APIs or show demo data
+                    await this.handleApiFallback();
+                }
+            }
+            
+            async tryFetchFromCurrentApi() {
                 try {
-                    const currentMatchesUrl = `${this.BASE_URL}/currentMatches?apikey=${this.API_KEY}&offset=0`;
-                    const response = await fetch(currentMatchesUrl);
+                    const config = this.apiConfigs[this.currentApiIndex];
+                    const url = `${config.baseUrl}/${config.endpoint}?apikey=${config.key}&offset=0`;
+                    
+                    console.log(`Trying API: ${config.name}`);
+                    
+                    // Create timeout controller for better browser compatibility
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
                     
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
                     
                     const data = await response.json();
                     
-                    if (data.status === 'success') {
-                        this.matches = data.data || [];
+                    if (data.status === 'success' && data.data) {
+                        this.matches = data.data;
+                        this.retryCount = 0; // Reset retry count on success
                         this.updateLiveScoreBar();
                         this.renderMatches();
                         this.renderAsiaCupSection();
+                        return true;
                     } else {
-                        throw new Error(data.reason || 'API returned error status');
+                        throw new Error(data.reason || data.message || 'API returned no data');
                     }
+                    
                 } catch (error) {
-                    console.error('Error fetching matches:', error);
-                    this.showError('Failed to load cricket matches. Please try again later.');
+                    console.error(`API ${this.apiConfigs[this.currentApiIndex].name} failed:`, error.message);
+                    return false;
+                }
+            }
+            
+            async handleApiFallback() {
+                // Try next API if available
+                if (this.currentApiIndex < this.apiConfigs.length - 1) {
+                    this.currentApiIndex++;
+                    const success = await this.tryFetchFromCurrentApi();
+                    if (success) return;
+                }
+                
+                // If all APIs failed, increment retry count
+                this.retryCount++;
+                
+                if (this.retryCount <= this.maxRetries) {
+                    // Reset to first API and show retry message
+                    this.currentApiIndex = 0;
+                    this.showRetryMessage();
+                    
+                    // Retry after 5 seconds
+                    setTimeout(() => {
+                        this.fetchMatches();
+                    }, 5000);
+                } else {
+                    // Show demo data after max retries
+                    this.loadDemoData();
                 }
             }
             
@@ -860,10 +932,23 @@
             }
             
             startAutoRefresh() {
-                // Refresh every 30 seconds
+                // Start with longer intervals to avoid rate limiting
+                let refreshIntervalMs = 60000; // Start with 60 seconds
+                
                 this.refreshInterval = setInterval(() => {
-                    this.fetchMatches();
-                }, 30000);
+                    // Only auto-refresh if we have real data (not demo data)
+                    if (this.retryCount <= this.maxRetries) {
+                        this.fetchMatches();
+                    } else {
+                        // If using demo data, try once every 5 minutes
+                        clearInterval(this.refreshInterval);
+                        this.refreshInterval = setInterval(() => {
+                            this.retryCount = 0; // Reset retry count
+                            this.currentApiIndex = 0; // Reset to first API
+                            this.fetchMatches();
+                        }, 300000); // 5 minutes
+                    }
+                }, refreshIntervalMs);
             }
             
             showError(message) {
@@ -881,6 +966,65 @@
                 this.liveScoreBar.innerHTML = `
                     <i class="fas fa-exclamation-triangle"></i> 
                     Unable to load live scores
+                `;
+            }
+            
+            showRetryMessage() {
+                this.liveScoreBar.innerHTML = `
+                    <i class=\"fas fa-hourglass-half\"></i> Rate limited. Retrying in 5 seconds... (Attempt ${this.retryCount}/${this.maxRetries})
+                `;
+            }
+            
+            loadDemoData() {
+                // Fallback demo data to keep UI alive if APIs fail repeatedly.
+                this.matches = [
+                    {
+                        name: "Asia Cup - Pakistan vs India",
+                        teams: ["Pakistan", "India"],
+                        matchStarted: true,
+                        matchEnded: false,
+                        matchType: "ODI",
+                        venue: "Dubai International Cricket Stadium",
+                        date: "Today",
+                        status: "Pakistan need 120 runs in 15.2 overs",
+                        score: [
+                            { inning: "Pakistan", r: 180, w: 3, o: 34.4 },
+                            { inning: "India", r: 299, w: 7, o: 50 }
+                        ]
+                    },
+                    {
+                        name: "Asia Cup - Sri Lanka vs Bangladesh",
+                        teams: ["Sri Lanka", "Bangladesh"],
+                        matchStarted: false,
+                        matchEnded: false,
+                        matchType: "ODI",
+                        venue: "Colombo",
+                        date: "Tomorrow",
+                        status: "Match starts at 02:00 PM PKT",
+                        score: []
+                    },
+                    {
+                        name: "T20I - Afghanistan vs Zimbabwe",
+                        teams: ["Afghanistan", "Zimbabwe"],
+                        matchStarted: true,
+                        matchEnded: true,
+                        matchType: "T20I",
+                        venue: "Sharjah",
+                        date: "Yesterday",
+                        status: "Afghanistan won by 25 runs",
+                        score: [
+                            { inning: "Afghanistan", r: 172, w: 6, o: 20 },
+                            { inning: "Zimbabwe", r: 147, w: 9, o: 20 }
+                        ]
+                    }
+                ];
+                
+                this.updateLiveScoreBar();
+                this.renderMatches();
+                this.renderAsiaCupSection();
+                
+                this.liveScoreBar.innerHTML = `
+                    <i class=\"fas fa-info-circle\"></i> Displaying demo data due to API rate limits. Live data will resume automatically.
                 `;
             }
         }
