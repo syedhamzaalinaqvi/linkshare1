@@ -230,10 +230,9 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             console.log('🚀 FAST: Using category-first strategy to avoid index issues...');
             
             try {
-            // ALWAYS get fresh data from server - no cache
+            // ALWAYS get fresh data from server - no cache (NO orderBy)
             const query = window.db.collection('groups')
                 .where('category', '==', topic)
-                .orderBy('timestamp', 'desc')
                 .limit(200);
                 
             const snapshot = await query.get({ source: 'server' });
@@ -256,10 +255,9 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             } catch (error) {
                 console.warn('⚠️ Category filter failed, trying country filter:', error.message);
                 
-                // Fallback: try country filter instead - FRESH from server
+                // Fallback: try country filter instead - FRESH from server (NO orderBy)
                 const query = window.db.collection('groups')
                     .where('country', '==', country)
-                    .orderBy('timestamp', 'desc')
                     .limit(100);
                     
                 const snapshot = await query.get({ source: 'server' });
@@ -276,12 +274,11 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             }
             
         } else if (topic !== 'all') {
-            // Only category filter - FRESH from server
-            console.log('⚡ FRESH: Category-only filter from server...');
+            // Only category filter - FRESH from server (NO orderBy to avoid index)
+            console.log('⚡ FRESH: Category-only filter from server (no index needed)...');
             
             const query = window.db.collection('groups')
                 .where('category', '==', topic)
-                .orderBy('timestamp', 'desc')
                 .limit(200);
                 
             const snapshot = await query.get({ source: 'server' });
@@ -296,12 +293,11 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             console.log(`🎯 Category filter returned ${allGroups.length} groups`);
             
         } else if (country !== 'all') {
-            // Only country filter - FRESH data from server
-            console.log('⚡ FRESH: Country-only filter from server...');
+            // Only country filter - FRESH data from server (NO orderBy)
+            console.log('⚡ FRESH: Country-only filter from server (no index needed)...');
             
             const query = window.db.collection('groups')
                 .where('country', '==', country)
-                .orderBy('timestamp', 'desc')
                 .limit(200);
                 
             const snapshot = await query.get({ source: 'server' });
@@ -364,11 +360,17 @@ async function searchEntireDatabase(topic, country, searchTerm) {
             console.log(`⚡ Search completed in ${searchTime.toFixed(2)}ms, found ${allGroups.length} results`);
         }
         
-        // Sort by timestamp (most recent first)
+        // IMPORTANT: Sort by timestamp in JavaScript (since we removed orderBy)
+        console.log('📋 Sorting groups by timestamp in JavaScript...');
         allGroups.sort((a, b) => {
-            const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp || 0);
-            const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp || 0);
-            return bTime - aTime;
+            try {
+                const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp || Date.now());
+                const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp || Date.now());
+                return bTime - aTime; // Most recent first
+            } catch (error) {
+                console.warn('⚠️ Timestamp sorting error:', error);
+                return 0;
+            }
         });
         
         console.log(`⚡ Found ${allGroups.length} groups in optimized search`);
@@ -452,10 +454,24 @@ function createOptimizedGroupCard(group, index) {
     // Add stagger animation delay
     card.style.setProperty('--stagger-delay', `${index * 50}ms`);
 
-    // Fast image handling
+    // IMPROVED image handling - avoid 403 errors
     let imageUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';
-    if (group.image && !group.image.includes('whatsapp.net') && !group.image.includes('fbcdn.net')) {
-        imageUrl = group.image;
+    
+    if (group.image) {
+        // Check for problematic domains that cause 403 errors
+        const problematicDomains = [
+            'whatsapp.net', 'fbcdn.net', 'facebook.com', 
+            'cdninstagram.com', 'fbsbx.com', 'scontent'
+        ];
+        
+        const hasProblematicDomain = problematicDomains.some(domain => 
+            group.image.toLowerCase().includes(domain)
+        );
+        
+        if (!hasProblematicDomain) {
+            // Safe to use this image
+            imageUrl = group.image;
+        }
     }
 
     // Time formatting
@@ -471,7 +487,11 @@ function createOptimizedGroupCard(group, index) {
 
     card.innerHTML = `
         <div class="card-image">
-            <img class="lazy-image" data-src="${imageUrl}" alt="${group.title || 'Group'}" loading="lazy">
+            <img class="lazy-image" 
+                 data-src="${imageUrl}" 
+                 alt="${group.title || 'Group'}" 
+                 loading="lazy"
+                 onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png';">
             <div class="image-placeholder">
                 <i class="fab fa-whatsapp"></i>
             </div>

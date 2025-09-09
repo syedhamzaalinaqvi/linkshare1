@@ -1647,10 +1647,7 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
             
-            <!-- Load optimized group loader BEFORE other scripts -->
-            <script src="js/firebase-config.js"></script>
-            <script src="js/optimized-group-loader.js"></script>
-            <script src="js/main.js"></script>
+            <!-- Scripts moved to bottom of page -->
             <!-- Tools Section -->
             <section
                 class="groups-section"
@@ -2434,21 +2431,10 @@
         <!-- Optimized Loading Styles -->
         <link rel="stylesheet" href="css/optimized-loading.css">
         
+        <!-- All scripts loaded once at the end -->
         <!-- Firebase Configuration -->
         <script src="js/firebase-config.js"></script>
-        
-        <!-- OPTIMIZED: New fast loading system with cache busting -->
-        <script>
-            // Dynamic script loading with cache busting
-            const optimizedScript = document.createElement('script');
-            optimizedScript.src = 'js/optimized-group-loader.js?v=2.0&cb=' + Date.now();
-            optimizedScript.onload = function() {
-                console.log('⚡ Optimized loader loaded with cache buster: ' + Date.now());
-            };
-            document.head.appendChild(optimizedScript);
-        </script>
-        
-        <!-- Backup: Original scripts for fallback -->
+        <script src="js/optimized-group-loader.js"></script>
         <script src="js/main.js"></script>
         
         <!-- Force fresh data script -->
