@@ -76,9 +76,9 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
         loadingState.currentFilter = { topic, country, search: searchTerm };
         saveUserState(); // Save user state
 
-        // Show loading for initial load only
+        // Show loading for initial load only with perfect centering
         if (!append) {
-            container.innerHTML = '<div class="optimized-loading">⚡ Loading groups...</div>';
+            container.innerHTML = '<div class="optimized-loading">Loading fresh groups...</div>';
             loadingState.lastDoc = null;
             loadingState.totalLoaded = 0;
             loadingState.hasMore = true;
@@ -104,7 +104,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
             loadingState.hasMore = endIndex < groups.length;
             
             if (displayGroups.length === 0 && !append) {
-                container.innerHTML = '<div class="no-groups">No groups found matching your criteria. <a href="/add-group">Add one!</a></div>';
+                container.innerHTML = '<div class="no-groups">No groups found matching your search.<br><a href="/add-group" style="color: #25D366; text-decoration: none; font-weight: bold;">Be the first to add one!</a></div>';
                 loadingState.isLoading = false;
                 return;
             }
@@ -142,7 +142,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
             console.log(`⚡ Groups loaded in ${loadTime.toFixed(2)}ms`);
 
             if (snapshot.empty && !append) {
-                container.innerHTML = '<div class="no-groups">No groups found. <a href="/add-group">Add the first one!</a></div>';
+                container.innerHTML = '<div class="no-groups">No groups available.<br><a href="/add-group" style="color: #25D366; text-decoration: none; font-weight: bold;">Add the first group!</a></div>';
                 loadingState.isLoading = false;
                 return;
             }
@@ -187,9 +187,18 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
         if (!append) {
             container.innerHTML = `
                 <div class="error-state">
-                    <h3>⚠️ Loading Error</h3>
-                    <p>There was a problem loading groups. Please try again.</p>
-                    <button onclick="loadGroupsOptimized()" class="retry-btn">
+                    <div style="font-size: 1.1rem; margin-bottom: 1rem;">Loading Error</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8;">There was a problem loading groups</div>
+                    <button onclick="loadGroupsOptimized()" class="retry-btn" style="
+                        background: #25D366;
+                        color: white;
+                        border: none;
+                        padding: 0.8rem 1.5rem;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                    ">
                         🔄 Try Again
                     </button>
                 </div>
@@ -205,58 +214,219 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
 }
 
 /**
- * SEARCH ENTIRE DATABASE - Fixes search/filter limitations
+ * OPTIMIZED DATABASE SEARCH - Fast and index-friendly with improved caching
  */
 async function searchEntireDatabase(topic, country, searchTerm) {
-    console.log(`🔍 Searching entire database: topic=${topic}, country=${country}, search="${searchTerm}"`);
+    console.log(`🔍 Super-optimized database search: topic=${topic}, country=${country}, search="${searchTerm}"`);
     
     try {
-        let query = window.db.collection('groups');
-        
-        // Apply filters to the query
-        if (topic && topic !== 'all') {
-            query = query.where('category', '==', topic);
-        }
-        if (country && country !== 'all') {
-            query = query.where('country', '==', country);
-        }
-        
-        // Order by timestamp
-        query = query.orderBy('timestamp', 'desc');
-        
-        // Get all matching documents (without limit for search)
-        const snapshot = await query.get({ source: 'default' });
-        
         let allGroups = [];
-        snapshot.forEach(doc => {
-            allGroups.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
         
-        // Apply text search if provided
+        // IMPROVED STRATEGY: Use most selective filter first, then in-memory filtering
+        // This completely avoids composite index requirements
+        
+        if (topic !== 'all' && country !== 'all') {
+            // Both filters: Use category as primary filter (usually more selective)
+            console.log('🚀 FAST: Using category-first strategy to avoid index issues...');
+            
+            try {
+                // Use cache-first approach for better speed
+                const query = window.db.collection('groups')
+                    .where('category', '==', topic)
+                    .orderBy('timestamp', 'desc')
+                    .limit(100); // Limit to improve speed
+                    
+                const snapshot = await query.get({ source: 'cache' }).catch(() => 
+                    query.get({ source: 'server' })
+                );
+                
+                console.log(`📊 Category query returned ${snapshot.size} documents`);
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    // Fast in-memory country filter
+                    if (data.country === country) {
+                        allGroups.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    }
+                });
+                
+                console.log(`⚡ Found ${allGroups.length} groups matching both filters`);
+                
+            } catch (error) {
+                console.warn('⚠️ Category filter failed, trying country filter:', error.message);
+                
+                // Fallback: try country filter instead
+                const query = window.db.collection('groups')
+                    .where('country', '==', country)
+                    .orderBy('timestamp', 'desc')
+                    .limit(100);
+                    
+                const snapshot = await query.get({ source: 'cache' }).catch(() => 
+                    query.get({ source: 'server' })
+                );
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.category === topic) {
+                        allGroups.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    }
+                });
+            }
+            
+        } else if (topic !== 'all') {
+            // Only category filter - use caching for speed
+            console.log('⚡ FAST: Category-only filter with caching...');
+            
+            const query = window.db.collection('groups')
+                .where('category', '==', topic)
+                .orderBy('timestamp', 'desc')
+                .limit(200); // Increased limit for single filter
+                
+            const snapshot = await query.get({ source: 'cache' }).catch(() => 
+                query.get({ source: 'server' })
+            );
+            
+            snapshot.forEach(doc => {
+                allGroups.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            console.log(`🎯 Category filter returned ${allGroups.length} groups`);
+            
+        } else if (country !== 'all') {
+            // Only country filter - use caching for speed
+            console.log('⚡ FAST: Country-only filter with caching...');
+            
+            const query = window.db.collection('groups')
+                .where('country', '==', country)
+                .orderBy('timestamp', 'desc')
+                .limit(200); // Increased limit for single filter
+                
+            const snapshot = await query.get({ source: 'cache' }).catch(() => 
+                query.get({ source: 'server' })
+            );
+            
+            snapshot.forEach(doc => {
+                allGroups.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            console.log(`🌍 Country filter returned ${allGroups.length} groups`);
+            
+        } else {
+            // No filters - get recent groups with aggressive caching
+            console.log('⚡ FAST: Getting recent groups with smart caching...');
+            
+            const query = window.db.collection('groups')
+                .orderBy('timestamp', 'desc')
+                .limit(300); // Reasonable limit for speed
+                
+            const snapshot = await query.get({ source: 'cache' }).catch(() => 
+                query.get({ source: 'server' })
+            );
+            
+            snapshot.forEach(doc => {
+                allGroups.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            console.log(`📚 All groups query returned ${allGroups.length} groups`);
+        }
+        
+        // Apply SUPER FAST text search if provided
         if (searchTerm && searchTerm.trim()) {
+            const startTime = performance.now();
             const searchLower = searchTerm.toLowerCase().trim();
+            const searchWords = searchLower.split(' ').filter(word => word.length > 1); // Ignore single chars
+            
+            console.log(`🔍 Starting search for: "${searchTerm}" (${searchWords.length} words)`);
+            
+            // ULTRA-FAST search algorithm
             allGroups = allGroups.filter(group => {
+                // Pre-lowercase once for efficiency
                 const title = (group.title || '').toLowerCase();
                 const description = (group.description || '').toLowerCase();
                 const category = (group.category || '').toLowerCase();
-                const country = (group.country || '').toLowerCase();
                 
-                return title.includes(searchLower) || 
-                       description.includes(searchLower) ||
-                       category.includes(searchLower) ||
-                       country.includes(searchLower);
+                // Short-circuit: if any word matches title (most important), include it
+                if (searchWords.some(word => title.includes(word))) {
+                    return true;
+                }
+                
+                // Check description and category only if title didn't match
+                const searchableText = `${description} ${category}`;
+                return searchWords.some(word => searchableText.includes(word));
             });
+            
+            const searchTime = performance.now() - startTime;
+            console.log(`⚡ Search completed in ${searchTime.toFixed(2)}ms, found ${allGroups.length} results`);
         }
         
-        console.log(`📊 Found ${allGroups.length} groups in database search`);
+        // Sort by timestamp (most recent first)
+        allGroups.sort((a, b) => {
+            const aTime = a.timestamp?.toDate?.() || new Date(a.timestamp || 0);
+            const bTime = b.timestamp?.toDate?.() || new Date(b.timestamp || 0);
+            return bTime - aTime;
+        });
+        
+        console.log(`⚡ Found ${allGroups.length} groups in optimized search`);
         return allGroups;
         
     } catch (error) {
-        console.error('❌ Database search error:', error);
-        return [];
+        console.error('❌ Optimized search error:', error);
+        
+        // Fallback: Get all groups and filter in memory
+        console.log('🔄 Using fallback search method...');
+        try {
+            const fallbackQuery = window.db.collection('groups')
+                .orderBy('timestamp', 'desc')
+                .limit(200);
+                
+            const snapshot = await fallbackQuery.get({ source: 'default' });
+            let fallbackGroups = [];
+            
+            snapshot.forEach(doc => {
+                fallbackGroups.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            // Apply all filters in memory
+            if (topic !== 'all') {
+                fallbackGroups = fallbackGroups.filter(group => group.category === topic);
+            }
+            if (country !== 'all') {
+                fallbackGroups = fallbackGroups.filter(group => group.country === country);
+            }
+            if (searchTerm && searchTerm.trim()) {
+                const searchLower = searchTerm.toLowerCase().trim();
+                fallbackGroups = fallbackGroups.filter(group => {
+                    const title = (group.title || '').toLowerCase();
+                    const description = (group.description || '').toLowerCase();
+                    return title.includes(searchLower) || description.includes(searchLower);
+                });
+            }
+            
+            console.log(`🛡️ Fallback search found ${fallbackGroups.length} groups`);
+            return fallbackGroups;
+            
+        } catch (fallbackError) {
+            console.error('❌ Fallback search also failed:', fallbackError);
+            return [];
+        }
     }
 }
 

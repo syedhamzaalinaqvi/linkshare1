@@ -71,8 +71,10 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
 
-            <!-- navbar -->
+        <!-- navbar -->
         <script src="js/nav-loader.js"></script>
+        <!-- Test improvements script (remove after testing) -->
+        <script src="js/test-improvements.js"></script>
         
         <!-- Add structured data add-->
         <script type="application/ld+json">
@@ -1646,6 +1648,11 @@
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
+            
+            <!-- Load optimized group loader BEFORE other scripts -->
+            <script src="js/firebase-config.js"></script>
+            <script src="js/optimized-group-loader.js"></script>
+            <script src="js/main.js"></script>
             <!-- Tools Section -->
             <section
                 class="groups-section"

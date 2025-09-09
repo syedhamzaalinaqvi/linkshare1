@@ -236,7 +236,7 @@ function loadGroups(
                 if (limitedGroups.length === 0) {
                     if (!loadMore) {
                         groupContainer.innerHTML =
-                            '<div class="no-groups">No groups found matching your criteria</div>';
+                            '<div class="no-groups">No groups found matching your criteria.<br><a href="/add-group" style="color: #25D366; text-decoration: none; font-weight: bold;">Add a new group!</a></div>';
                     }
                     isLastPage = true;
                     updateLoadMoreButton(0);
@@ -282,17 +282,37 @@ function loadGroups(
             })
             .catch((error) => {
                 console.error("Error loading groups:", error);
-                groupContainer.innerHTML = `<div class="error">
-                <p>Error loading groups: ${error.message}</p>
-                <button onclick="location.reload()" class="submit-btn">Retry</button>
+                groupContainer.innerHTML = `<div class="error-state">
+                <div style="font-size: 1.1rem; margin-bottom: 1rem;">Loading Error</div>
+                <div style="font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8;">${error.message}</div>
+                <button onclick="location.reload()" style="
+                    background: #25D366;
+                    color: white;
+                    border: none;
+                    padding: 0.8rem 1.5rem;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                ">Retry</button>
             </div>`;
                 updateLoadMoreButton(0);
             });
     } catch (error) {
         console.error("Error loading groups:", error);
-        groupContainer.innerHTML = `<div class="error">
-            <p>Error loading groups: ${error.message}</p>
-            <button onclick="location.reload()" class="submit-btn">Retry</button>
+        groupContainer.innerHTML = `<div class="error-state">
+            <div style="font-size: 1.1rem; margin-bottom: 1rem;">Loading Error</div>
+            <div style="font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8;">${error.message}</div>
+            <button onclick="location.reload()" style="
+                background: #25D366;
+                color: white;
+                border: none;
+                padding: 0.8rem 1.5rem;
+                border-radius: 25px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            ">Retry</button>
         </div>`;
         updateLoadMoreButton(0);
     }

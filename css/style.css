@@ -12,26 +12,99 @@
     --transition: all 0.3s ease;
 }
 
-/* Simple Loading Styles */
-.simple-loading {
-    text-align: center;
-    padding: 2rem;
-    font-size: 1.1rem;
-    color: #666;
+/* Enhanced Loading Styles - Perfectly Centered */
+.simple-loading,
+.optimized-loading,
+.loading,
+.no-groups,
+.error-state {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    text-align: center;
+    padding: 3rem 1rem;
+    min-height: 200px;
+    width: 100%;
+    font-size: 1.2rem;
+    color: #666;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    margin: 1rem auto;
+    max-width: 500px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
 }
 
-.simple-loading::before {
-    content: "⏳";
-    animation: spin 2s linear infinite;
+.simple-loading::before,
+.optimized-loading::before {
+    content: "⚡";
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    animation: pulse 1.5s ease-in-out infinite;
+    display: block;
+}
+
+.no-groups {
+    color: #128c7e;
+    font-weight: 500;
+}
+
+.no-groups::before {
+    content: "📱";
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    opacity: 0.7;
+}
+
+.error-state {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.error-state::before {
+    content: "⚠️";
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
 }
 
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* Mobile optimization for loading messages */
+@media (max-width: 595px) {
+    .simple-loading,
+    .optimized-loading,
+    .loading,
+    .no-groups,
+    .error-state {
+        padding: 2rem 1rem;
+        min-height: 150px;
+        font-size: 1rem;
+        margin: 0.5rem auto;
+        max-width: calc(100vw - 2rem);
+    }
+    
+    .simple-loading::before,
+    .optimized-loading::before {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .no-groups::before,
+    .error-state::before {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
 }
 
 /* Base Styles */
