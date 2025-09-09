@@ -95,6 +95,67 @@ function testCSSStyles() {
     });
 }
 
+// Test filter state persistence
+function testFilterStatePersistence() {
+    console.log('🔄 Testing filter state persistence...');
+    
+    // Simulate setting filters
+    if (window.loadGroupsOptimized) {
+        setTimeout(() => {
+            console.log('🏷️ Setting Movies + Pakistan filters...');
+            window.loadGroupsOptimized('Movies', 'Pakistan', '');
+            
+            // Check if dropdowns show correct text after 2 seconds
+            setTimeout(() => {
+                const topicBtn = document.querySelector('#topicFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
+                const countryBtn = document.querySelector('#countryFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
+                
+                console.log('📝 Topic button text:', topicBtn?.textContent);
+                console.log('📝 Country button text:', countryBtn?.textContent);
+                
+                if (topicBtn?.textContent?.includes('Movies')) {
+                    console.log('✅ Topic filter correctly shows "Movies"');
+                } else {
+                    console.log('❌ Topic filter NOT showing "Movies"');
+                }
+                
+                if (countryBtn?.textContent?.includes('Pakistan')) {
+                    console.log('✅ Country filter correctly shows "Pakistan"');
+                } else {
+                    console.log('❌ Country filter NOT showing "Pakistan"');
+                }
+            }, 2000);
+        }, 1000);
+    }
+}
+
+// Test scroll bar issues
+function testScrollBarIssues() {
+    console.log('📏 Testing scroll bar prevention...');
+    
+    const groupsGrid = document.querySelector('.groups-grid');
+    if (groupsGrid) {
+        const computedStyle = window.getComputedStyle(groupsGrid);
+        const overflow = computedStyle.overflow;
+        const overflowY = computedStyle.overflowY;
+        const height = computedStyle.height;
+        const minHeight = computedStyle.minHeight;
+        
+        console.log('📏 Groups grid styles:', {
+            overflow,
+            overflowY, 
+            height,
+            minHeight
+        });
+        
+        if (overflowY === 'visible' && height === 'auto') {
+            console.log('✅ Scroll bar prevention configured correctly');
+        } else {
+            console.log('❌ Scroll bar prevention might not work properly');
+        }
+    }
+}
+
 // Run all tests when page loads
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
@@ -102,6 +163,8 @@ if (document.readyState === 'loading') {
             testSearchPerformance();
             testLoadingMessages();
             testCSSStyles();
+            testFilterStatePersistence();
+            testScrollBarIssues();
         }, 2000);
     });
 } else {
@@ -109,7 +172,9 @@ if (document.readyState === 'loading') {
         testSearchPerformance();
         testLoadingMessages();
         testCSSStyles();
+        testFilterStatePersistence();
+        testScrollBarIssues();
     }, 2000);
 }
 
-console.log('🚀 Test script loaded - will run tests in 2 seconds...');
+console.log('🚀 ENHANCED Test script loaded - testing all glitch fixes in 2 seconds...');

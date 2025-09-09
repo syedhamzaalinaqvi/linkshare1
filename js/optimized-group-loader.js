@@ -654,8 +654,15 @@ function initializeSmartLoader() {
         if (savedState.currentFilter) {
             loadingState.currentFilter = savedState.currentFilter;
             
-            // Update UI filters to match saved state
-            updateUIFilters(savedState.currentFilter);
+            // Update UI filters to match saved state - with delay to ensure DOM is ready
+            setTimeout(() => {
+                updateUIFilters(savedState.currentFilter);
+            }, 300);
+            
+            // Try again after a longer delay in case elements weren't ready
+            setTimeout(() => {
+                updateUIFilters(savedState.currentFilter);
+            }, 1000);
         }
         
         // Load groups with saved filters
@@ -683,34 +690,60 @@ function initializeSmartLoader() {
 }
 
 /**
- * UPDATE UI FILTERS - Syncs saved filters with UI
+ * UPDATE UI FILTERS - Syncs saved filters with UI (IMPROVED)
  */
 function updateUIFilters(filters) {
+    console.log('🔄 Updating UI filters:', filters);
+    
     // Update search input
     const searchInput = document.querySelector('#searchGroups');
     if (searchInput && filters.search) {
         searchInput.value = filters.search;
+        console.log('🔍 Updated search input:', filters.search);
     }
     
-    // Update dropdown buttons text
-    if (filters.topic !== 'all') {
+    // Update topic/category filter
+    if (filters.topic && filters.topic !== 'all') {
         const topicBtn = document.querySelector('#topicFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
-        if (topicBtn) {
-            const topicItem = document.querySelector(`#topicFilters .filter-btn[data-category="${filters.topic}"]`);
-            if (topicItem) {
-                topicBtn.innerHTML = `${topicItem.textContent} <i class="fas fa-chevron-down"></i>`;
-            }
+        const topicItem = document.querySelector(`#topicFilters .filter-btn[data-category="${filters.topic}"]`);
+        
+        if (topicBtn && topicItem) {
+            // Update button text
+            topicBtn.innerHTML = `${topicItem.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
+            
+            // Update active states
+            document.querySelectorAll('#topicFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            topicItem.classList.add('active');
+            
+            console.log('🏷️ Updated topic filter:', filters.topic, '->', topicItem.textContent.trim());
+        } else {
+            console.warn('⚠️ Topic filter elements not found:', { topicBtn: !!topicBtn, topicItem: !!topicItem });
         }
     }
     
-    if (filters.country !== 'all') {
+    // Update country filter
+    if (filters.country && filters.country !== 'all') {
         const countryBtn = document.querySelector('#countryFilters')?.closest('.dropdown')?.querySelector('.dropdown-btn');
-        if (countryBtn) {
-            const countryItem = document.querySelector(`#countryFilters .filter-btn[data-country="${filters.country}"]`);
-            if (countryItem) {
-                countryBtn.innerHTML = `${countryItem.textContent} <i class="fas fa-chevron-down"></i>`;
-            }
+        const countryItem = document.querySelector(`#countryFilters .filter-btn[data-country="${filters.country}"]`);
+        
+        if (countryBtn && countryItem) {
+            // Update button text
+            countryBtn.innerHTML = `${countryItem.textContent.trim()} <i class="fas fa-chevron-down"></i>`;
+            
+            // Update active states
+            document.querySelectorAll('#countryFilters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            countryItem.classList.add('active');
+            
+            console.log('🌍 Updated country filter:', filters.country, '->', countryItem.textContent.trim());
+        } else {
+            console.warn('⚠️ Country filter elements not found:', { countryBtn: !!countryBtn, countryItem: !!countryItem });
         }
+    }
+    
+    // Also update global state for other scripts
+    if (window.main) {
+        window.currentTopic = filters.topic;
+        window.currentCountry = filters.country;
     }
 }
 

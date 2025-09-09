@@ -106,8 +106,9 @@ function renderGroupsInstantly(groups, container) {
     // Clear loading state
     container.innerHTML = '';
     
-    // Set up container styles
-    container.style.minHeight = '400px';
+    // Set up container styles - NO SCROLL BARS!
+    container.style.minHeight = 'auto'; // Let content determine height
+    container.style.height = 'auto'; // Natural height
     container.style.display = 'grid';
     container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
     container.style.gap = '1.5rem';
@@ -115,6 +116,9 @@ function renderGroupsInstantly(groups, container) {
     container.style.opacity = '1';
     container.style.width = '100%';
     container.style.padding = '1rem 0';
+    container.style.overflow = 'visible'; // Prevent scroll bars
+    container.style.overflowX = 'hidden'; // Only hide horizontal
+    container.style.overflowY = 'visible'; // Allow natural vertical
     
     // Load first batch immediately
     loadNextBatch(container);

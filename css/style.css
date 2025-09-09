@@ -12,27 +12,30 @@
     --transition: all 0.3s ease;
 }
 
-/* Enhanced Loading Styles - Perfectly Centered */
+/* Enhanced Loading Styles - PERFECTLY Centered on ALL devices */
 .simple-loading,
 .optimized-loading,
 .loading,
 .no-groups,
 .error-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
     padding: 3rem 1rem;
     min-height: 200px;
-    width: 100%;
+    width: 100% !important;
     font-size: 1.2rem;
     color: #666;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
-    margin: 1rem auto;
+    margin: 1rem auto !important;
     max-width: 500px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .simple-loading::before,
@@ -80,34 +83,62 @@
     to { transform: rotate(360deg); }
 }
 
-/* Mobile optimization for loading messages */
-@media (max-width: 595px) {
+/* Mobile optimization for PERFECT centering on all devices */
+@media (max-width: 768px) {
     .simple-loading,
     .optimized-loading,
     .loading,
     .no-groups,
     .error-state {
-        padding: 2rem 1rem;
-        min-height: 150px;
-        font-size: 1rem;
-        margin: 0.5rem auto;
-        max-width: calc(100vw - 2rem);
+        padding: 2rem 1rem !important;
+        min-height: 150px !important;
+        font-size: 1rem !important;
+        margin: 1rem auto !important;
+        max-width: calc(100vw - 2rem) !important;
+        width: calc(100vw - 2rem) !important;
+        position: relative !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
     }
     
     .simple-loading::before,
     .optimized-loading::before {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.5rem !important;
+        margin-bottom: 0.5rem !important;
+        display: block !important;
     }
     
     .no-groups::before,
     .error-state::before {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
+        font-size: 2rem !important;
+        margin-bottom: 0.5rem !important;
+        display: block !important;
     }
 }
 
-/* Base Styles */
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    .simple-loading,
+    .optimized-loading,
+    .loading,
+    .no-groups,
+    .error-state {
+        padding: 1.5rem 0.5rem !important;
+        min-height: 120px !important;
+        font-size: 0.9rem !important;
+        margin: 0.5rem auto !important;
+        max-width: calc(100vw - 1rem) !important;
+        width: calc(100vw - 1rem) !important;
+        border-radius: 8px !important;
+    }
+}
+
+/* Base Styles - NO unwanted scroll bars */
 * {
     margin: 0;
     padding: 0;
@@ -119,6 +150,15 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--bg-color);
+    overflow-x: hidden; /* Prevent horizontal scroll only */
+}
+
+/* Main container - prevent scroll issues */
+.container,
+main {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
 }
 
 .premium-groups {
@@ -434,11 +474,14 @@ select:focus {
     box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
 }
 
-/* Groups Grid */
+/* Groups Grid - NO scroll bar issues */
 .groups-section {
     padding: 0rem;
     max-width: 99%;
     margin: auto;
+    overflow: visible !important; /* Prevent container scroll bars */
+    height: auto !important; /* Natural height */
+    min-height: auto !important; /* No forced height */
 }
 
 .groups-header {
@@ -499,7 +542,7 @@ select:focus {
 }
 
 
-/* Main grid container with overflow prevention */
+/* Main grid container with NO unwanted scroll bars */
 .groups-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -507,8 +550,12 @@ select:focus {
     padding: 1rem 0;
     width: 100%;
     max-width: 100%;
-    overflow-x: hidden;
+    overflow: visible !important; /* Prevent any scroll bars */
+    overflow-x: hidden !important; /* Only hide horizontal overflow */
+    overflow-y: visible !important; /* Allow natural vertical flow */
     box-sizing: border-box;
+    min-height: auto !important; /* Don't force height */
+    height: auto !important; /* Let content determine height */
 }
 
 /* Ensure all grid items have equal width */
