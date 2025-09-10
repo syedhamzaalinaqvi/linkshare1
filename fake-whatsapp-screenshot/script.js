@@ -317,75 +317,59 @@
       let contentHeight = Math.round(rect.height);
       
       if (messagesContainer) {
-        // Apply screenshot-specific styles
+        // Normalize styles for measurement and capture
         messagesContainer.style.height = 'auto';
         messagesContainer.style.maxHeight = 'none';
         messagesContainer.style.overflow = 'visible';
-        messagesContainer.style.padding = '15px 15px 20px 15px';
-        
-        // Force reflow and wait for rendering
-        phoneScreenClone.offsetHeight;
-        await new Promise(resolve => setTimeout(resolve, 150));
-        
-        // Keep input visible for complete look
+        messagesContainer.style.paddingTop = '15px';
+        messagesContainer.style.paddingRight = '15px';
+        messagesContainer.style.paddingLeft = '15px';
+        messagesContainer.style.paddingBottom = '0px'; // no extra bottom padding for tight fit
+        messagesContainer.style.boxSizing = 'border-box';
+
+        // Ensure input is positioned statically for capture
         if (messageInput) {
           messageInput.style.position = 'static';
-          messageInput.style.minHeight = '50px';
-          messageInput.style.padding = '6px 12px';
         }
-        
-        // Force reflow and wait for rendering
+
+        // Reflow and wait
         phoneScreenClone.offsetHeight;
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Calculate component heights including input
+        await new Promise(resolve => setTimeout(resolve, 120));
+
+        // Heights of fixed sections
         const statusBarHeight = statusBar ? statusBar.offsetHeight : 0;
         const headerHeight = chatHeader ? chatHeader.offsetHeight : 0;
         const inputHeight = messageInput ? messageInput.offsetHeight : 0;
-        
-        // Measure actual content in messages container
-        const dateDiv = messagesContainer.querySelector('.date-divider');
-        const infoBanner = messagesContainer.querySelector('.info-banner');
-        const messageBubbles = messagesContainer.querySelectorAll('.message-bubble');
-        
-        // Calculate messages content height with minimal padding
-        let messagesContentHeight = 25; // Top + bottom padding (15 + 10)
-        
-        if (dateDiv) messagesContentHeight += dateDiv.offsetHeight + 15;
-        if (infoBanner) messagesContentHeight += infoBanner.offsetHeight + 14;
-        
-        messageBubbles.forEach(bubble => {
-          messagesContentHeight += bubble.offsetHeight + 12; // message + margin
-        });
-        
-        // Calculate total needed height including input
-        const calculatedHeight = statusBarHeight + headerHeight + messagesContentHeight + inputHeight;
-        
-        // Use calculated height but don't make it unnecessarily tall
-        contentHeight = calculatedHeight;
-        
-        // Only use original height as minimum if calculated is much smaller
+
+        // Messages content natural height (including padding top we set)
+        const naturalMessagesHeight = messagesContainer.scrollHeight; // with paddingTop and content
+
+        // Compute target overall height: max(original phone height, actual content height)
         const originalHeight = Math.round(rect.height);
-        if (calculatedHeight < originalHeight - 50) {
-          contentHeight = originalHeight;
-        }
-        
-        // Set messages container to fill the remaining space between header and input
-        const availableMessagesHeight = contentHeight - statusBarHeight - headerHeight - inputHeight;
-        messagesContainer.style.height = availableMessagesHeight + 'px';
+        let computedTotal = statusBarHeight + headerHeight + naturalMessagesHeight + inputHeight;
+        contentHeight = Math.max(originalHeight, computedTotal);
+
+        // Now set the messages container height so that input sits flush at bottom
+        const targetMessagesHeight = contentHeight - statusBarHeight - headerHeight - inputHeight;
+        const finalMessagesHeight = Math.max(naturalMessagesHeight, targetMessagesHeight);
+        messagesContainer.style.height = finalMessagesHeight + 'px';
+
+        // Recompute final content height to be exact
+        contentHeight = statusBarHeight + headerHeight + finalMessagesHeight + inputHeight;
       }
+        
       
-      // Set final container dimensions
+      // Set final container dimensions (exact)
       screenshotContainer.style.height = contentHeight + 'px';
       phoneScreenClone.style.height = contentHeight + 'px';
       phoneScreenClone.style.minHeight = contentHeight + 'px';
-      
-      // Ensure all content is properly rendered before capture
+
+      // Final reflow
       screenshotContainer.offsetHeight;
       phoneScreenClone.offsetHeight;
-      
-      // Wait for complete rendering
-      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Wait a moment for final layout
+      await new Promise(resolve => setTimeout(resolve, 120));
       
       // Final scroll position check
       if (messagesContainer) {
