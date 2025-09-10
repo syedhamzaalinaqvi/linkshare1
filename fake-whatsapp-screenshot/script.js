@@ -15,6 +15,7 @@
   const messageTypeInput = el('messageType');
   const messageTextInput = el('messageText');
   const messageTimeInput = el('messageTime');
+  const messageStatusInput = el('messageStatus');
   const addMessageBtn = el('addMessage');
   const clearMessagesBtn = el('clearMessages');
   const generateBtn = el('generateScreenshot');
@@ -29,7 +30,7 @@
   const phoneScreen = el('phoneScreen');
 
   // Helpers
-  function createMessageBubble(type, text, time) {
+  function createMessageBubble(type, text, time, status = 'seen') {
     const bubble = document.createElement('div');
     bubble.className = `message-bubble ${type}`;
 
@@ -37,17 +38,58 @@
     content.className = 'message-content-bubble';
     content.textContent = text || '';
 
-    const timeEl = document.createElement('div');
-    timeEl.className = 'message-time-bubble';
-    timeEl.textContent = time || '';
+    const metaEl = document.createElement('div');
+    metaEl.className = 'message-meta';
+    
+    // Format time as 12-hour format
+    const formattedTime = formatTime(time);
+    
+    // Add ticks for sent messages
+    if (type === 'sent') {
+      const ticksSpan = document.createElement('span');
+      ticksSpan.className = 'ticks';
+      
+      switch (status) {
+        case 'sent':
+          ticksSpan.innerHTML = '✓';
+          ticksSpan.style.color = '#667781';
+          break;
+        case 'delivered':
+          ticksSpan.innerHTML = '✓✓';
+          ticksSpan.style.color = '#667781';
+          break;
+        case 'seen':
+          ticksSpan.innerHTML = '✓✓';
+          ticksSpan.style.color = '#53bdeb';
+          break;
+        default:
+          ticksSpan.innerHTML = '';
+      }
+      
+      metaEl.innerHTML = `${formattedTime} `;
+      metaEl.appendChild(ticksSpan);
+    } else {
+      metaEl.textContent = formattedTime;
+    }
 
     bubble.appendChild(content);
-    bubble.appendChild(timeEl);
+    bubble.appendChild(metaEl);
 
     return bubble;
   }
 
-  function addMessageToList(type, text, time) {
+  function formatTime(timeStr) {
+    if (!timeStr) return '';
+    
+    // Handle both HH:MM and H:MM formats
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    
+    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  }
+
+  function addMessageToList(type, text, time, status = 'seen') {
     const list = document.getElementById('messagesList');
     const item = document.createElement('div');
     item.className = `message-item ${type}`;
@@ -123,6 +165,7 @@
     const type = messageTypeInput.value;
     const text = messageTextInput.value.trim();
     const time = messageTimeInput.value || '';
+    const status = type === 'sent' ? messageStatusInput.value : 'none';
 
     if (!text) {
       messageTextInput.focus();
@@ -130,12 +173,12 @@
     }
 
     // Add to preview
-    const bubble = createMessageBubble(type, text, time);
+    const bubble = createMessageBubble(type, text, time, status);
     messagesContainer.appendChild(bubble);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
     // Add to list (editor)
-    addMessageToList(type, text, time);
+    addMessageToList(type, text, time, status);
 
     // reset input
     messageTextInput.value = '';
@@ -194,14 +237,12 @@
     syncStatusBar();
 
     const samples = [
-      { type: 'received', text: 'Hey! Are we still on for tonight?', time: '19:12' },
-      { type: 'sent', text: 'Yes, 7:30 pm sharp! See you there.', time: '19:14' },
-      { type: 'received', text: 'Perfect, see you 👋', time: '19:15' }
+      { type: 'sent', text: 'Hello, how are you doing today', time: '14:29', status: 'seen' }
     ];
     samples.forEach(m => {
-      const b = createMessageBubble(m.type, m.text, m.time);
+      const b = createMessageBubble(m.type, m.text, m.time, m.status || 'seen');
       messagesContainer.appendChild(b);
-      addMessageToList(m.type, m.text, m.time);
+      addMessageToList(m.type, m.text, m.time, m.status || 'seen');
     });
   }
 

@@ -66,8 +66,14 @@
                             <option value="received">Received</option>
                             <option value="sent">Sent</option>
                         </select>
+                        <select id="messageStatus" title="Message status for Sent messages">
+                            <option value="none">No ticks</option>
+                            <option value="sent">Sent (✓)</option>
+                            <option value="delivered">Delivered (✓✓ grey)</option>
+                            <option value="seen" selected>Seen (✓✓ blue)</option>
+                        </select>
                         <input type="text" id="messageText" placeholder="Enter message text">
-                        <input type="time" id="messageTime" value="19:30">
+                        <input type="time" id="messageTime" value="14:29">
                         <button id="addMessage" class="btn-primary">Add Message</button>
                     </div>
                 </div>
@@ -131,19 +137,26 @@
                             <div class="date-divider">
                                 <span>Today</span>
                             </div>
+                            <div class="info-banner">
+                                <i class="fas fa-lock"></i>
+                                <span>Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them. Learn more.</span>
+                            </div>
                             <!-- Messages will be displayed here -->
                         </div>
 
                         <!-- Message Input -->
                         <div class="message-input">
-                            <i class="fas fa-plus"></i>
-                            <div class="input-field">
-                                <span>Type a message</span>
+                            <div class="input-section">
+                                <i class="fas fa-smile input-emoji"></i>
+                                <div class="input-field">
+                                    <span>Message</span>
+                                </div>
+                                <i class="fas fa-paperclip input-attach"></i>
+                                <i class="fas fa-camera input-camera"></i>
                             </div>
-                            <i class="fas fa-smile"></i>
-                            <i class="fas fa-paperclip"></i>
-                            <i class="fas fa-camera"></i>
-                            <i class="fas fa-microphone"></i>
+                            <div class="mic-button">
+                                <i class="fas fa-microphone"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
