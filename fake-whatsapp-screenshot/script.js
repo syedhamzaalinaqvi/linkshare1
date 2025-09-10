@@ -296,11 +296,19 @@
       screenshotContainer.innerHTML = '';
       screenshotContainer.appendChild(phoneScreenClone);
 
-      // Match container size but ensure no content cutoff
+      // Match container width
       const rect = phoneScreen.getBoundingClientRect();
       const width = Math.round(rect.width);
       
-      // Get component heights for accurate calculation
+      // Temporarily make visible for accurate measurements
+      screenshotContainer.style.visibility = 'visible';
+      screenshotContainer.style.position = 'fixed';
+      screenshotContainer.style.top = '0';
+      screenshotContainer.style.left = '0';
+      screenshotContainer.style.zIndex = '-1';
+      screenshotContainer.style.width = width + 'px';
+      
+      // Get component references
       const statusBar = phoneScreenClone.querySelector('.status-bar');
       const chatHeader = phoneScreenClone.querySelector('.chat-header');
       const messageInput = phoneScreenClone.querySelector('.message-input');
@@ -309,60 +317,58 @@
       let contentHeight = Math.round(rect.height);
       
       if (messagesContainer) {
-        // Remove any height constraints and overflow settings for proper measurement
+        // Apply screenshot-specific styles
         messagesContainer.style.height = 'auto';
         messagesContainer.style.maxHeight = 'none';
         messagesContainer.style.overflow = 'visible';
-        messagesContainer.style.paddingBottom = '30px'; // Extra space at bottom
+        messagesContainer.style.padding = '15px 15px 20px 15px';
         
-        // Force scroll to bottom to ensure last messages are visible
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // Force reflow and wait for rendering
+        phoneScreenClone.offsetHeight;
+        await new Promise(resolve => setTimeout(resolve, 150));
         
-        // Wait for any CSS transitions or rendering
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Calculate accurate heights after rendering
+        // Calculate component heights after proper styling
         const statusBarHeight = statusBar ? statusBar.offsetHeight : 0;
         const headerHeight = chatHeader ? chatHeader.offsetHeight : 0;
         const inputHeight = messageInput ? messageInput.offsetHeight : 0;
         
-        // Get the actual content height of messages
-        const messagesScrollHeight = messagesContainer.scrollHeight;
+        // Measure actual content in messages container
+        const dateDiv = messagesContainer.querySelector('.date-divider');
+        const infoBanner = messagesContainer.querySelector('.info-banner');
+        const messageBubbles = messagesContainer.querySelectorAll('.message-bubble');
         
-        // Calculate total needed height with proper padding
-        const totalContentHeight = statusBarHeight + headerHeight + messagesScrollHeight + inputHeight + 50; // 50px buffer
-        contentHeight = Math.max(contentHeight, totalContentHeight);
+        // Start with container padding
+        let messagesContentHeight = 35; // Top + bottom padding (15 + 20)
         
-        // Set container to exact content height to show everything
-        messagesContainer.style.height = messagesScrollHeight + 'px';
+        if (dateDiv) messagesContentHeight += dateDiv.offsetHeight + 15;
+        if (infoBanner) messagesContentHeight += infoBanner.offsetHeight + 14;
+        
+        messageBubbles.forEach(bubble => {
+          messagesContentHeight += bubble.offsetHeight + 12; // message + margin
+        });
+        
+        // Calculate total needed height (no extra buffer needed)
+        contentHeight = statusBarHeight + headerHeight + messagesContentHeight + inputHeight;
+        
+        // Set exact height
+        messagesContainer.style.height = messagesContentHeight + 'px';
       }
       
-      screenshotContainer.style.width = width + 'px';
+      // Set final container dimensions
       screenshotContainer.style.height = contentHeight + 'px';
-      
-      // Update the cloned phone screen height to match content
       phoneScreenClone.style.height = contentHeight + 'px';
       phoneScreenClone.style.minHeight = contentHeight + 'px';
       
-      // Temporarily make visible for capture (but off the viewport)
-      screenshotContainer.style.visibility = 'visible';
-      screenshotContainer.style.position = 'fixed';
-      screenshotContainer.style.top = '0';
-      screenshotContainer.style.left = '0';
-      screenshotContainer.style.zIndex = '-1';
-      screenshotContainer.style.opacity = '1';
-      
       // Ensure all content is properly rendered before capture
-      // Force a reflow and repaint
       screenshotContainer.offsetHeight;
+      phoneScreenClone.offsetHeight;
       
-      // Wait longer for full rendering including fonts and images
+      // Wait for complete rendering
       await new Promise(resolve => setTimeout(resolve, 200));
       
-      // Ensure messages are still scrolled to show everything
+      // Final scroll position check
       if (messagesContainer) {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        // Force another reflow after scroll
         messagesContainer.offsetHeight;
       }
       
