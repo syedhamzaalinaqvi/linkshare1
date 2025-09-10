@@ -296,12 +296,35 @@
       screenshotContainer.innerHTML = '';
       screenshotContainer.appendChild(phoneScreenClone);
 
-      // Match container size exactly to the visible phone screen to avoid blank areas
+      // Match container size but ensure no content cutoff
       const rect = phoneScreen.getBoundingClientRect();
       const width = Math.round(rect.width);
       const height = Math.round(rect.height);
+      
+      // Calculate actual content height to prevent cutoff
+      const statusBar = phoneScreenClone.querySelector('.status-bar');
+      const chatHeader = phoneScreenClone.querySelector('.chat-header');
+      const messageInput = phoneScreenClone.querySelector('.message-input');
+      const messagesContainer = phoneScreenClone.querySelector('.messages-container');
+      
+      let contentHeight = height;
+      if (messagesContainer) {
+        // Ensure messages container has enough space and no scroll cutoff
+        messagesContainer.style.paddingBottom = '20px'; // Extra space at bottom
+        messagesContainer.scrollTop = 0; // Scroll to top to show all messages
+        
+        // Calculate minimum needed height
+        const statusBarHeight = statusBar ? statusBar.offsetHeight : 0;
+        const headerHeight = chatHeader ? chatHeader.offsetHeight : 0;
+        const inputHeight = messageInput ? messageInput.offsetHeight : 0;
+        const messagesScrollHeight = messagesContainer.scrollHeight;
+        
+        const minNeededHeight = statusBarHeight + headerHeight + messagesScrollHeight + inputHeight + 40; // 40px extra padding
+        contentHeight = Math.max(height, minNeededHeight);
+      }
+      
       screenshotContainer.style.width = width + 'px';
-      screenshotContainer.style.height = height + 'px';
+      screenshotContainer.style.height = contentHeight + 'px';
 
       // Preserve scroll position of messages list (if any)
       const origMessages = phoneScreen.querySelector('.messages-container');
@@ -329,11 +352,11 @@
         allowTaint: true,
         logging: false,
         width: width,
-        height: height,
+        height: contentHeight, // Use calculated content height
         scrollX: 0,
         scrollY: 0,
         windowWidth: width,
-        windowHeight: height,
+        windowHeight: contentHeight, // Use calculated content height
         imageTimeout: 0,
         removeContainer: false
       });
