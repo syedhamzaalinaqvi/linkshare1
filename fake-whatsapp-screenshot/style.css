@@ -436,8 +436,8 @@ body {
 }
 
 .message-bubble.received .message-meta {
-    right: auto;
-    left: 10px;
+    right: 10px;
+    left: auto;
 }
 
 .message-bubble.received .message-time-bubble {
