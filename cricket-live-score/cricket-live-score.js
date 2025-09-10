@@ -26,6 +26,10 @@ class CricketLiveScore {
         this.retryCount = 0;
         this.maxRetries = 3;
         
+        // Asia Cup cache for better coverage
+        this.asiaCupMatchesCache = [];
+        this.asiaCupLastFetch = 0;
+        
         // DOM Elements
         this.liveScoreBar = document.getElementById('liveScoreBar');
         this.matchesContainer = document.getElementById('matchesContainer');
@@ -42,6 +46,8 @@ class CricketLiveScore {
             if (this.matches.length === 0) {
                 await this.fetchUpcomingMatches();
             }
+            // Always try to fetch Asia Cup specifically for featured section
+            await this.fetchAsiaCupFeatured();
             this.startAutoRefresh();
         } catch (error) {
             console.error('Failed to initialize cricket live score:', error);
@@ -247,9 +253,11 @@ class CricketLiveScore {
                 <div class="no-matches" style="text-align: center; padding: 2rem; color: white;">
                     <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.7;"></i>
                     <p>No Asia Cup matches currently active</p>
-                    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 1rem;">Stay tuned for upcoming tournament matches!</p>
+                    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 1rem;">Searching for fixtures...</p>
                 </div>
             `;
+            // Trigger explicit Asia Cup fetch if not already cached
+            this.fetchAsiaCupFeatured().catch(() => {});
         }
     }
     
@@ -689,6 +697,131 @@ class CricketLiveScore {
             <i class="fas fa-exclamation-triangle"></i> 
             All APIs unavailable. Showing fallback message.
         `;
+    }
+    
+    // Explicit Asia Cup fetching from multiple endpoints
+    async fetchAsiaCupFeatured() {
+        try {
+            const now = Date.now();
+            // Use cache if fetched within last 5 minutes
+            if (this.asiaCupMatchesCache.length > 0 && (now - this.asiaCupLastFetch) < 5 * 60 * 1000) {
+                this.renderAsiaCupFromCache();
+                return;
+            }
+            
+            const rapidConfig = this.apiConfigs.find(c => c.type === 'rapidapi');
+            if (!rapidConfig) return;
+            
+            console.log('Fetching Asia Cup matches from Cricbuzz...');
+            
+            const headers = {
+                'Content-Type': 'application/json',
+                'X-RapidAPI-Key': rapidConfig.key,
+                'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com'
+            };
+            
+            // Fetch from multiple endpoints to get comprehensive coverage
+            const endpoints = ['matches/v1/live', 'matches/v1/recent', 'matches/v1/upcoming'];
+            const allMatches = [];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${rapidConfig.baseUrl}/${endpoint}`, { 
+                        method: 'GET', 
+                        headers 
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const parsed = this.parseCricbuzzData(data);
+                        allMatches.push(...parsed);
+                    }
+                } catch (err) {
+                    console.log(`Failed to fetch from ${endpoint}:`, err.message);
+                }
+            }
+            
+            // Filter for Asia Cup matches
+            const asiaCupMatches = allMatches.filter(match => 
+                this.isAsiaCupMatch(match)
+            );
+            
+            // Remove duplicates based on match name
+            const uniqueMatches = asiaCupMatches.filter((match, index, arr) => 
+                arr.findIndex(m => m.name === match.name) === index
+            );
+            
+            // Sort by date priority
+            uniqueMatches.sort((a, b) => {
+                const dateA = a.date || '';
+                const dateB = b.date || '';
+                const priority = (d) => d === 'Today' ? 0 : d === 'Tomorrow' ? 1 : 2;
+                return priority(dateA) - priority(dateB);
+            });
+            
+            this.asiaCupMatchesCache = uniqueMatches.slice(0, 6);
+            this.asiaCupLastFetch = now;
+            
+            console.log(`Found ${this.asiaCupMatchesCache.length} Asia Cup matches`);
+            this.renderAsiaCupFromCache();
+            
+        } catch (error) {
+            console.error('Error fetching Asia Cup featured matches:', error);
+        }
+    }
+    
+    isAsiaCupMatch(match) {
+        const text = `${match.series || ''} ${match.tournament || ''} ${match.name || ''}`.toLowerCase();
+        return text.includes('asia cup') || 
+               text.includes('asia') && text.includes('cup') ||
+               (match.teams && match.teams.some(team => 
+                   ['Pakistan', 'India', 'Sri Lanka', 'Bangladesh', 'Afghanistan'].includes(team)
+               ));
+    }
+    
+    renderAsiaCupFromCache() {
+        if (!this.asiaCupMatchesCache || this.asiaCupMatchesCache.length === 0) {
+            this.asiaCupMatches.innerHTML = `
+                <div class="no-matches" style="text-align: center; padding: 2rem; color: white;">
+                    <i class="fas fa-trophy" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.7;"></i>
+                    <p>No Asia Cup fixtures found yet</p>
+                    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 1rem;">Checking tournament schedule...</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div class="asia-cup-grid" style="display: grid; gap: 1rem; margin-top: 1rem;">';
+        
+        this.asiaCupMatchesCache.forEach(match => {
+            const statusClass = this.getMatchStatusClass(match);
+            const scoreText = this.getScoreText(match);
+            
+            html += `
+                <div class="match-card ${statusClass}" style="margin: 0;">
+                    <div class="match-header">
+                        <div class="match-title">${match.name}</div>
+                        <div class="match-subtitle">${match.venue || 'Venue TBA'} • ${match.date || 'Date TBA'}</div>
+                    </div>
+                    <div class="match-body">
+                        <div class="teams-section">
+                            ${this.renderTeams(match)}
+                        </div>
+                        <div class="match-status ${statusClass}">
+                            ${match.status || 'Status Unknown'}
+                        </div>
+                        ${scoreText !== 'No score available' ? `
+                            <div class="overs-progress">
+                                ${this.renderProgressBar(match)}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        this.asiaCupMatches.innerHTML = html;
     }
 }
 
