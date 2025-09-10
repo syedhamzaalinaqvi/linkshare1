@@ -123,12 +123,15 @@
     delBtn.innerHTML = '<i class="fas fa-trash"></i>';
     delBtn.title = 'Delete message';
 
-    // Edit form
+    // Edit form with time editing
     const editForm = document.createElement('div');
     editForm.className = 'message-edit-form';
     editForm.innerHTML = `
-      <input type="text" value="${text}" class="edit-text">
-      <div>
+      <div class="edit-inputs">
+        <input type="text" value="${text}" class="edit-text" placeholder="Message text">
+        <input type="time" value="${time.replace(/\s?(AM|PM)/i, '')}" class="edit-time" title="Message time">
+      </div>
+      <div class="edit-buttons">
         <button type="button" class="save">Save</button>
         <button type="button" class="cancel">Cancel</button>
       </div>
@@ -145,18 +148,25 @@
 
     editForm.querySelector('.save').addEventListener('click', () => {
       const newText = editForm.querySelector('.edit-text').value.trim();
+      const newTime = editForm.querySelector('.edit-time').value;
+      
       if (newText) {
         textEl.textContent = newText;
+        const formattedTime = formatTime(newTime);
+        timeEl.textContent = formattedTime;
         
         // Update preview bubble
         const idx = Array.from(list.children).indexOf(item);
         const bubbles = messagesContainer.querySelectorAll('.message-bubble');
         if (bubbles[idx]) {
           const bubbleContent = bubbles[idx].querySelector('.message-content-bubble');
+          const bubbleTime = bubbles[idx].querySelector('.message-meta');
           if (bubbleContent) bubbleContent.textContent = newText;
+          if (bubbleTime) bubbleTime.innerHTML = bubbleTime.innerHTML.replace(/\d{1,2}:\d{2}\s?(AM|PM)/i, formattedTime);
         }
         
         editForm.classList.remove('active');
+        saveToLocalStorage(); // Save changes
       }
     });
 
@@ -166,6 +176,7 @@
       const bubbles = messagesContainer.querySelectorAll('.message-bubble');
       if (bubbles[idx]) bubbles[idx].remove();
       item.remove();
+      saveToLocalStorage(); // Save after deletion
     });
 
     const buttonGroup = document.createElement('div');
@@ -270,59 +281,180 @@
     generateBtn.disabled = true;
     const originalText = generateBtn.innerHTML;
     generateBtn.innerHTML = '<span class="loading"></span> Generating...';
+    
     try {
-      const canvas = await html2canvas(phoneScreen, {
-        backgroundColor: null,
-        scale: 2,
-        useCORS: true
+      // Capture only the phone screen content (borderless)
+      const phoneScreenContent = phoneScreen;
+      
+      const canvas = await html2canvas(phoneScreenContent, {
+        backgroundColor: '#ffffff',
+        scale: 3, // Higher quality for mobile
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        width: phoneScreenContent.offsetWidth,
+        height: phoneScreenContent.offsetHeight,
+        scrollX: 0,
+        scrollY: 0
       });
-      const dataURL = canvas.toDataURL('image/png');
+      
+      const dataURL = canvas.toDataURL('image/png', 1.0); // Maximum quality
 
+      // Save to history
+      saveScreenshotHistory(dataURL);
+      
+      // Download
       const link = document.createElement('a');
       link.href = dataURL;
       const safeName = (displayContactName.textContent || 'whatsapp').replace(/[^a-z0-9-_]+/gi, '_');
-      link.download = `fake_whatsapp_${safeName}.png`;
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      link.download = `whatsapp_${safeName}_${timestamp}.png`;
       link.click();
+      
+      // Show success message
+      showSuccessMessage('Screenshot generated and saved!');
+      
     } catch (e) {
-      alert('Failed to generate screenshot. Try again.');
-      console.error(e);
+      alert('Failed to generate screenshot. Please try again.');
+      console.error('Screenshot error:', e);
     } finally {
       generateBtn.disabled = false;
       generateBtn.innerHTML = originalText;
     }
   }
+  
+  function showSuccessMessage(text) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.textContent = text;
+    successDiv.style.display = 'block';
+    
+    const actionButtons = document.querySelector('.action-buttons');
+    actionButtons.appendChild(successDiv);
+    
+    setTimeout(() => {
+      if (successDiv.parentNode) {
+        successDiv.parentNode.removeChild(successDiv);
+      }
+    }, 3000);
+  }
 
-  // Event bindings
-  contactNameInput.addEventListener('input', syncHeader);
-  contactStatusInput.addEventListener('change', syncHeader);
-  profilePicInput.addEventListener('input', syncHeader);
+  // Event bindings with auto-save
+  contactNameInput.addEventListener('input', () => { syncHeader(); saveToLocalStorage(); });
+  contactStatusInput.addEventListener('change', () => { syncHeader(); saveToLocalStorage(); });
+  profilePicInput.addEventListener('input', () => { syncHeader(); saveToLocalStorage(); });
 
-  batteryLevelInput.addEventListener('input', syncStatusBar);
-  timeDisplayInput.addEventListener('input', syncStatusBar);
-  headerIconSizeInput.addEventListener('input', syncHeaderIconSize);
+  batteryLevelInput.addEventListener('input', () => { syncStatusBar(); saveToLocalStorage(); });
+  timeDisplayInput.addEventListener('input', () => { syncStatusBar(); saveToLocalStorage(); });
+  headerIconSizeInput.addEventListener('input', () => { syncHeaderIconSize(); saveToLocalStorage(); });
+  networkProviderInput.addEventListener('input', saveToLocalStorage);
 
-  addMessageBtn.addEventListener('click', addMessage);
+  addMessageBtn.addEventListener('click', () => { addMessage(); saveToLocalStorage(); });
   messageTextInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addMessage();
+    if (e.key === 'Enter') { 
+      addMessage(); 
+      saveToLocalStorage(); 
+    }
   });
 
-  clearMessagesBtn.addEventListener('click', clearAll);
+  clearMessagesBtn.addEventListener('click', () => { 
+    clearAll(); 
+    saveToLocalStorage(); 
+  });
   generateBtn.addEventListener('click', generateScreenshot);
 
-  // Initialize with a sample conversation
+  // Local Storage Functions
+  function saveToLocalStorage() {
+    const messages = [];
+    const messageItems = document.querySelectorAll('.message-item');
+    
+    messageItems.forEach(item => {
+      const type = item.classList.contains('sent') ? 'sent' : 'received';
+      const text = item.querySelector('.message-text').textContent;
+      const time = item.querySelector('.message-time').textContent;
+      // Get status from the actual message (if sent)
+      const status = type === 'sent' ? 'seen' : 'none'; // Default for now
+      messages.push({ type, text, time, status });
+    });
+    
+    const chatData = {
+      messages,
+      contactName: contactNameInput.value,
+      contactStatus: contactStatusInput.value,
+      profilePic: profilePicInput.value,
+      batteryLevel: batteryLevelInput.value,
+      timeDisplay: timeDisplayInput.value,
+      networkProvider: networkProviderInput.value,
+      headerIconSize: headerIconSizeInput.value
+    };
+    
+    localStorage.setItem('whatsappChatData', JSON.stringify(chatData));
+  }
+  
+  function loadFromLocalStorage() {
+    const savedData = localStorage.getItem('whatsappChatData');
+    if (savedData) {
+      const chatData = JSON.parse(savedData);
+      
+      // Load form data
+      contactNameInput.value = chatData.contactName || 'John Doe';
+      contactStatusInput.value = chatData.contactStatus || 'online';
+      profilePicInput.value = chatData.profilePic || '';
+      batteryLevelInput.value = chatData.batteryLevel || 85;
+      timeDisplayInput.value = chatData.timeDisplay || '19:30';
+      networkProviderInput.value = chatData.networkProvider || 'Carrier';
+      headerIconSizeInput.value = chatData.headerIconSize || 1.0;
+      
+      // Load messages
+      chatData.messages.forEach(m => {
+        const b = createMessageBubble(m.type, m.text, m.time, m.status || 'seen');
+        messagesContainer.appendChild(b);
+        addMessageToList(m.type, m.text, m.time, m.status || 'seen');
+      });
+      
+      // Sync UI
+      syncHeader();
+      syncStatusBar();
+      syncHeaderIconSize();
+    }
+  }
+  
+  function saveScreenshotHistory(dataURL) {
+    const screenshots = JSON.parse(localStorage.getItem('whatsappScreenshots') || '[]');
+    const screenshot = {
+      id: Date.now(),
+      dataURL,
+      contactName: displayContactName.textContent,
+      timestamp: new Date().toISOString(),
+      messageCount: messagesContainer.querySelectorAll('.message-bubble').length
+    };
+    
+    screenshots.unshift(screenshot); // Add to beginning
+    if (screenshots.length > 10) screenshots.pop(); // Keep only 10 recent
+    
+    localStorage.setItem('whatsappScreenshots', JSON.stringify(screenshots));
+  }
+
+  // Initialize with saved data or sample conversation
   function init() {
     syncHeader();
     syncStatusBar();
     syncHeaderIconSize();
-
-    const samples = [
-      { type: 'sent', text: 'Hello, how are you doing today', time: '14:29', status: 'seen' }
-    ];
-    samples.forEach(m => {
-      const b = createMessageBubble(m.type, m.text, m.time, m.status || 'seen');
-      messagesContainer.appendChild(b);
-      addMessageToList(m.type, m.text, m.time, m.status || 'seen');
-    });
+    
+    // Try to load saved data first
+    loadFromLocalStorage();
+    
+    // If no saved data, load sample
+    if (messagesContainer.querySelectorAll('.message-bubble').length === 1) { // Only date divider
+      const samples = [
+        { type: 'sent', text: 'Hello, how are you doing today', time: '14:29', status: 'seen' }
+      ];
+      samples.forEach(m => {
+        const b = createMessageBubble(m.type, m.text, m.time, m.status || 'seen');
+        messagesContainer.appendChild(b);
+        addMessageToList(m.type, m.text, m.time, m.status || 'seen');
+      });
+    }
   }
 
   init();
