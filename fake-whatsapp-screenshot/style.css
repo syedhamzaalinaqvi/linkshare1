@@ -1,3 +1,18 @@
+/* Import LinkShare theme variables */
+:root {
+    --primary-color: #25D366;
+    --secondary-color: #128C7E;
+    --accent-color: #34B7F1;
+    --text-color: #333;
+    --bg-color: #f5f5f5;
+    --white: #ffffff;
+    --gray-light: #f8f9fa;
+    --gray: #6c757d;
+    --shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    --radius: 12px;
+    --transition: all 0.3s ease;
+}
+
 /* Reset and Base Styles */
 * {
     margin: 0;
@@ -6,42 +21,17 @@
 }
 
 body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    overflow-x: hidden;
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-}
-
-/* Header Styles */
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Site theme tweaks to align with LinkShare */
-:root {
-    --brand-primary: #764ba2;
-    --brand-secondary: #667eea;
-    --brand-accent: #25d366;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--brand-accent), #128c7e);
-}
-
-.header h1 i {
-    color: var(--brand-accent);
 }
 
 .header h1 {
@@ -62,6 +52,16 @@ body {
     font-weight: 300;
 }
 
+/* Converter Container - matching document-converter */
+.converter-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
 /* Main Content Layout */
 .main-content {
     display: grid;
@@ -72,18 +72,16 @@ body {
 
 /* Controls Panel */
 .controls-panel {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid #ddd;
 }
 
 .controls-panel h3 {
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
 }
 
@@ -102,19 +100,19 @@ body {
 .control-group input,
 .control-group select {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e1e8ed;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    background: #fff;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--white);
 }
 
 .control-group input:focus,
 .control-group select:focus {
     outline: none;
-    border-color: #25d366;
-    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.1);
 }
 
 /* Messages Section */
@@ -189,37 +187,31 @@ body {
 /* Buttons */
 .btn-primary,
 .btn-secondary {
-    padding: 12px 20px;
+    background-color: var(--primary-color);
+    color: white;
     border: none;
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-weight: 500;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    transition: var(--transition);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #25d366, #128c7e);
-    color: white;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    gap: 0.5rem;
 }
 
 .btn-primary:hover {
+    background-color: var(--secondary-color);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
 }
 
 .btn-secondary {
-    background: #6c757d;
-    color: white;
+    background-color: var(--gray);
 }
 
 .btn-secondary:hover {
-    background: #5a6268;
+    background-color: #5a6268;
     transform: translateY(-2px);
 }
 
@@ -231,20 +223,18 @@ body {
 
 /* Preview Panel */
 .preview-panel {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border: 1px solid #ddd;
     position: sticky;
     top: 20px;
 }
 
 .preview-panel h3 {
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 1.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 600;
     text-align: center;
 }
@@ -641,18 +631,17 @@ body {
 
 /* User Guide Section */
 .user-guide {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    margin-top: 50px;
-    padding: 60px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--white);
+    margin-top: 3rem;
+    padding: 3rem 0;
+    border-top: 1px solid #eee;
 }
 
 .user-guide h2 {
     text-align: center;
-    color: #fff;
-    font-size: 2.2rem;
-    margin-bottom: 40px;
+    color: var(--secondary-color);
+    font-size: 2rem;
+    margin-bottom: 2rem;
     font-weight: 600;
 }
 
@@ -662,11 +651,11 @@ body {
 }
 
 .guide-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: var(--gray-light);
+    border-radius: var(--radius);
+    padding: 2rem;
+    border: 1px solid #ddd;
+    box-shadow: var(--shadow);
 }
 
 .guide-section h3 {
@@ -703,15 +692,16 @@ body {
 
 .use-case,
 .feature {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    border-left: 4px solid var(--brand-accent);
+    background: var(--white);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border-left: 4px solid var(--primary-color);
+    box-shadow: var(--shadow);
 }
 
 .use-case h4,
 .feature h4 {
-    color: var(--brand-primary);
+    color: var(--secondary-color);
     margin-bottom: 8px;
 }
 
@@ -725,26 +715,7 @@ body {
     line-height: 1.6;
 }
 
-/* Footer */
-.footer {
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
-    color: #fff;
-    text-align: center;
-    padding: 30px 0;
-    margin-top: 40px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.footer a {
-    color: var(--brand-accent);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer a:hover {
-    color: #fff;
-}
+/* Footer styles are handled by main CSS */
 
 /* Edit button styling */
 .edit-message {
