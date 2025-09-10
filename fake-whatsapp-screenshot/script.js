@@ -299,49 +299,72 @@
       // Match container size but ensure no content cutoff
       const rect = phoneScreen.getBoundingClientRect();
       const width = Math.round(rect.width);
-      const height = Math.round(rect.height);
       
-      // Calculate actual content height to prevent cutoff
+      // Get component heights for accurate calculation
       const statusBar = phoneScreenClone.querySelector('.status-bar');
       const chatHeader = phoneScreenClone.querySelector('.chat-header');
       const messageInput = phoneScreenClone.querySelector('.message-input');
       const messagesContainer = phoneScreenClone.querySelector('.messages-container');
       
-      let contentHeight = height;
+      let contentHeight = Math.round(rect.height);
+      
       if (messagesContainer) {
-        // Ensure messages container has enough space and no scroll cutoff
-        messagesContainer.style.paddingBottom = '20px'; // Extra space at bottom
-        messagesContainer.scrollTop = 0; // Scroll to top to show all messages
+        // Remove any height constraints and overflow settings for proper measurement
+        messagesContainer.style.height = 'auto';
+        messagesContainer.style.maxHeight = 'none';
+        messagesContainer.style.overflow = 'visible';
+        messagesContainer.style.paddingBottom = '30px'; // Extra space at bottom
         
-        // Calculate minimum needed height
+        // Force scroll to bottom to ensure last messages are visible
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Wait for any CSS transitions or rendering
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Calculate accurate heights after rendering
         const statusBarHeight = statusBar ? statusBar.offsetHeight : 0;
         const headerHeight = chatHeader ? chatHeader.offsetHeight : 0;
         const inputHeight = messageInput ? messageInput.offsetHeight : 0;
+        
+        // Get the actual content height of messages
         const messagesScrollHeight = messagesContainer.scrollHeight;
         
-        const minNeededHeight = statusBarHeight + headerHeight + messagesScrollHeight + inputHeight + 40; // 40px extra padding
-        contentHeight = Math.max(height, minNeededHeight);
+        // Calculate total needed height with proper padding
+        const totalContentHeight = statusBarHeight + headerHeight + messagesScrollHeight + inputHeight + 50; // 50px buffer
+        contentHeight = Math.max(contentHeight, totalContentHeight);
+        
+        // Set container to exact content height to show everything
+        messagesContainer.style.height = messagesScrollHeight + 'px';
       }
       
       screenshotContainer.style.width = width + 'px';
       screenshotContainer.style.height = contentHeight + 'px';
-
-      // Preserve scroll position of messages list (if any)
-      const origMessages = phoneScreen.querySelector('.messages-container');
-      const cloneMessages = phoneScreenClone.querySelector('.messages-container');
-      if (origMessages && cloneMessages) {
-        cloneMessages.scrollTop = origMessages.scrollTop;
-      }
       
-      // Temporarily make visible for capture (but off the stacking context)
+      // Update the cloned phone screen height to match content
+      phoneScreenClone.style.height = contentHeight + 'px';
+      phoneScreenClone.style.minHeight = contentHeight + 'px';
+      
+      // Temporarily make visible for capture (but off the viewport)
       screenshotContainer.style.visibility = 'visible';
       screenshotContainer.style.position = 'fixed';
       screenshotContainer.style.top = '0';
       screenshotContainer.style.left = '0';
       screenshotContainer.style.zIndex = '-1';
+      screenshotContainer.style.opacity = '1';
       
-      // Wait a moment for rendering
-      await new Promise(resolve => setTimeout(resolve, 80));
+      // Ensure all content is properly rendered before capture
+      // Force a reflow and repaint
+      screenshotContainer.offsetHeight;
+      
+      // Wait longer for full rendering including fonts and images
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Ensure messages are still scrolled to show everything
+      if (messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // Force another reflow after scroll
+        messagesContainer.offsetHeight;
+      }
       
       const deviceScale = Math.min(4, Math.max(2, (window.devicePixelRatio || 2) * 2));
       
@@ -357,8 +380,17 @@
         scrollY: 0,
         windowWidth: width,
         windowHeight: contentHeight, // Use calculated content height
-        imageTimeout: 0,
-        removeContainer: false
+        imageTimeout: 5000, // Longer timeout for complex content
+        removeContainer: false,
+        onclone: function(clonedDoc) {
+          // Ensure cloned messages container shows all content
+          const clonedMessages = clonedDoc.querySelector('.messages-container');
+          if (clonedMessages) {
+            clonedMessages.style.height = 'auto';
+            clonedMessages.style.maxHeight = 'none';
+            clonedMessages.style.overflow = 'visible';
+          }
+        }
       });
       
       // Hide container again

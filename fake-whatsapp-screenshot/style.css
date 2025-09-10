@@ -445,6 +445,25 @@ body {
     min-height: 500px; /* Minimum height for larger screens */
 }
 
+/* Screenshot container messages - ensure full visibility without constraints */
+.screenshot-container .messages-container {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    flex: none !important;
+    position: static !important;
+    padding-bottom: 30px !important; /* Extra bottom padding for clean capture */
+}
+
+/* Screenshot container phone screen - dynamic height adjustment */
+.screenshot-container .phone-screen {
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: static !important;
+}
+
 .date-divider {
     text-align: center;
     margin: 15px 0;
