@@ -317,26 +317,41 @@
       let contentHeight = Math.round(rect.height);
       
       if (messagesContainer) {
-        // Keep original viewport-based approach - capture only what's visible
+        // Get original scroll position BEFORE any modifications
         const originalMessagesContainer = phoneScreen.querySelector('.messages-container');
+        const currentScrollTop = originalMessagesContainer.scrollTop;
         
-        // Copy the current scroll position and viewport size
-        messagesContainer.scrollTop = originalMessagesContainer.scrollTop;
+        // Set up messages container to match original viewport
         messagesContainer.style.height = originalMessagesContainer.offsetHeight + 'px';
         messagesContainer.style.maxHeight = originalMessagesContainer.offsetHeight + 'px';
         messagesContainer.style.overflow = 'hidden'; // Hide scrollbars in screenshot
         messagesContainer.style.paddingTop = '15px';
         messagesContainer.style.paddingRight = '15px';
         messagesContainer.style.paddingLeft = '15px';
-        messagesContainer.style.paddingBottom = '15px'; // consistent padding
+        messagesContainer.style.paddingBottom = '15px';
         messagesContainer.style.boxSizing = 'border-box';
-
-        // Ensure input is positioned statically
+        
+        // Keep input visible and properly positioned
         if (messageInput) {
+          messageInput.style.display = 'flex'; // Make sure it's visible
           messageInput.style.position = 'static';
+          messageInput.style.minHeight = '50px';
+          messageInput.style.padding = '6px 12px';
         }
+        
+        // Force reflow to ensure everything is rendered
+        phoneScreenClone.offsetHeight;
+        
+        // Wait for rendering
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Apply the EXACT scroll position from original AFTER everything is set up
+        messagesContainer.scrollTop = currentScrollTop;
+        
+        // Force another reflow after scroll
+        messagesContainer.offsetHeight;
 
-        // Use original phone screen height (viewport-based)
+        // Use original phone screen height (fixed viewport)
         contentHeight = Math.round(rect.height);
       }
         
