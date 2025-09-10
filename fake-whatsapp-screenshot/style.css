@@ -464,13 +464,13 @@ body {
 
 /* Message Input */
 .message-input {
-    background: #f0f2f6;
+    background: #efeae2;
     padding: 8px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    border-top: 1px solid #ddd;
+    /*border-top: 1px solid #ddd;*/
     min-height: 60px;
 }
 
