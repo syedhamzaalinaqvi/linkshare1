@@ -465,6 +465,11 @@ body {
     position: static !important;
 }
 
+/* Hide message input in screenshots for authentic look */
+.screenshot-container .message-input {
+    display: none !important;
+}
+
 .date-divider {
     text-align: center;
     margin: 15px 0;
