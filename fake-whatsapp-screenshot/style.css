@@ -461,6 +461,13 @@ body {
     max-height: none !important;
     overflow: visible !important;
     position: static !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Ensure input stays at bottom of the screen clone */
+.screenshot-container .phone-screen .message-input {
+    margin-top: auto !important; /* Push to bottom in column flex */
 }
 
 /* Keep message input visible and properly styled in screenshots */

@@ -331,12 +331,26 @@
         messagesContainer.style.paddingBottom = '15px';
         messagesContainer.style.boxSizing = 'border-box';
         
-        // Keep input visible and properly positioned
+        // ULTRA-FORCE input visibility with all possible CSS properties
         if (messageInput) {
-          messageInput.style.display = 'flex'; // Make sure it's visible
+          console.log('Setting up message input...', messageInput);
+          messageInput.style.display = 'flex';
+          messageInput.style.visibility = 'visible';
+          messageInput.style.opacity = '1';
           messageInput.style.position = 'static';
           messageInput.style.minHeight = '50px';
+          messageInput.style.height = 'auto';
           messageInput.style.padding = '6px 12px';
+          messageInput.style.background = '#f0f2f6';
+          messageInput.style.borderTop = 'none';
+          messageInput.style.bottom = 'auto';
+          messageInput.style.left = 'auto';
+          messageInput.style.right = 'auto';
+          messageInput.style.transform = 'none';
+          messageInput.style.zIndex = '1';
+          messageInput.style.order = '999'; // Force to bottom in flex
+          
+          console.log('Input styles applied:', messageInput.style.cssText);
         }
         
         // Force reflow to ensure everything is rendered
@@ -358,10 +372,21 @@
       }
         
       
-      // Set final container dimensions (exact)
+      // Set final container dimensions and ensure flex layout for input
       screenshotContainer.style.height = contentHeight + 'px';
       phoneScreenClone.style.height = contentHeight + 'px';
       phoneScreenClone.style.minHeight = contentHeight + 'px';
+      phoneScreenClone.style.display = 'flex';
+      phoneScreenClone.style.flexDirection = 'column';
+      
+      // Double-check input is still visible after layout changes
+      const finalMessageInput = phoneScreenClone.querySelector('.message-input');
+      if (finalMessageInput) {
+        console.log('Final input check - display:', finalMessageInput.style.display);
+        console.log('Final input check - visibility:', finalMessageInput.style.visibility);
+        finalMessageInput.style.display = 'flex';
+        finalMessageInput.style.visibility = 'visible';
+      }
 
       // Final reflow
       screenshotContainer.offsetHeight;
