@@ -250,7 +250,7 @@ body {
     width: 100%;
     height: 720px; /* Increased height for larger screen */
     background: #fff;
-    border-radius: 25px;
+    border-radius: 5px;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     border: 8px solid #333;
