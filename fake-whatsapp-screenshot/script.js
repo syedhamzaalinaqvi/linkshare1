@@ -11,6 +11,7 @@
   const batteryLevelInput = el('batteryLevel');
   const timeDisplayInput = el('timeDisplay');
   const networkProviderInput = el('networkProvider');
+  const headerIconSizeInput = el('headerIconSize');
 
   const messageTypeInput = el('messageType');
   const messageTextInput = el('messageText');
@@ -28,6 +29,8 @@
   const displayTime = el('displayTime');
   const batteryPercent = el('batteryPercent');
   const phoneScreen = el('phoneScreen');
+  const chatHeaderRight = document.querySelector('.chat-header-right');
+  const backArrow = document.querySelector('.back-arrow');
 
   // Helpers
   function createMessageBubble(type, text, time, status = 'seen') {
@@ -108,9 +111,54 @@
     content.appendChild(textEl);
     content.appendChild(timeEl);
 
+    // Edit button
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit-message';
+    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+    editBtn.title = 'Edit message';
+
+    // Delete button
     const delBtn = document.createElement('button');
     delBtn.className = 'delete-message';
     delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+    delBtn.title = 'Delete message';
+
+    // Edit form
+    const editForm = document.createElement('div');
+    editForm.className = 'message-edit-form';
+    editForm.innerHTML = `
+      <input type="text" value="${text}" class="edit-text">
+      <div>
+        <button type="button" class="save">Save</button>
+        <button type="button" class="cancel">Cancel</button>
+      </div>
+    `;
+
+    editBtn.addEventListener('click', () => {
+      editForm.classList.add('active');
+      editForm.querySelector('.edit-text').focus();
+    });
+
+    editForm.querySelector('.cancel').addEventListener('click', () => {
+      editForm.classList.remove('active');
+    });
+
+    editForm.querySelector('.save').addEventListener('click', () => {
+      const newText = editForm.querySelector('.edit-text').value.trim();
+      if (newText) {
+        textEl.textContent = newText;
+        
+        // Update preview bubble
+        const idx = Array.from(list.children).indexOf(item);
+        const bubbles = messagesContainer.querySelectorAll('.message-bubble');
+        if (bubbles[idx]) {
+          const bubbleContent = bubbles[idx].querySelector('.message-content-bubble');
+          if (bubbleContent) bubbleContent.textContent = newText;
+        }
+        
+        editForm.classList.remove('active');
+      }
+    });
 
     delBtn.addEventListener('click', () => {
       // remove from preview as well
@@ -120,8 +168,15 @@
       item.remove();
     });
 
+    const buttonGroup = document.createElement('div');
+    buttonGroup.style.display = 'flex';
+    buttonGroup.style.gap = '5px';
+    buttonGroup.appendChild(editBtn);
+    buttonGroup.appendChild(delBtn);
+
     item.appendChild(content);
-    item.appendChild(delBtn);
+    item.appendChild(buttonGroup);
+    item.appendChild(editForm);
 
     list.appendChild(item);
   }
@@ -153,12 +208,34 @@
 
   function syncStatusBar() {
     const time = timeDisplayInput.value || '19:30';
-    displayTime.textContent = time;
+    const formattedTime = formatTime(time);
+    displayTime.textContent = formattedTime;
 
     let level = parseInt(batteryLevelInput.value, 10);
     if (isNaN(level) || level < 0) level = 0;
     if (level > 100) level = 100;
     batteryPercent.textContent = level + '%';
+  }
+
+  function syncHeaderIconSize() {
+    const scale = headerIconSizeInput.value || 1.0;
+    const rangeValue = document.querySelector('.range-value');
+    if (rangeValue) rangeValue.textContent = scale + 'x';
+    
+    if (chatHeaderRight) {
+      chatHeaderRight.style.fontSize = (0.9 * scale) + 'rem';
+    }
+    if (backArrow) {
+      backArrow.style.fontSize = (1.0 * scale) + 'rem';
+    }
+    
+    const contactAvatar = document.getElementById('contactAvatar');
+    if (contactAvatar) {
+      const size = Math.round(36 * scale);
+      contactAvatar.style.width = size + 'px';
+      contactAvatar.style.height = size + 'px';
+      contactAvatar.style.fontSize = (1.0 * scale) + 'rem';
+    }
   }
 
   function addMessage() {
@@ -222,6 +299,7 @@
 
   batteryLevelInput.addEventListener('input', syncStatusBar);
   timeDisplayInput.addEventListener('input', syncStatusBar);
+  headerIconSizeInput.addEventListener('input', syncHeaderIconSize);
 
   addMessageBtn.addEventListener('click', addMessage);
   messageTextInput.addEventListener('keydown', (e) => {
@@ -235,6 +313,7 @@
   function init() {
     syncHeader();
     syncStatusBar();
+    syncHeaderIconSize();
 
     const samples = [
       { type: 'sent', text: 'Hello, how are you doing today', time: '14:29', status: 'seen' }
