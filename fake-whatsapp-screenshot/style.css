@@ -404,16 +404,23 @@ body {
     border-radius: 18px;
     position: relative;
     word-wrap: break-word;
+    color: #1f2937; /* Dark text color for visibility */
+    font-size: 0.95rem;
+    line-height: 1.4;
+    font-weight: 400;
 }
 
 .message-bubble.sent .message-content-bubble {
     background: #dcf8c6;
     border-bottom-right-radius: 4px;
+    color: #1a1a1a; /* Darker text for sent messages */
 }
 
 .message-bubble.received .message-content-bubble {
-    background: white;
+    background: #ffffff;
     border-bottom-left-radius: 4px;
+    color: #1a1a1a; /* Dark text for received messages */
+    border: 1px solid #e5e5e5; /* Subtle border for definition */
 }
 
 .message-meta {
@@ -421,10 +428,11 @@ body {
     align-items: center;
     gap: 4px;
     font-size: 0.7rem;
-    color: #667781;
+    color: #667781 !important; /* Ensure meta text is visible */
     position: absolute;
     bottom: 6px;
     right: 10px;
+    opacity: 1 !important; /* Force full opacity */
 }
 
 .message-meta .ticks {
@@ -434,8 +442,8 @@ body {
 }
 
 .message-bubble.received .message-meta {
-    right: 10px;
-    left: auto;
+    right: auto;
+    left: 10px;
 }
 
 .message-bubble.received .message-time-bubble {
