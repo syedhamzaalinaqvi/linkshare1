@@ -363,8 +363,10 @@ body {
     overflow-y: auto;
     padding: 15px 15px 70px 15px; /* Extra bottom padding for message input */
     background: #efeae2;
-    background-image: url('https://raw.githubusercontent.com/WhatsApp/stickers/master/MakeStickers/assets/whatsapp-bg-light.png');
-    background-size: 400px auto;
+    background-image: 
+        radial-gradient(circle at 25px 25px, rgba(255,255,255,0.15) 2px, transparent 2px),
+        radial-gradient(circle at 75px 75px, rgba(255,255,255,0.15) 2px, transparent 2px);
+    background-size: 100px 100px;
     background-repeat: repeat;
     height: 400px;
     position: relative;
@@ -461,7 +463,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    border-top: 1px solid #ddd;
+    border-top: none; /* Removed white line */
     min-height: 60px;
     position: absolute;
     bottom: 0;
