@@ -11,11 +11,18 @@ class CricketLiveScore {
                 type: 'cricapi'
             },
             {
-                name: 'Cricbuzz RapidAPI',
+                name: 'Cricket Live Line RapidAPI',
                 key: '32a8817212msh7f3f4d71c33d39dp1e60cfjsnd741986feab8',
-                baseUrl: 'https://cricbuzz-cricket.p.rapidapi.com',
-                endpoint: 'matches/v1/live',
-                type: 'rapidapi'
+                baseUrl: 'https://cricket-live-line1.p.rapidapi.com',
+                endpoint: 'liveMatches',
+                type: 'cricket-live-line',
+                host: 'cricket-live-line1.p.rapidapi.com',
+                endpoints: {
+                    live: 'liveMatches',
+                    recent: 'recentMatches', 
+                    upcoming: 'upcomingMatches',
+                    series: 'series'
+                }
             }
         ];
         
@@ -116,6 +123,13 @@ class CricketLiveScore {
                     'X-RapidAPI-Key': config.key,
                     'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com'
                 };
+            } else if (config.type === 'cricket-live-line') {
+                url = `${config.baseUrl}/${config.endpoint}`;
+                headers = {
+                    'Content-Type': 'application/json',
+                    'X-RapidAPI-Key': config.key,
+                    'X-RapidAPI-Host': config.host
+                };
             }
             
             const response = await fetch(url, {
@@ -127,7 +141,13 @@ class CricketLiveScore {
             clearTimeout(timeoutId);
             
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                if (response.status === 429) {
+                    throw new Error('Rate limited - too many requests');
+                } else if (response.status === 401) {
+                    throw new Error('Invalid API key');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
             }
             
             const data = await response.json();
@@ -141,6 +161,9 @@ class CricketLiveScore {
             } else if (config.type === 'rapidapi') {
                 // Parse Cricbuzz API response
                 matches = this.parseCricbuzzData(data);
+            } else if (config.type === 'cricket-live-line') {
+                // Parse Cricket Live Line API response
+                matches = this.parseCricketLiveLineData(data);
             }
             
             if (matches.length > 0) {
@@ -589,6 +612,138 @@ class CricketLiveScore {
         return scores;
     }
     
+    parseCricketLiveLineData(data) {
+        // Parse Cricket Live Line API response format
+        let matches = [];
+        
+        try {
+            console.log('Raw Cricket Live Line API data:', data);
+            
+            // Handle different response formats from cricket-live-line API
+            if (data && Array.isArray(data)) {
+                matches = data.map(match => this.normalizeCricketLiveLineMatch(match)).filter(m => m !== null);
+            } else if (data && data.matches && Array.isArray(data.matches)) {
+                matches = data.matches.map(match => this.normalizeCricketLiveLineMatch(match)).filter(m => m !== null);
+            } else if (data && data.data && Array.isArray(data.data)) {
+                matches = data.data.map(match => this.normalizeCricketLiveLineMatch(match)).filter(m => m !== null);
+            } else if (data && typeof data === 'object') {
+                // If single match object
+                const normalized = this.normalizeCricketLiveLineMatch(data);
+                if (normalized) matches.push(normalized);
+            }
+            
+            console.log(`Parsed ${matches.length} matches from Cricket Live Line API`);
+            
+        } catch (error) {
+            console.error('Error parsing Cricket Live Line data:', error);
+        }
+        
+        return matches;
+    }
+    
+    normalizeCricketLiveLineMatch(matchData) {
+        if (!matchData) return null;
+        
+        try {
+            // Extract team names
+            const team1 = matchData.team1 || matchData.teamA || matchData.homeTeam || 'Team 1';
+            const team2 = matchData.team2 || matchData.teamB || matchData.awayTeam || 'Team 2';
+            
+            // Determine match status
+            const status = matchData.status || matchData.matchStatus || 'Unknown';
+            const isLive = status.toLowerCase().includes('live') || 
+                          status.toLowerCase().includes('inprogress') || 
+                          matchData.isLive || 
+                          matchData.live;
+            const isCompleted = status.toLowerCase().includes('complete') || 
+                               status.toLowerCase().includes('finished') || 
+                               matchData.isCompleted;
+            
+            return {
+                name: `${team1} vs ${team2}`,
+                teams: [team1, team2],
+                matchStarted: isLive || isCompleted,
+                matchEnded: isCompleted,
+                matchType: matchData.format || matchData.matchType || matchData.type || 'Unknown',
+                venue: matchData.venue || matchData.ground || matchData.location || 'Venue TBA',
+                date: this.formatDate(matchData.date || matchData.startTime || matchData.matchTime),
+                status: status,
+                series: matchData.series || matchData.tournament || matchData.competition,
+                score: this.parseCricketLiveLineScore(matchData)
+            };
+        } catch (error) {
+            console.error('Error normalizing Cricket Live Line match data:', error);
+            return null;
+        }
+    }
+    
+    parseCricketLiveLineScore(matchData) {
+        let scores = [];
+        
+        try {
+            // Handle different score formats from Cricket Live Line
+            if (matchData.score) {
+                if (Array.isArray(matchData.score)) {
+                    // If score is an array of innings
+                    scores = matchData.score.map(inning => ({
+                        inning: inning.team || inning.battingTeam,
+                        r: parseInt(inning.runs || inning.score || 0),
+                        w: parseInt(inning.wickets || inning.wicketsLost || 0),
+                        o: parseFloat(inning.overs || inning.oversPlayed || 0)
+                    }));
+                } else if (typeof matchData.score === 'object') {
+                    // If score is an object with team scores
+                    const team1Score = matchData.score.team1 || matchData.score.teamA;
+                    const team2Score = matchData.score.team2 || matchData.score.teamB;
+                    
+                    if (team1Score) {
+                        scores.push({
+                            inning: matchData.team1 || matchData.teamA,
+                            r: parseInt(team1Score.runs || team1Score.score || 0),
+                            w: parseInt(team1Score.wickets || 0),
+                            o: parseFloat(team1Score.overs || 0)
+                        });
+                    }
+                    
+                    if (team2Score) {
+                        scores.push({
+                            inning: matchData.team2 || matchData.teamB,
+                            r: parseInt(team2Score.runs || team2Score.score || 0),
+                            w: parseInt(team2Score.wickets || 0),
+                            o: parseFloat(team2Score.overs || 0)
+                        });
+                    }
+                }
+            }
+            
+            // Fallback: try to extract from direct properties
+            if (scores.length === 0) {
+                if (matchData.team1Score || matchData.teamAScore) {
+                    scores.push({
+                        inning: matchData.team1 || matchData.teamA,
+                        r: parseInt(matchData.team1Score || matchData.teamAScore || 0),
+                        w: parseInt(matchData.team1Wickets || matchData.teamAWickets || 0),
+                        o: parseFloat(matchData.team1Overs || matchData.teamAOvers || 0)
+                    });
+                }
+                
+                if (matchData.team2Score || matchData.teamBScore) {
+                    scores.push({
+                        inning: matchData.team2 || matchData.teamB,
+                        r: parseInt(matchData.team2Score || matchData.teamBScore || 0),
+                        w: parseInt(matchData.team2Wickets || matchData.teamBWickets || 0),
+                        o: parseFloat(matchData.team2Overs || matchData.teamBOvers || 0)
+                    });
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error parsing Cricket Live Line scores:', error);
+        }
+        
+        return scores;
+    }
+    
     formatDate(timestamp) {
         if (!timestamp) return 'Date TBA';
         
@@ -620,14 +775,22 @@ class CricketLiveScore {
                 upcomingUrl = `${config.baseUrl}/matches?apikey=${config.key}&offset=0`;
             } else if (config.type === 'rapidapi') {
                 upcomingUrl = `${config.baseUrl}/matches/v1/recent`;
+            } else if (config.type === 'cricket-live-line') {
+                upcomingUrl = `${config.baseUrl}/recentMatches`;
+            }
+            
+            const headers = {};
+            if (config.type === 'rapidapi') {
+                headers['X-RapidAPI-Key'] = config.key;
+                headers['X-RapidAPI-Host'] = 'cricbuzz-cricket.p.rapidapi.com';
+            } else if (config.type === 'cricket-live-line') {
+                headers['X-RapidAPI-Key'] = config.key;
+                headers['X-RapidAPI-Host'] = config.host;
             }
             
             const response = await fetch(upcomingUrl, {
                 method: 'GET',
-                headers: config.type === 'rapidapi' ? {
-                    'X-RapidAPI-Key': config.key,
-                    'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com'
-                } : {}
+                headers: headers
             });
             
             if (response.ok) {
@@ -639,6 +802,8 @@ class CricketLiveScore {
                     upcomingMatches = data.data || [];
                 } else if (config.type === 'rapidapi') {
                     upcomingMatches = this.parseCricbuzzData(data);
+                } else if (config.type === 'cricket-live-line') {
+                    upcomingMatches = this.parseCricketLiveLineData(data);
                 }
                 
                 if (upcomingMatches.length > 0) {
@@ -709,35 +874,100 @@ class CricketLiveScore {
                 return;
             }
             
+            // Prefer new cricket-live-line API; if not present, fallback to prior rapidapi
+            const cllConfig = this.apiConfigs.find(c => c.type === 'cricket-live-line');
             const rapidConfig = this.apiConfigs.find(c => c.type === 'rapidapi');
-            if (!rapidConfig) return;
+            const apiConfig = cllConfig || rapidConfig;
+            if (!apiConfig) return;
             
             console.log('Fetching Asia Cup matches from Cricbuzz...');
             
             const headers = {
                 'Content-Type': 'application/json',
-                'X-RapidAPI-Key': rapidConfig.key,
-                'X-RapidAPI-Host': 'cricbuzz-cricket.p.rapidapi.com'
+                'X-RapidAPI-Key': apiConfig.key,
+                'X-RapidAPI-Host': apiConfig.host || 'cricbuzz-cricket.p.rapidapi.com'
             };
             
-            // Fetch from multiple endpoints to get comprehensive coverage
-            const endpoints = ['matches/v1/live', 'matches/v1/recent', 'matches/v1/upcoming'];
+            // Start with series data to find Asia Cup specifically, then get matches
             const allMatches = [];
             
-            for (const endpoint of endpoints) {
+            if (apiConfig.type === 'cricket-live-line') {
+                // Try to get series first to find Asia Cup series ID
                 try {
-                    const response = await fetch(`${rapidConfig.baseUrl}/${endpoint}`, { 
+                    const seriesResponse = await fetch(`${apiConfig.baseUrl}/series`, { 
                         method: 'GET', 
                         headers 
                     });
                     
-                    if (response.ok) {
-                        const data = await response.json();
-                        const parsed = this.parseCricbuzzData(data);
-                        allMatches.push(...parsed);
+                    if (seriesResponse.ok) {
+                        const seriesData = await seriesResponse.json();
+                        const asiaCupSeries = this.findAsiaCupSeries(seriesData);
+                        
+                        // If we find Asia Cup series, get matches from that specific series
+                        if (asiaCupSeries && asiaCupSeries.id) {
+                            console.log(`Found Asia Cup series ID: ${asiaCupSeries.id}`);
+                            const seriesEndpoints = [
+                                `series/${asiaCupSeries.id}/recentMatches`,
+                                `series/${asiaCupSeries.id}/upcomingMatches`
+                            ];
+                            
+                            for (const endpoint of seriesEndpoints) {
+                                try {
+                                    const response = await fetch(`${apiConfig.baseUrl}/${endpoint}`, { 
+                                        method: 'GET', 
+                                        headers 
+                                    });
+                                    
+                                    if (response.ok) {
+                                        const data = await response.json();
+                                        const parsed = this.parseCricketLiveLineData(data);
+                                        allMatches.push(...parsed);
+                                    }
+                                } catch (err) {
+                                    console.log(`Failed to fetch from ${endpoint}:`, err.message);
+                                }
+                            }
+                        }
                     }
                 } catch (err) {
-                    console.log(`Failed to fetch from ${endpoint}:`, err.message);
+                    console.log('Failed to fetch series data:', err.message);
+                }
+                
+                // Fallback: try general endpoints but limit to avoid rate limiting
+                if (allMatches.length === 0) {
+                    try {
+                        const response = await fetch(`${apiConfig.baseUrl}/recentMatches`, { 
+                            method: 'GET', 
+                            headers 
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            const parsed = this.parseCricketLiveLineData(data);
+                            allMatches.push(...parsed);
+                        }
+                    } catch (err) {
+                        console.log('Failed to fetch recent matches:', err.message);
+                    }
+                }
+            } else {
+                // Cricbuzz API fallback
+                const endpoints = ['matches/v1/live', 'matches/v1/recent'];
+                for (const endpoint of endpoints) {
+                    try {
+                        const response = await fetch(`${apiConfig.baseUrl}/${endpoint}`, { 
+                            method: 'GET', 
+                            headers 
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            const parsed = this.parseCricbuzzData(data);
+                            allMatches.push(...parsed);
+                        }
+                    } catch (err) {
+                        console.log(`Failed to fetch from ${endpoint}:`, err.message);
+                    }
                 }
             }
             
@@ -768,6 +998,25 @@ class CricketLiveScore {
         } catch (error) {
             console.error('Error fetching Asia Cup featured matches:', error);
         }
+    }
+    
+    findAsiaCupSeries(seriesData) {
+        try {
+            if (Array.isArray(seriesData)) {
+                return seriesData.find(series => {
+                    const name = (series.name || series.title || '').toLowerCase();
+                    return name.includes('asia cup') || (name.includes('asia') && name.includes('cup'));
+                });
+            } else if (seriesData && seriesData.data && Array.isArray(seriesData.data)) {
+                return seriesData.data.find(series => {
+                    const name = (series.name || series.title || '').toLowerCase();
+                    return name.includes('asia cup') || (name.includes('asia') && name.includes('cup'));
+                });
+            }
+        } catch (error) {
+            console.log('Error finding Asia Cup series:', error);
+        }
+        return null;
     }
     
     isAsiaCupMatch(match) {
