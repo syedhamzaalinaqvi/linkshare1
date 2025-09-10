@@ -13,7 +13,7 @@
     --transition: all 0.3s ease;
 }
 
-/* Reset and Base Styles */
+/* Reset and Base Styles 
 * {
     margin: 0;
     padding: 0;
@@ -27,7 +27,7 @@ body {
     background-color: var(--bg-color);
     overflow-x: hidden;
 }
-
+*/
 .container {
     max-width: 1200px;
     margin: 0 auto;
