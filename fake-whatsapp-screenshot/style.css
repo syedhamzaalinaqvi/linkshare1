@@ -54,9 +54,9 @@ body {
 
 /* Converter Container - matching document-converter */
 .converter-container {
-    max-width: 1000px;
+    width: 100%;
+    padding: 3%;
     margin: 0 auto;
-    padding: 2rem;
     background-color: var(--white);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -357,16 +357,17 @@ body {
     background: rgba(0, 0, 0, 0.1);
 }
 
-/* Messages Container */
+/* Messages Container - Adjusted for fixed message input */
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    padding: 15px;
+    padding: 15px 15px 70px 15px; /* Extra bottom padding for message input */
     background: #efeae2;
     background-image: url('https://raw.githubusercontent.com/WhatsApp/stickers/master/MakeStickers/assets/whatsapp-bg-light.png');
     background-size: 400px auto;
     background-repeat: repeat;
     height: 400px;
+    position: relative;
 }
 
 .date-divider {
@@ -452,16 +453,21 @@ body {
     }
 }
 
-/* Message Input */
+/* Message Input - Fixed positioning for mobile */
 .message-input {
-    background: #efeae2;
+    background: #f0f2f6;
     padding: 8px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    /*border-top: 1px solid #ddd;*/
+    border-top: 1px solid #ddd;
     min-height: 60px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
 }
 
 .input-section {
@@ -472,12 +478,14 @@ body {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 25px;
-    padding: 10px 12px;
+    padding: 8px 12px;
 }
 
 .input-emoji, .input-attach, .input-camera {
     color: #54656f;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    min-width: 20px;
+    text-align: center;
 }
 
 .input-field {
@@ -487,21 +495,23 @@ body {
     border-radius: 20px;
     border: none;
     color: #667781;
+    font-size: 0.9rem;
 }
 
 .mic-button {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
     background: #25d366;
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1rem;
     box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     cursor: pointer;
     transition: transform 0.2s ease;
+    flex-shrink: 0;
 }
 
 .mic-button:hover {
@@ -561,6 +571,79 @@ body {
     
     .messages-container {
         height: 280px;
+        padding-bottom: 65px; /* Adjusted for mobile message input */
+    }
+    
+    /* Mobile-specific message input adjustments */
+    .message-input {
+        padding: 6px 10px;
+        min-height: 55px;
+        gap: 8px;
+    }
+    
+    .input-section {
+        padding: 6px 10px;
+        gap: 6px;
+    }
+    
+    .input-emoji, .input-attach, .input-camera {
+        font-size: 0.9rem;
+        min-width: 18px;
+    }
+    
+    .input-field {
+        font-size: 0.85rem;
+        padding: 4px 6px;
+    }
+    
+    .mic-button {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    .phone-mockup {
+        max-width: 260px;
+    }
+    
+    .phone-screen {
+        height: 420px;
+        border-width: 4px;
+    }
+    
+    .messages-container {
+        height: 260px;
+        padding: 12px 12px 60px 12px;
+    }
+    
+    .message-input {
+        padding: 5px 8px;
+        min-height: 50px;
+        gap: 6px;
+    }
+    
+    .input-section {
+        padding: 5px 8px;
+        gap: 5px;
+    }
+    
+    .input-emoji, .input-attach, .input-camera {
+        font-size: 0.85rem;
+        min-width: 16px;
+    }
+    
+    .input-field {
+        font-size: 0.8rem;
+        padding: 3px 5px;
+    }
+    
+    .mic-button {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
     }
 }
 
