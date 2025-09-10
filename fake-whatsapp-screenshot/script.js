@@ -295,8 +295,22 @@
       // Clear and append clone
       screenshotContainer.innerHTML = '';
       screenshotContainer.appendChild(phoneScreenClone);
+
+      // Match container size exactly to the visible phone screen to avoid blank areas
+      const rect = phoneScreen.getBoundingClientRect();
+      const width = Math.round(rect.width);
+      const height = Math.round(rect.height);
+      screenshotContainer.style.width = width + 'px';
+      screenshotContainer.style.height = height + 'px';
+
+      // Preserve scroll position of messages list (if any)
+      const origMessages = phoneScreen.querySelector('.messages-container');
+      const cloneMessages = phoneScreenClone.querySelector('.messages-container');
+      if (origMessages && cloneMessages) {
+        cloneMessages.scrollTop = origMessages.scrollTop;
+      }
       
-      // Temporarily make visible for capture
+      // Temporarily make visible for capture (but off the stacking context)
       screenshotContainer.style.visibility = 'visible';
       screenshotContainer.style.position = 'fixed';
       screenshotContainer.style.top = '0';
@@ -304,20 +318,22 @@
       screenshotContainer.style.zIndex = '-1';
       
       // Wait a moment for rendering
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 80));
+      
+      const deviceScale = Math.min(4, Math.max(2, (window.devicePixelRatio || 2) * 2));
       
       const canvas = await html2canvas(screenshotContainer, {
         backgroundColor: '#ffffff',
-        scale: 4, // Even higher quality
+        scale: deviceScale, // High quality adaptive to device
         useCORS: true,
         allowTaint: true,
         logging: false,
-        width: 400,
-        height: 720,
+        width: width,
+        height: height,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: 400,
-        windowHeight: 720,
+        windowWidth: width,
+        windowHeight: height,
         imageTimeout: 0,
         removeContainer: false
       });
