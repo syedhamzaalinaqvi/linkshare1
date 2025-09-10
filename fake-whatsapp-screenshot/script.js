@@ -346,7 +346,9 @@
         await new Promise(resolve => setTimeout(resolve, 100));
         
         // Apply the EXACT scroll position from original AFTER everything is set up
+        console.log('Original scroll position:', currentScrollTop);
         messagesContainer.scrollTop = currentScrollTop;
+        console.log('Applied scroll position:', messagesContainer.scrollTop);
         
         // Force another reflow after scroll
         messagesContainer.offsetHeight;
@@ -368,11 +370,7 @@
       // Wait a moment for final layout
       await new Promise(resolve => setTimeout(resolve, 120));
       
-      // Final scroll position check
-      if (messagesContainer) {
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        messagesContainer.offsetHeight;
-      }
+      // DON'T override scroll position - keep the user's current scroll position
       
       const deviceScale = Math.min(4, Math.max(2, (window.devicePixelRatio || 2) * 2));
       
@@ -391,12 +389,19 @@
         imageTimeout: 5000, // Longer timeout for complex content
         removeContainer: false,
         onclone: function(clonedDoc) {
-          // Ensure cloned messages container shows all content
+          // Preserve scroll position and input visibility in cloned document
           const clonedMessages = clonedDoc.querySelector('.messages-container');
+          const clonedInput = clonedDoc.querySelector('.message-input');
+          
           if (clonedMessages) {
-            clonedMessages.style.height = 'auto';
-            clonedMessages.style.maxHeight = 'none';
-            clonedMessages.style.overflow = 'visible';
+            // DON'T change height or overflow - keep viewport settings
+            clonedMessages.style.overflow = 'hidden';
+          }
+          
+          if (clonedInput) {
+            // Force input visibility in clone
+            clonedInput.style.display = 'flex';
+            clonedInput.style.position = 'static';
           }
         }
       });

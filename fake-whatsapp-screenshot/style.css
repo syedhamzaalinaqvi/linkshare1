@@ -464,6 +464,7 @@ body {
 }
 
 /* Keep message input visible and properly styled in screenshots */
+.screenshot-container .phone-screen .message-input,
 .screenshot-container .message-input {
     display: flex !important; /* Force visibility */
     position: static !important;
@@ -472,6 +473,8 @@ body {
     padding: 6px 12px !important;
     background: #f0f2f6 !important;
     border-top: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .date-divider {
