@@ -452,8 +452,11 @@ body {
     overflow: visible !important;
     flex: none !important;
     position: static !important;
-    padding: 15px 15px 20px 15px !important; /* Controlled padding for clean capture */
+    padding: 15px 15px 15px 15px !important; /* Minimal, balanced padding */
     box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
 }
 
 /* Screenshot container phone screen - dynamic height adjustment */

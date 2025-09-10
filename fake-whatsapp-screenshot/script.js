@@ -345,8 +345,8 @@
         const infoBanner = messagesContainer.querySelector('.info-banner');
         const messageBubbles = messagesContainer.querySelectorAll('.message-bubble');
         
-        // Calculate messages content height with proper padding
-        let messagesContentHeight = 35; // Top + bottom padding (15 + 20)
+        // Calculate messages content height with minimal padding
+        let messagesContentHeight = 30; // Top + bottom padding (15 + 15)
         
         if (dateDiv) messagesContentHeight += dateDiv.offsetHeight + 15;
         if (infoBanner) messagesContentHeight += infoBanner.offsetHeight + 14;
@@ -367,12 +367,16 @@
           contentHeight = Math.min(calculatedHeight, minHeight + 300); // Cap at +300px
         }
         
-        // Set messages container to fill the remaining space
+        // Set messages container to fill the remaining space perfectly
         const availableMessagesHeight = contentHeight - statusBarHeight - headerHeight;
         messagesContainer.style.height = availableMessagesHeight + 'px';
         
-        // Add bottom padding to messages container for clean end
-        messagesContainer.style.paddingBottom = '40px';
+        // Minimal bottom padding for clean finish (not excessive)
+        messagesContainer.style.paddingBottom = '20px';
+        
+        // Make sure messages are positioned from top
+        messagesContainer.style.paddingTop = '15px';
+        messagesContainer.style.boxSizing = 'border-box';
       }
       
       // Set final container dimensions
