@@ -348,8 +348,8 @@
         const infoBanner = messagesContainer.querySelector('.info-banner');
         const messageBubbles = messagesContainer.querySelectorAll('.message-bubble');
         
-        // Calculate messages content height with proper padding
-        let messagesContentHeight = 35; // Top + bottom padding (15 + 20)
+        // Calculate messages content height with minimal padding
+        let messagesContentHeight = 25; // Top + bottom padding (15 + 10)
         
         if (dateDiv) messagesContentHeight += dateDiv.offsetHeight + 15;
         if (infoBanner) messagesContentHeight += infoBanner.offsetHeight + 14;
@@ -361,13 +361,13 @@
         // Calculate total needed height including input
         const calculatedHeight = statusBarHeight + headerHeight + messagesContentHeight + inputHeight;
         
-        // Use minimum height based on original phone screen
-        const minHeight = Math.round(rect.height);
-        contentHeight = Math.max(calculatedHeight, minHeight);
+        // Use calculated height but don't make it unnecessarily tall
+        contentHeight = calculatedHeight;
         
-        // For longer conversations, allow taller screenshots but with reasonable limit
-        if (calculatedHeight > minHeight + 100) {
-          contentHeight = Math.min(calculatedHeight, minHeight + 300);
+        // Only use original height as minimum if calculated is much smaller
+        const originalHeight = Math.round(rect.height);
+        if (calculatedHeight < originalHeight - 50) {
+          contentHeight = originalHeight;
         }
         
         // Set messages container to fill the remaining space between header and input

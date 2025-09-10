@@ -452,7 +452,7 @@ body {
     overflow: visible !important;
     flex: none !important;
     position: static !important;
-    padding: 15px 15px 20px 15px !important; /* Normal padding for clean capture */
+    padding: 15px 15px 10px 15px !important; /* Minimal padding for tight crop */
     box-sizing: border-box !important;
 }
 
