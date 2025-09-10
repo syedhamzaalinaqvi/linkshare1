@@ -259,6 +259,60 @@ body {
     flex-direction: column;
 }
 
+/* Hidden screenshot container - no borders, no radius */
+.screenshot-container {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    width: 400px;
+    height: 720px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    border-radius: 0;
+    visibility: hidden;
+    /* Better text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1;
+    /* Ensure fonts load properly */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Ensure text in screenshot container is crisp */
+.screenshot-container * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1;
+}
+
+/* Force solid colors for screenshot container */
+.screenshot-container .message-content-bubble {
+    color: #1a1a1a !important;
+    font-weight: 500 !important;
+    opacity: 1 !important;
+}
+
+.screenshot-container .message-bubble.sent .message-content-bubble {
+    background: #dcf8c6 !important;
+    color: #000000 !important;
+}
+
+.screenshot-container .message-bubble.received .message-content-bubble {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #e5e5e5 !important;
+}
+
+.screenshot-container .message-meta {
+    color: #667781 !important;
+    opacity: 1 !important;
+}
+
 /* Status Bar */
 .status-bar {
     background: #075e54;

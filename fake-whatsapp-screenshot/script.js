@@ -283,20 +283,51 @@
     generateBtn.innerHTML = '<span class="loading"></span> Generating...';
     
     try {
-      // Capture only the phone screen content (borderless)
-      const phoneScreenContent = phoneScreen;
+      // Clone phone screen content to hidden screenshot container
+      const screenshotContainer = document.getElementById('screenshotContainer');
+      const phoneScreenClone = phoneScreen.cloneNode(true);
       
-      const canvas = await html2canvas(phoneScreenContent, {
+      // Remove any IDs to avoid conflicts
+      phoneScreenClone.removeAttribute('id');
+      const allElements = phoneScreenClone.querySelectorAll('[id]');
+      allElements.forEach(el => el.removeAttribute('id'));
+      
+      // Clear and append clone
+      screenshotContainer.innerHTML = '';
+      screenshotContainer.appendChild(phoneScreenClone);
+      
+      // Temporarily make visible for capture
+      screenshotContainer.style.visibility = 'visible';
+      screenshotContainer.style.position = 'fixed';
+      screenshotContainer.style.top = '0';
+      screenshotContainer.style.left = '0';
+      screenshotContainer.style.zIndex = '-1';
+      
+      // Wait a moment for rendering
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const canvas = await html2canvas(screenshotContainer, {
         backgroundColor: '#ffffff',
-        scale: 3, // Higher quality for mobile
+        scale: 4, // Even higher quality
         useCORS: true,
         allowTaint: true,
         logging: false,
-        width: phoneScreenContent.offsetWidth,
-        height: phoneScreenContent.offsetHeight,
+        width: 400,
+        height: 720,
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        windowWidth: 400,
+        windowHeight: 720,
+        imageTimeout: 0,
+        removeContainer: false
       });
+      
+      // Hide container again
+      screenshotContainer.style.visibility = 'hidden';
+      screenshotContainer.style.position = 'absolute';
+      screenshotContainer.style.top = '-9999px';
+      screenshotContainer.style.left = '-9999px';
+      screenshotContainer.style.zIndex = 'auto';
       
       const dataURL = canvas.toDataURL('image/png', 1.0); // Maximum quality
 
@@ -312,7 +343,7 @@
       link.click();
       
       // Show success message
-      showSuccessMessage('Screenshot generated and saved!');
+      showSuccessMessage('Borderless screenshot generated!');
       
     } catch (e) {
       alert('Failed to generate screenshot. Please try again.');
