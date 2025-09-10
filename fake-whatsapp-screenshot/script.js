@@ -327,26 +327,29 @@
         phoneScreenClone.offsetHeight;
         await new Promise(resolve => setTimeout(resolve, 150));
         
-        // Hide message input for authentic screenshot look
+        // Keep input visible for complete look
         if (messageInput) {
-          messageInput.style.display = 'none';
+          messageInput.style.position = 'static';
+          messageInput.style.minHeight = '50px';
+          messageInput.style.padding = '6px 12px';
         }
         
-        // Force reflow after hiding input
+        // Force reflow and wait for rendering
         phoneScreenClone.offsetHeight;
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 100));
         
-        // Calculate component heights after hiding input
+        // Calculate component heights including input
         const statusBarHeight = statusBar ? statusBar.offsetHeight : 0;
         const headerHeight = chatHeader ? chatHeader.offsetHeight : 0;
+        const inputHeight = messageInput ? messageInput.offsetHeight : 0;
         
         // Measure actual content in messages container
         const dateDiv = messagesContainer.querySelector('.date-divider');
         const infoBanner = messagesContainer.querySelector('.info-banner');
         const messageBubbles = messagesContainer.querySelectorAll('.message-bubble');
         
-        // Calculate messages content height with minimal padding
-        let messagesContentHeight = 30; // Top + bottom padding (15 + 15)
+        // Calculate messages content height with proper padding
+        let messagesContentHeight = 35; // Top + bottom padding (15 + 20)
         
         if (dateDiv) messagesContentHeight += dateDiv.offsetHeight + 15;
         if (infoBanner) messagesContentHeight += infoBanner.offsetHeight + 14;
@@ -355,28 +358,21 @@
           messagesContentHeight += bubble.offsetHeight + 12; // message + margin
         });
         
-        // Calculate total needed height (no input height since it's hidden)
-        const calculatedHeight = statusBarHeight + headerHeight + messagesContentHeight;
+        // Calculate total needed height including input
+        const calculatedHeight = statusBarHeight + headerHeight + messagesContentHeight + inputHeight;
         
-        // Use minimum height based on original phone screen (minus input area ~60px)
-        const minHeight = Math.round(rect.height) - 60; // Original height minus input area
+        // Use minimum height based on original phone screen
+        const minHeight = Math.round(rect.height);
         contentHeight = Math.max(calculatedHeight, minHeight);
         
         // For longer conversations, allow taller screenshots but with reasonable limit
         if (calculatedHeight > minHeight + 100) {
-          contentHeight = Math.min(calculatedHeight, minHeight + 300); // Cap at +300px
+          contentHeight = Math.min(calculatedHeight, minHeight + 300);
         }
         
-        // Set messages container to fill the remaining space perfectly
-        const availableMessagesHeight = contentHeight - statusBarHeight - headerHeight;
+        // Set messages container to fill the remaining space between header and input
+        const availableMessagesHeight = contentHeight - statusBarHeight - headerHeight - inputHeight;
         messagesContainer.style.height = availableMessagesHeight + 'px';
-        
-        // Minimal bottom padding for clean finish (not excessive)
-        messagesContainer.style.paddingBottom = '20px';
-        
-        // Make sure messages are positioned from top
-        messagesContainer.style.paddingTop = '15px';
-        messagesContainer.style.boxSizing = 'border-box';
       }
       
       // Set final container dimensions

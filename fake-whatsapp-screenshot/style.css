@@ -452,11 +452,8 @@ body {
     overflow: visible !important;
     flex: none !important;
     position: static !important;
-    padding: 15px 15px 15px 15px !important; /* Minimal, balanced padding */
+    padding: 15px 15px 20px 15px !important; /* Normal padding for clean capture */
     box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
 }
 
 /* Screenshot container phone screen - dynamic height adjustment */
@@ -468,9 +465,12 @@ body {
     position: static !important;
 }
 
-/* Hide message input in screenshots for authentic look */
+/* Keep message input visible but minimal in screenshots */
 .screenshot-container .message-input {
-    display: none !important;
+    position: static !important;
+    bottom: auto !important;
+    min-height: 50px !important;
+    padding: 6px 12px !important;
 }
 
 .date-divider {
