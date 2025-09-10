@@ -445,14 +445,12 @@ body {
     min-height: 500px; /* Minimum height for larger screens */
 }
 
-/* Screenshot container messages - ensure full visibility without constraints */
+/* Screenshot container messages - viewport-based capture */
 .screenshot-container .messages-container {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+    /* Height and overflow will be set by JavaScript based on viewport */
     flex: none !important;
     position: static !important;
-    padding: 15px 15px 0px 15px !important; /* No bottom padding for tight fit */
+    padding: 15px !important; /* Consistent padding on all sides */
     box-sizing: border-box !important;
 }
 

@@ -317,45 +317,27 @@
       let contentHeight = Math.round(rect.height);
       
       if (messagesContainer) {
-        // Normalize styles for measurement and capture
-        messagesContainer.style.height = 'auto';
-        messagesContainer.style.maxHeight = 'none';
-        messagesContainer.style.overflow = 'visible';
+        // Keep original viewport-based approach - capture only what's visible
+        const originalMessagesContainer = phoneScreen.querySelector('.messages-container');
+        
+        // Copy the current scroll position and viewport size
+        messagesContainer.scrollTop = originalMessagesContainer.scrollTop;
+        messagesContainer.style.height = originalMessagesContainer.offsetHeight + 'px';
+        messagesContainer.style.maxHeight = originalMessagesContainer.offsetHeight + 'px';
+        messagesContainer.style.overflow = 'hidden'; // Hide scrollbars in screenshot
         messagesContainer.style.paddingTop = '15px';
         messagesContainer.style.paddingRight = '15px';
         messagesContainer.style.paddingLeft = '15px';
-        messagesContainer.style.paddingBottom = '0px'; // no extra bottom padding for tight fit
+        messagesContainer.style.paddingBottom = '15px'; // consistent padding
         messagesContainer.style.boxSizing = 'border-box';
 
-        // Ensure input is positioned statically for capture
+        // Ensure input is positioned statically
         if (messageInput) {
           messageInput.style.position = 'static';
         }
 
-        // Reflow and wait
-        phoneScreenClone.offsetHeight;
-        await new Promise(resolve => setTimeout(resolve, 120));
-
-        // Heights of fixed sections
-        const statusBarHeight = statusBar ? statusBar.offsetHeight : 0;
-        const headerHeight = chatHeader ? chatHeader.offsetHeight : 0;
-        const inputHeight = messageInput ? messageInput.offsetHeight : 0;
-
-        // Messages content natural height (including padding top we set)
-        const naturalMessagesHeight = messagesContainer.scrollHeight; // with paddingTop and content
-
-        // Compute target overall height: max(original phone height, actual content height)
-        const originalHeight = Math.round(rect.height);
-        let computedTotal = statusBarHeight + headerHeight + naturalMessagesHeight + inputHeight;
-        contentHeight = Math.max(originalHeight, computedTotal);
-
-        // Now set the messages container height so that input sits flush at bottom
-        const targetMessagesHeight = contentHeight - statusBarHeight - headerHeight - inputHeight;
-        const finalMessagesHeight = Math.max(naturalMessagesHeight, targetMessagesHeight);
-        messagesContainer.style.height = finalMessagesHeight + 'px';
-
-        // Recompute final content height to be exact
-        contentHeight = statusBarHeight + headerHeight + finalMessagesHeight + inputHeight;
+        // Use original phone screen height (viewport-based)
+        contentHeight = Math.round(rect.height);
       }
         
       
