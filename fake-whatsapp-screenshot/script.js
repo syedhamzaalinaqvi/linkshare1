@@ -331,26 +331,36 @@
         messagesContainer.style.paddingBottom = '15px';
         messagesContainer.style.boxSizing = 'border-box';
         
-        // ULTRA-FORCE input visibility with all possible CSS properties
+        // COMPLETELY OVERRIDE the absolute positioning issue
         if (messageInput) {
-          console.log('Setting up message input...', messageInput);
+          console.log('Original message input found:', messageInput);
+          console.log('Original position style:', getComputedStyle(messageInput).position);
+          
+          // NUCLEAR OVERRIDE: Remove ALL positioning styles
+          messageInput.style.cssText = '';
+          
+          // Apply COMPLETE new styling from scratch
           messageInput.style.display = 'flex';
-          messageInput.style.visibility = 'visible';
-          messageInput.style.opacity = '1';
-          messageInput.style.position = 'static';
-          messageInput.style.minHeight = '50px';
-          messageInput.style.height = 'auto';
-          messageInput.style.padding = '6px 12px';
+          messageInput.style.position = 'relative'; // Change from absolute to relative
+          messageInput.style.width = '100%';
           messageInput.style.background = '#f0f2f6';
+          messageInput.style.padding = '8px 12px';
+          messageInput.style.alignItems = 'center';
+          messageInput.style.justifyContent = 'space-between';
+          messageInput.style.gap = '12px';
+          messageInput.style.minHeight = '60px';
           messageInput.style.borderTop = 'none';
+          messageInput.style.zIndex = '1';
           messageInput.style.bottom = 'auto';
           messageInput.style.left = 'auto';
           messageInput.style.right = 'auto';
-          messageInput.style.transform = 'none';
-          messageInput.style.zIndex = '1';
-          messageInput.style.order = '999'; // Force to bottom in flex
+          messageInput.style.top = 'auto';
+          messageInput.style.visibility = 'visible';
+          messageInput.style.opacity = '1';
+          messageInput.style.order = '10'; // Ensure it comes after messages
           
-          console.log('Input styles applied:', messageInput.style.cssText);
+          console.log('NEW input styles applied:', messageInput.style.cssText);
+          console.log('NEW computed position:', getComputedStyle(messageInput).position);
         }
         
         // Force reflow to ensure everything is rendered
@@ -372,20 +382,35 @@
       }
         
       
-      // Set final container dimensions and ensure flex layout for input
+      // Set final container dimensions and ensure proper layout
       screenshotContainer.style.height = contentHeight + 'px';
       phoneScreenClone.style.height = contentHeight + 'px';
       phoneScreenClone.style.minHeight = contentHeight + 'px';
       phoneScreenClone.style.display = 'flex';
       phoneScreenClone.style.flexDirection = 'column';
+      phoneScreenClone.style.position = 'relative'; // Ensure it can contain relative elements
+      phoneScreenClone.style.overflow = 'visible';
       
-      // Double-check input is still visible after layout changes
+      // FINAL CHECK: Ensure input is absolutely visible and positioned
       const finalMessageInput = phoneScreenClone.querySelector('.message-input');
       if (finalMessageInput) {
-        console.log('Final input check - display:', finalMessageInput.style.display);
-        console.log('Final input check - visibility:', finalMessageInput.style.visibility);
-        finalMessageInput.style.display = 'flex';
-        finalMessageInput.style.visibility = 'visible';
+        console.log('=== FINAL INPUT CHECK ===');
+        console.log('Element found:', finalMessageInput);
+        console.log('Current display:', getComputedStyle(finalMessageInput).display);
+        console.log('Current visibility:', getComputedStyle(finalMessageInput).visibility);
+        console.log('Current position:', getComputedStyle(finalMessageInput).position);
+        console.log('Current height:', getComputedStyle(finalMessageInput).height);
+        
+        // FORCE visibility one more time
+        finalMessageInput.style.display = 'flex !important';
+        finalMessageInput.style.visibility = 'visible !important';
+        finalMessageInput.style.position = 'relative !important';
+        finalMessageInput.style.opacity = '1 !important';
+        
+        console.log('After final force - display:', getComputedStyle(finalMessageInput).display);
+        console.log('=== END FINAL CHECK ===');
+      } else {
+        console.error('❌ FINAL MESSAGE INPUT NOT FOUND IN CLONE!');
       }
 
       // Final reflow
