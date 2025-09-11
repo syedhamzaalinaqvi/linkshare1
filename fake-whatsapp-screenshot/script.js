@@ -354,8 +354,8 @@
         
         // DIFFERENT HEIGHT CALCULATION FOR MOBILE vs DESKTOP
         if (isMobile) {
-          // MOBILE: Use larger height to ensure input is captured
-          contentHeight = originalHeight + 100; // Extra space for mobile
+          // MOBILE: Add just enough space for input (no extra blank space)
+          contentHeight = originalHeight + inputHeight; // Just input height, no more
           console.log('Mobile: Using larger height for capture:', contentHeight);
         } else {
           // DESKTOP: Use original height (working fine)
@@ -363,8 +363,18 @@
           console.log('Desktop: Using original height:', contentHeight);
         }
         
-        // Adjust messages container to make room for input
-        const availableMessagesHeight = contentHeight - (statusBar?.offsetHeight || 0) - (chatHeader?.offsetHeight || 0) - inputHeight - 50;
+        // Adjust messages container to make room for input (precise calculation)
+        const statusBarHeight = statusBar?.offsetHeight || 0;
+        const headerHeight = chatHeader?.offsetHeight || 0;
+        const availableMessagesHeight = contentHeight - statusBarHeight - headerHeight - inputHeight;
+        
+        console.log('Height breakdown:', {
+          total: contentHeight,
+          statusBar: statusBarHeight,
+          header: headerHeight,
+          input: inputHeight,
+          messages: availableMessagesHeight
+        });
         messagesContainer.style.height = availableMessagesHeight + 'px';
         messagesContainer.style.maxHeight = availableMessagesHeight + 'px';
         messagesContainer.style.overflow = 'hidden';
