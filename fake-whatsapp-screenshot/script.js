@@ -316,9 +316,14 @@
       
       let contentHeight = Math.round(rect.height);
       
-      // Calculate dimensions FIRST
+      // Calculate dimensions FIRST with mobile detection
       const originalHeight = Math.round(rect.height);
-      const inputHeight = messageInput ? messageInput.offsetHeight || 60 : 60;
+      const isMobile = window.innerWidth <= 768; // Mobile breakpoint from CSS
+      const mobileInputHeight = isMobile ? 55 : 60; // Mobile input is 55px, desktop is 60px
+      const inputHeight = messageInput ? messageInput.offsetHeight || mobileInputHeight : mobileInputHeight;
+      
+      console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
+      console.log('Expected input height:', mobileInputHeight);
       
       if (messagesContainer) {
         // Get original scroll position BEFORE any modifications
@@ -329,21 +334,37 @@
         if (messageInput) {
           console.log('Found message input, making it visible...');
           
+          // Apply mobile-specific or desktop styling
+          const inputPadding = isMobile ? '6px 10px' : '8px 12px';
+          const inputMinHeight = isMobile ? '55px' : '60px';
+          const inputGap = isMobile ? '8px' : '12px';
+          
           // Reset positioning and make it visible at bottom
           messageInput.style.position = 'static';
           messageInput.style.display = 'flex';
           messageInput.style.visibility = 'visible';
           messageInput.style.opacity = '1';
           messageInput.style.width = '100%';
-          messageInput.style.minHeight = '60px';
+          messageInput.style.minHeight = inputMinHeight;
           messageInput.style.height = inputHeight + 'px'; // Set exact height
           messageInput.style.background = '#f0f2f6';
-          messageInput.style.padding = '8px 12px';
+          messageInput.style.padding = inputPadding; // Mobile-specific padding
+          messageInput.style.gap = inputGap; // Mobile-specific gap
           messageInput.style.borderTop = 'none';
           messageInput.style.flexShrink = '0'; // Prevent shrinking
           messageInput.style.order = '999'; // Ensure it's at the bottom
+          messageInput.style.alignItems = 'center';
+          messageInput.style.justifyContent = 'space-between';
           
-          console.log('Input made visible with styles:', messageInput.style.cssText);
+          // Also style the input section for mobile
+          const inputSection = messageInput.querySelector('.input-section');
+          if (inputSection && isMobile) {
+            inputSection.style.padding = '6px 10px';
+            inputSection.style.gap = '6px';
+          }
+          
+          console.log('Input made visible with', isMobile ? 'mobile' : 'desktop', 'styles');
+          console.log('Applied styles:', messageInput.style.cssText);
         }
         
         // Calculate PRECISE height - no extra blank space
@@ -432,13 +453,31 @@
         imageTimeout: 5000,
         removeContainer: false,
         onclone: function(clonedDoc, element) {
-          // Keep it simple - just ensure input is visible in clone
+          // Ensure input is visible with mobile-specific styling in clone
           const clonedInput = element.querySelector('.message-input');
           if (clonedInput) {
+            const isMobileClone = window.innerWidth <= 768;
+            const clonePadding = isMobileClone ? '6px 10px' : '8px 12px';
+            const cloneMinHeight = isMobileClone ? '55px' : '60px';
+            
             clonedInput.style.display = 'flex';
             clonedInput.style.visibility = 'visible';
             clonedInput.style.position = 'static';
             clonedInput.style.opacity = '1';
+            clonedInput.style.background = '#f0f2f6';
+            clonedInput.style.padding = clonePadding;
+            clonedInput.style.minHeight = cloneMinHeight;
+            clonedInput.style.alignItems = 'center';
+            clonedInput.style.justifyContent = 'space-between';
+            clonedInput.style.width = '100%';
+            clonedInput.style.order = '999';
+            
+            // Also style the input section in clone
+            const clonedInputSection = clonedInput.querySelector('.input-section');
+            if (clonedInputSection && isMobileClone) {
+              clonedInputSection.style.padding = '6px 10px';
+              clonedInputSection.style.gap = '6px';
+            }
           }
         }
       });
