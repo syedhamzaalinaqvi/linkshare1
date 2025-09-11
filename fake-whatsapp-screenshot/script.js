@@ -316,14 +316,43 @@
       
       let contentHeight = Math.round(rect.height);
       
+      // Calculate dimensions FIRST
+      const originalHeight = Math.round(rect.height);
+      const inputHeight = messageInput ? messageInput.offsetHeight || 60 : 60;
+      
       if (messagesContainer) {
         // Get original scroll position BEFORE any modifications
         const originalMessagesContainer = phoneScreen.querySelector('.messages-container');
         const currentScrollTop = originalMessagesContainer.scrollTop;
         
-        // Set up messages container to match original viewport
-        messagesContainer.style.height = originalMessagesContainer.offsetHeight + 'px';
-        messagesContainer.style.maxHeight = originalMessagesContainer.offsetHeight + 'px';
+        // Simple approach: Ensure input is visible and positioned correctly
+        if (messageInput) {
+          console.log('Found message input, making it visible...');
+          
+          // Reset positioning and make it visible at bottom
+          messageInput.style.position = 'static';
+          messageInput.style.display = 'flex';
+          messageInput.style.visibility = 'visible';
+          messageInput.style.opacity = '1';
+          messageInput.style.width = '100%';
+          messageInput.style.minHeight = '60px';
+          messageInput.style.height = inputHeight + 'px'; // Set exact height
+          messageInput.style.background = '#f0f2f6';
+          messageInput.style.padding = '8px 12px';
+          messageInput.style.borderTop = 'none';
+          messageInput.style.flexShrink = '0'; // Prevent shrinking
+          messageInput.style.order = '999'; // Ensure it's at the bottom
+          
+          console.log('Input made visible with styles:', messageInput.style.cssText);
+        }
+        
+        // Calculate PRECISE height - no extra blank space
+        contentHeight = originalHeight;
+        
+        // Adjust messages container to make room for input
+        const availableMessagesHeight = originalHeight - (statusBar?.offsetHeight || 0) - (chatHeader?.offsetHeight || 0) - inputHeight;
+        messagesContainer.style.height = availableMessagesHeight + 'px';
+        messagesContainer.style.maxHeight = availableMessagesHeight + 'px';
         messagesContainer.style.overflow = 'hidden'; // Hide scrollbars in screenshot
         messagesContainer.style.paddingTop = '15px';
         messagesContainer.style.paddingRight = '15px';
@@ -331,28 +360,8 @@
         messagesContainer.style.paddingBottom = '15px';
         messagesContainer.style.boxSizing = 'border-box';
         
-        // Simple approach: Ensure input is visible and positioned correctly
-        if (messageInput) {
-          console.log('Found message input, making it visible...');
-          
-          // Reset positioning and make it visible
-          messageInput.style.position = 'static';
-          messageInput.style.display = 'flex';
-          messageInput.style.visibility = 'visible';
-          messageInput.style.opacity = '1';
-          messageInput.style.width = '100%';
-          messageInput.style.minHeight = '60px';
-          messageInput.style.background = '#f0f2f6';
-          messageInput.style.padding = '8px 12px';
-          messageInput.style.borderTop = 'none';
-          
-          console.log('Input made visible with styles:', messageInput.style.cssText);
-        }
-        
-        // Force reflow to ensure everything is rendered
+        // Force reflow and wait for rendering
         phoneScreenClone.offsetHeight;
-        
-        // Wait for rendering
         await new Promise(resolve => setTimeout(resolve, 100));
         
         // Apply the EXACT scroll position from original AFTER everything is set up
@@ -362,26 +371,23 @@
         
         // Force another reflow after scroll
         messagesContainer.offsetHeight;
-
-        // Use LARGER height to ensure input is definitely included
-        const originalHeight = Math.round(rect.height);
-        const inputHeight = messageInput ? messageInput.offsetHeight || 60 : 60;
-        contentHeight = originalHeight + inputHeight; // Add extra space for input
         
         console.log('Original height:', originalHeight);
         console.log('Input height:', inputHeight);
-        console.log('Total content height:', contentHeight);
+        console.log('Messages height adjusted to:', availableMessagesHeight);
+        console.log('Final content height:', contentHeight);
       }
         
       
-      // Set final container dimensions and ensure proper layout
+      // Set EXACT container dimensions - no extra space
       screenshotContainer.style.height = contentHeight + 'px';
       phoneScreenClone.style.height = contentHeight + 'px';
       phoneScreenClone.style.minHeight = contentHeight + 'px';
+      phoneScreenClone.style.maxHeight = contentHeight + 'px'; // Prevent expansion
       phoneScreenClone.style.display = 'flex';
       phoneScreenClone.style.flexDirection = 'column';
-      phoneScreenClone.style.position = 'relative'; // Ensure it can contain relative elements
-      phoneScreenClone.style.overflow = 'visible';
+      phoneScreenClone.style.position = 'relative';
+      phoneScreenClone.style.overflow = 'hidden'; // Hide any overflow
       
       // Final check: Ensure input is in the capture area
       const finalMessageInput = phoneScreenClone.querySelector('.message-input');
@@ -418,11 +424,11 @@
         allowTaint: true,
         logging: false,
         width: width,
-        height: contentHeight + 50, // Extra height buffer to ensure input is captured
+        height: contentHeight, // Exact height - no extra buffer
         scrollX: 0,
         scrollY: 0,
         windowWidth: width,
-        windowHeight: contentHeight + 50,
+        windowHeight: contentHeight,
         imageTimeout: 5000,
         removeContainer: false,
         onclone: function(clonedDoc, element) {
