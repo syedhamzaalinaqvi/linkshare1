@@ -558,6 +558,44 @@ body {
     flex-shrink: 0 !important;
 }
 
+/* MOBILE SCREENSHOT OVERRIDES - FORCE VISIBILITY */
+@media (max-width: 768px) {
+    .screenshot-container .message-input,
+    .screenshot-container .phone-screen .message-input {
+        display: flex !important;
+        visibility: visible !important;
+        position: static !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        background: #f0f2f6 !important;
+        padding: 6px 10px !important;
+        min-height: 55px !important;
+        gap: 8px !important;
+        order: 999 !important;
+        z-index: 9999 !important;
+        flex-shrink: 0 !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        border-top: none !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        top: auto !important;
+        transform: none !important;
+    }
+    
+    .screenshot-container .message-input .input-section {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex: 1 !important;
+        background: #fff !important;
+        border: 1px solid #ddd !important;
+        border-radius: 25px !important;
+        padding: 6px 10px !important;
+    }
+}
+
 /* Keep message input visible and properly styled in screenshots */
 .screenshot-container .phone-screen .message-input,
 .screenshot-container .message-input {
