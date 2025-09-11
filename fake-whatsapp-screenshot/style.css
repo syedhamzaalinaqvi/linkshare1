@@ -470,6 +470,48 @@ body {
     margin-top: auto !important; /* Push to bottom in column flex */
 }
 
+/* Manual input styling (backup solution) */
+.screenshot-container .manual-input,
+.manual-input {
+    display: flex !important;
+    position: relative !important;
+    width: 100% !important;
+    background: #f0f2f6 !important;
+    padding: 8px 12px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    min-height: 60px !important;
+    border-top: none !important;
+    z-index: 999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: auto !important;
+}
+
+.manual-input .input-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    padding: 8px 12px !important;
+}
+
+.manual-input .mic-button {
+    width: 38px !important;
+    height: 38px !important;
+    background: #25d366 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+}
+
 /* Keep message input visible and properly styled in screenshots */
 .screenshot-container .phone-screen .message-input,
 .screenshot-container .message-input {

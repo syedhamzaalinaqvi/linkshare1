@@ -411,6 +411,31 @@
         console.log('=== END FINAL CHECK ===');
       } else {
         console.error('❌ FINAL MESSAGE INPUT NOT FOUND IN CLONE!');
+        
+        // EMERGENCY PLAN: Manually create and append input div
+        console.log('🚨 CREATING MANUAL INPUT DIV AS BACKUP');
+        const manualInput = document.createElement('div');
+        manualInput.className = 'message-input manual-input';
+        manualInput.innerHTML = `
+          <div class="input-section">
+            <i class="fas fa-smile input-emoji"></i>
+            <div class="input-field">
+              <span>Message</span>
+            </div>
+            <i class="fas fa-paperclip input-attach"></i>
+            <i class="fas fa-camera input-camera"></i>
+          </div>
+          <div class="mic-button">
+            <i class="fas fa-microphone"></i>
+          </div>
+        `;
+        
+        // Style the manual input
+        manualInput.style.cssText = 'display: flex !important; position: relative !important; width: 100% !important; background: #f0f2f6 !important; padding: 8px 12px !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; min-height: 60px !important; border-top: none !important; z-index: 1 !important; visibility: visible !important; opacity: 1 !important;';
+        
+        // Append to phone screen clone
+        phoneScreenClone.appendChild(manualInput);
+        console.log('Manual input appended:', manualInput);
       }
 
       // Final reflow
@@ -424,35 +449,60 @@
       
       const deviceScale = Math.min(4, Math.max(2, (window.devicePixelRatio || 2) * 2));
       
+      // EXTENSIVE PRE-CAPTURE DEBUGGING
+      console.log('=== PRE-CAPTURE DEBUGGING ===');
+      console.log('Screenshot container:', screenshotContainer);
+      console.log('Screenshot container children:', screenshotContainer.children);
+      const debugInput = screenshotContainer.querySelector('.message-input');
+      console.log('Input found in container:', debugInput);
+      if (debugInput) {
+        console.log('Input getBoundingClientRect:', debugInput.getBoundingClientRect());
+        console.log('Input offsetHeight:', debugInput.offsetHeight);
+        console.log('Input scrollHeight:', debugInput.scrollHeight);
+        console.log('Input computed style:', getComputedStyle(debugInput));
+      }
+      console.log('=== END PRE-CAPTURE DEBUGGING ===');
+      
       const canvas = await html2canvas(screenshotContainer, {
         backgroundColor: '#ffffff',
-        scale: deviceScale, // High quality adaptive to device
+        scale: deviceScale,
         useCORS: true,
         allowTaint: true,
-        logging: false,
+        logging: true, // Enable logging to see what html2canvas is doing
         width: width,
-        height: contentHeight, // Use calculated content height
+        height: contentHeight,
         scrollX: 0,
         scrollY: 0,
         windowWidth: width,
-        windowHeight: contentHeight, // Use calculated content height
-        imageTimeout: 5000, // Longer timeout for complex content
+        windowHeight: contentHeight,
+        imageTimeout: 5000,
         removeContainer: false,
-        onclone: function(clonedDoc) {
-          // Preserve scroll position and input visibility in cloned document
-          const clonedMessages = clonedDoc.querySelector('.messages-container');
-          const clonedInput = clonedDoc.querySelector('.message-input');
+        ignoreElements: function(element) {
+          // Don't ignore any elements - capture everything
+          return false;
+        },
+        onclone: function(clonedDoc, element) {
+          console.log('=== HTML2CANVAS ONCLONE ===');
+          console.log('Cloned document:', clonedDoc);
+          console.log('Cloned element:', element);
           
-          if (clonedMessages) {
-            // DON'T change height or overflow - keep viewport settings
-            clonedMessages.style.overflow = 'hidden';
-          }
+          const clonedInput = element.querySelector('.message-input');
+          console.log('Input in html2canvas clone:', clonedInput);
           
           if (clonedInput) {
-            // Force input visibility in clone
-            clonedInput.style.display = 'flex';
-            clonedInput.style.position = 'static';
+            console.log('FOUND INPUT IN HTML2CANVAS CLONE!');
+            console.log('Clone input computed style:', getComputedStyle(clonedInput));
+            console.log('Clone input rect:', clonedInput.getBoundingClientRect());
+            
+            // ULTRA FORCE in html2canvas clone
+            clonedInput.style.cssText = 'display: flex !important; visibility: visible !important; position: relative !important; opacity: 1 !important; background: #f0f2f6 !important; padding: 8px 12px !important; min-height: 60px !important; width: 100% !important;';
+            
+            console.log('After force in clone:', getComputedStyle(clonedInput));
+          } else {
+            console.error('❌ INPUT NOT FOUND IN HTML2CANVAS CLONE!');
           }
+          
+          console.log('=== END HTML2CANVAS ONCLONE ===');
         }
       });
       
