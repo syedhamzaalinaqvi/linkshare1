@@ -354,8 +354,8 @@
         
         // DIFFERENT HEIGHT CALCULATION FOR MOBILE vs DESKTOP
         if (isMobile) {
-          // MOBILE: Add just enough space for input (no extra blank space)
-          contentHeight = originalHeight + inputHeight; // Just input height, no more
+          // MOBILE: Add input height + small buffer to ensure complete input is visible
+          contentHeight = originalHeight + inputHeight + 20; // Input + 20px buffer for complete visibility
           console.log('Mobile: Using larger height for capture:', contentHeight);
         } else {
           // DESKTOP: Use original height (working fine)
