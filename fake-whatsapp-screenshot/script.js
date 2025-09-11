@@ -352,14 +352,22 @@
           console.log('Input styled for', isMobile ? 'mobile' : 'desktop');
         }
         
-        // Calculate PRECISE height - no extra blank space
-        contentHeight = originalHeight;
+        // DIFFERENT HEIGHT CALCULATION FOR MOBILE vs DESKTOP
+        if (isMobile) {
+          // MOBILE: Use larger height to ensure input is captured
+          contentHeight = originalHeight + 100; // Extra space for mobile
+          console.log('Mobile: Using larger height for capture:', contentHeight);
+        } else {
+          // DESKTOP: Use original height (working fine)
+          contentHeight = originalHeight;
+          console.log('Desktop: Using original height:', contentHeight);
+        }
         
         // Adjust messages container to make room for input
-        const availableMessagesHeight = originalHeight - (statusBar?.offsetHeight || 0) - (chatHeader?.offsetHeight || 0) - inputHeight;
+        const availableMessagesHeight = contentHeight - (statusBar?.offsetHeight || 0) - (chatHeader?.offsetHeight || 0) - inputHeight - 50;
         messagesContainer.style.height = availableMessagesHeight + 'px';
         messagesContainer.style.maxHeight = availableMessagesHeight + 'px';
-        messagesContainer.style.overflow = 'hidden'; // Hide scrollbars in screenshot
+        messagesContainer.style.overflow = 'hidden';
         messagesContainer.style.paddingTop = '15px';
         messagesContainer.style.paddingRight = '15px';
         messagesContainer.style.paddingLeft = '15px';
@@ -385,94 +393,16 @@
       }
         
       
-      // Set EXACT container dimensions - no extra space
+      // Set container dimensions with mobile consideration
       screenshotContainer.style.height = contentHeight + 'px';
       phoneScreenClone.style.height = contentHeight + 'px';
       phoneScreenClone.style.minHeight = contentHeight + 'px';
-      phoneScreenClone.style.maxHeight = contentHeight + 'px';
       phoneScreenClone.style.display = 'flex';
       phoneScreenClone.style.flexDirection = 'column';
       phoneScreenClone.style.position = 'relative';
-      phoneScreenClone.style.overflow = 'hidden';
+      phoneScreenClone.style.overflow = 'visible'; // Allow overflow for mobile
       
-      // DIFFERENT APPROACH FOR MOBILE: Create fresh input if mobile
-      if (isMobile) {
-        console.log('Mobile detected - trying different approach...');
-        
-        // Remove existing input if any
-        const existingInput = phoneScreenClone.querySelector('.message-input');
-        if (existingInput) {
-          existingInput.remove();
-          console.log('Removed existing input for mobile');
-        }
-        
-        // Create completely new input for mobile
-        const mobileInput = document.createElement('div');
-        mobileInput.className = 'message-input mobile-fresh-input';
-        mobileInput.style.cssText = `
-          display: flex !important;
-          position: static !important;
-          width: 100% !important;
-          background: #f0f2f6 !important;
-          padding: 6px 10px !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          gap: 8px !important;
-          min-height: 55px !important;
-          height: 55px !important;
-          border-top: none !important;
-          z-index: 999 !important;
-          visibility: visible !important;
-          opacity: 1 !important;
-          flex-shrink: 0 !important;
-          order: 999 !important;
-        `;
-        
-        // Create input section
-        const inputSection = document.createElement('div');
-        inputSection.className = 'input-section';
-        inputSection.style.cssText = `
-          display: flex !important;
-          align-items: center !important;
-          gap: 6px !important;
-          flex: 1 !important;
-          background: #fff !important;
-          border: 1px solid #ddd !important;
-          border-radius: 25px !important;
-          padding: 6px 10px !important;
-        `;
-        inputSection.innerHTML = `
-          <i class="fas fa-smile" style="color: #54656f; font-size: 1rem;"></i>
-          <div style="flex: 1; color: #667781; font-size: 0.9rem;">Message</div>
-          <i class="fas fa-paperclip" style="color: #54656f; font-size: 1rem;"></i>
-          <i class="fas fa-camera" style="color: #54656f; font-size: 1rem;"></i>
-        `;
-        
-        // Create mic button
-        const micButton = document.createElement('div');
-        micButton.className = 'mic-button';
-        micButton.style.cssText = `
-          width: 38px !important;
-          height: 38px !important;
-          background: #25d366 !important;
-          color: white !important;
-          border-radius: 50% !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          font-size: 1rem !important;
-          flex-shrink: 0 !important;
-        `;
-        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
-        
-        // Append to mobile input
-        mobileInput.appendChild(inputSection);
-        mobileInput.appendChild(micButton);
-        
-        // Append to phone screen
-        phoneScreenClone.appendChild(mobileInput);
-        console.log('Created fresh mobile input:', mobileInput);
-      }
+      console.log('Container height set to:', contentHeight);
       
 
       // Final reflow
