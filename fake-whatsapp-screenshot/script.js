@@ -331,37 +331,87 @@
         messagesContainer.style.paddingBottom = '15px';
         messagesContainer.style.boxSizing = 'border-box';
         
-        // COMPLETELY OVERRIDE the absolute positioning issue
+        // REMOVE THE ORIGINAL INPUT ENTIRELY - IT'S PROBLEMATIC
         if (messageInput) {
-          console.log('Original message input found:', messageInput);
-          console.log('Original position style:', getComputedStyle(messageInput).position);
-          
-          // NUCLEAR OVERRIDE: Remove ALL positioning styles
-          messageInput.style.cssText = '';
-          
-          // Apply COMPLETE new styling from scratch
-          messageInput.style.display = 'flex';
-          messageInput.style.position = 'relative'; // Change from absolute to relative
-          messageInput.style.width = '100%';
-          messageInput.style.background = '#f0f2f6';
-          messageInput.style.padding = '8px 12px';
-          messageInput.style.alignItems = 'center';
-          messageInput.style.justifyContent = 'space-between';
-          messageInput.style.gap = '12px';
-          messageInput.style.minHeight = '60px';
-          messageInput.style.borderTop = 'none';
-          messageInput.style.zIndex = '1';
-          messageInput.style.bottom = 'auto';
-          messageInput.style.left = 'auto';
-          messageInput.style.right = 'auto';
-          messageInput.style.top = 'auto';
-          messageInput.style.visibility = 'visible';
-          messageInput.style.opacity = '1';
-          messageInput.style.order = '10'; // Ensure it comes after messages
-          
-          console.log('NEW input styles applied:', messageInput.style.cssText);
-          console.log('NEW computed position:', getComputedStyle(messageInput).position);
+          console.log('Removing original problematic input:', messageInput);
+          messageInput.remove(); // Delete it completely
         }
+        
+        // CREATE BRAND NEW INPUT FROM SCRATCH - GUARANTEED TO WORK
+        console.log('Creating brand new input div...');
+        const newInput = document.createElement('div');
+        newInput.className = 'message-input new-forced-input';
+        
+        // Create the complete inner structure
+        const inputSection = document.createElement('div');
+        inputSection.className = 'input-section';
+        inputSection.innerHTML = `
+          <i class="fas fa-smile input-emoji"></i>
+          <div class="input-field">
+            <span>Message</span>
+          </div>
+          <i class="fas fa-paperclip input-attach"></i>
+          <i class="fas fa-camera input-camera"></i>
+        `;
+        
+        const micButton = document.createElement('div');
+        micButton.className = 'mic-button';
+        micButton.innerHTML = '<i class="fas fa-microphone"></i>';
+        
+        newInput.appendChild(inputSection);
+        newInput.appendChild(micButton);
+        
+        // Apply BULLETPROOF styling
+        newInput.style.cssText = `
+          display: flex !important;
+          position: static !important;
+          width: 100% !important;
+          background: #f0f2f6 !important;
+          padding: 8px 12px !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
+          min-height: 60px !important;
+          border-top: none !important;
+          z-index: 999 !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          margin: 0 !important;
+          box-sizing: border-box !important;
+          flex-shrink: 0 !important;
+        `;
+        
+        // Style the input section
+        inputSection.style.cssText = `
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          flex: 1 !important;
+          background: #fff !important;
+          border: 1px solid #ddd !important;
+          border-radius: 25px !important;
+          padding: 8px 12px !important;
+        `;
+        
+        // Style the mic button
+        micButton.style.cssText = `
+          width: 38px !important;
+          height: 38px !important;
+          background: #25d366 !important;
+          color: white !important;
+          border-radius: 50% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 1rem !important;
+          flex-shrink: 0 !important;
+        `;
+        
+        // FORCE append to phone screen clone
+        phoneScreenClone.appendChild(newInput);
+        console.log('New input appended to phone screen:', newInput);
+        console.log('Phone screen children:', phoneScreenClone.children);
+        console.log('New input computed style:', getComputedStyle(newInput));
         
         // Force reflow to ensure everything is rendered
         phoneScreenClone.offsetHeight;
@@ -391,51 +441,18 @@
       phoneScreenClone.style.position = 'relative'; // Ensure it can contain relative elements
       phoneScreenClone.style.overflow = 'visible';
       
-      // FINAL CHECK: Ensure input is absolutely visible and positioned
-      const finalMessageInput = phoneScreenClone.querySelector('.message-input');
+      // FINAL CHECK: Our new input should always be there
+      const finalMessageInput = phoneScreenClone.querySelector('.new-forced-input');
       if (finalMessageInput) {
         console.log('=== FINAL INPUT CHECK ===');
-        console.log('Element found:', finalMessageInput);
-        console.log('Current display:', getComputedStyle(finalMessageInput).display);
-        console.log('Current visibility:', getComputedStyle(finalMessageInput).visibility);
-        console.log('Current position:', getComputedStyle(finalMessageInput).position);
-        console.log('Current height:', getComputedStyle(finalMessageInput).height);
-        
-        // FORCE visibility one more time
-        finalMessageInput.style.display = 'flex !important';
-        finalMessageInput.style.visibility = 'visible !important';
-        finalMessageInput.style.position = 'relative !important';
-        finalMessageInput.style.opacity = '1 !important';
-        
-        console.log('After final force - display:', getComputedStyle(finalMessageInput).display);
-        console.log('=== END FINAL CHECK ===');
+        console.log('New input successfully found:', finalMessageInput);
+        console.log('Final display:', getComputedStyle(finalMessageInput).display);
+        console.log('Final visibility:', getComputedStyle(finalMessageInput).visibility);
+        console.log('Final height:', getComputedStyle(finalMessageInput).height);
+        console.log('Final position:', getComputedStyle(finalMessageInput).position);
+        console.log('=== SUCCESS ===');
       } else {
-        console.error('❌ FINAL MESSAGE INPUT NOT FOUND IN CLONE!');
-        
-        // EMERGENCY PLAN: Manually create and append input div
-        console.log('🚨 CREATING MANUAL INPUT DIV AS BACKUP');
-        const manualInput = document.createElement('div');
-        manualInput.className = 'message-input manual-input';
-        manualInput.innerHTML = `
-          <div class="input-section">
-            <i class="fas fa-smile input-emoji"></i>
-            <div class="input-field">
-              <span>Message</span>
-            </div>
-            <i class="fas fa-paperclip input-attach"></i>
-            <i class="fas fa-camera input-camera"></i>
-          </div>
-          <div class="mic-button">
-            <i class="fas fa-microphone"></i>
-          </div>
-        `;
-        
-        // Style the manual input
-        manualInput.style.cssText = 'display: flex !important; position: relative !important; width: 100% !important; background: #f0f2f6 !important; padding: 8px 12px !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important; min-height: 60px !important; border-top: none !important; z-index: 1 !important; visibility: visible !important; opacity: 1 !important;';
-        
-        // Append to phone screen clone
-        phoneScreenClone.appendChild(manualInput);
-        console.log('Manual input appended:', manualInput);
+        console.error('❌ CRITICAL ERROR: Even new input not found!');
       }
 
       // Final reflow

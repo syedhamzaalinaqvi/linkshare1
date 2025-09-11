@@ -512,6 +512,52 @@ body {
     font-size: 1rem !important;
 }
 
+/* New forced input styling - GUARANTEED TO WORK */
+.screenshot-container .new-forced-input,
+.new-forced-input {
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    background: #f0f2f6 !important;
+    padding: 8px 12px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    min-height: 60px !important;
+    border-top: none !important;
+    z-index: 999 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    order: 999 !important;
+}
+
+.new-forced-input .input-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 !important;
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    padding: 8px 12px !important;
+}
+
+.new-forced-input .mic-button {
+    width: 38px !important;
+    height: 38px !important;
+    background: #25d366 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    flex-shrink: 0 !important;
+}
+
 /* Keep message input visible and properly styled in screenshots */
 .screenshot-container .phone-screen .message-input,
 .screenshot-container .message-input {
