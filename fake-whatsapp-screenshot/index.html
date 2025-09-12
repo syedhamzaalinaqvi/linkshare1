@@ -77,14 +77,22 @@
                 <div class="control-group">
                     <label>Carrier</label>
                     <div class="carrier-options">
-                        <label class="radio-label">
-                            <input type="radio" name="carrierSignals" value="1" id="carrierSignals1">
-                            <span class="radio-text">1 Signal Bar</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="carrierSignals" value="2" id="carrierSignals2" checked>
-                            <span class="radio-text">2 Signal Bars</span>
-                        </label>
+                        <div class="carrier-signals">
+                            <label class="radio-label">
+                                <input type="radio" name="carrierSignals" value="1" id="carrierSignals1">
+                                <span class="radio-text">1 Signal Bar</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="carrierSignals" value="2" id="carrierSignals2" checked>
+                                <span class="radio-text">2 Signal Bars</span>
+                            </label>
+                        </div>
+                        <div class="wifi-option">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="wifiEnabled" checked>
+                                <span class="checkbox-text">Show WiFi</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
@@ -135,13 +143,18 @@
                                     <i class="fas fa-signal signal-1"></i>
                                     <i class="fas fa-signal signal-2"></i>
                                 </span>
-                                <span class="wifi-icon">
+                                <span class="wifi-icon" id="wifiIconDisplay">
                                     <i class="fas fa-wifi"></i>
                                 </span>
 
                                 <span class="battery" id="batteryDisplay">
-                                    <i class="fas fa-battery-three-quarters"></i>
-                                    <span id="batteryPercent">85%</span>
+                                    <div class="battery-container">
+                                        <div class="battery-body">
+                                            <div class="battery-fill" id="batteryFill"></div>
+                                        </div>
+                                        <div class="battery-tip"></div>
+                                    </div>
+                                    <span class="battery-percent" id="batteryPercent">85%</span>
                                 </span>
                             </div>
                         </div>

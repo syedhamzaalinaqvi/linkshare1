@@ -12,6 +12,7 @@
   const timeDisplayInput = el('timeDisplay');
   const carrierSignals1Input = el('carrierSignals1');
   const carrierSignals2Input = el('carrierSignals2');
+  const wifiEnabledInput = el('wifiEnabled');
   const headerIconSizeInput = el('headerIconSize');
 
   const messageTypeInput = el('messageType');
@@ -29,7 +30,10 @@
   const messagesContainer = el('messagesContainer');
   const displayTime = el('displayTime');
   const batteryPercent = el('batteryPercent');
+  const batteryFill = el('batteryFill');
+  const batteryDisplay = el('batteryDisplay');
   const carrierSignalsDisplay = el('carrierSignalsDisplay');
+  const wifiIconDisplay = el('wifiIconDisplay');
   const phoneScreen = el('phoneScreen');
   const chatHeaderRight = document.querySelector('.chat-header-right');
   const backArrow = document.querySelector('.back-arrow');
@@ -227,7 +231,24 @@
     let level = parseInt(batteryLevelInput.value, 10);
     if (isNaN(level) || level < 0) level = 0;
     if (level > 100) level = 100;
+    
+    // Update battery percentage text
     batteryPercent.textContent = level + '%';
+    
+    // Update battery fill bar based on percentage
+    if (batteryFill) {
+      const fillWidth = Math.max(2, (level / 100) * 20); // Min 2px, max 20px (full width)
+      batteryFill.style.width = fillWidth + 'px';
+    }
+    
+    // Add low-battery class if ≤20%
+    if (batteryDisplay) {
+      if (level <= 20) {
+        batteryDisplay.classList.add('low-battery');
+      } else {
+        batteryDisplay.classList.remove('low-battery');
+      }
+    }
   }
 
   function syncCarrierSignals() {
@@ -237,6 +258,17 @@
         carrierSignalsDisplay.classList.add('single-carrier');
       } else {
         carrierSignalsDisplay.classList.remove('single-carrier');
+      }
+    }
+  }
+
+  function syncWifiIcon() {
+    const isWifiEnabled = wifiEnabledInput.checked;
+    if (wifiIconDisplay) {
+      if (isWifiEnabled) {
+        wifiIconDisplay.classList.remove('hidden');
+      } else {
+        wifiIconDisplay.classList.add('hidden');
       }
     }
   }
@@ -532,6 +564,7 @@
   headerIconSizeInput.addEventListener('input', () => { syncHeaderIconSize(); saveToLocalStorage(); });
   carrierSignals1Input.addEventListener('change', () => { syncCarrierSignals(); saveToLocalStorage(); });
   carrierSignals2Input.addEventListener('change', () => { syncCarrierSignals(); saveToLocalStorage(); });
+  wifiEnabledInput.addEventListener('change', () => { syncWifiIcon(); saveToLocalStorage(); });
 
   addMessageBtn.addEventListener('click', () => { addMessage(); saveToLocalStorage(); });
   messageTextInput.addEventListener('keydown', (e) => {
@@ -569,6 +602,7 @@
       batteryLevel: batteryLevelInput.value,
       timeDisplay: timeDisplayInput.value,
       carrierSignals: carrierSignals1Input.checked ? '1' : '2',
+      wifiEnabled: wifiEnabledInput.checked,
       headerIconSize: headerIconSizeInput.value
     };
     
@@ -595,6 +629,9 @@
         carrierSignals2Input.checked = true;
       }
       
+      // Load WiFi setting (default to enabled)
+      wifiEnabledInput.checked = chatData.wifiEnabled !== undefined ? chatData.wifiEnabled : true;
+      
       headerIconSizeInput.value = chatData.headerIconSize || 1.0;
       
       // Load messages
@@ -608,6 +645,7 @@
       syncHeader();
       syncStatusBar();
       syncCarrierSignals();
+      syncWifiIcon();
       syncHeaderIconSize();
     }
   }
@@ -633,6 +671,7 @@
     syncHeader();
     syncStatusBar();
     syncCarrierSignals();
+    syncWifiIcon();
     syncHeaderIconSize();
     
     // Try to load saved data first
