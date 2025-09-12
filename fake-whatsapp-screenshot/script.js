@@ -10,7 +10,8 @@
   const profilePicInput = el('profilePic');
   const batteryLevelInput = el('batteryLevel');
   const timeDisplayInput = el('timeDisplay');
-  const networkProviderInput = el('networkProvider');
+  const carrierSignals1Input = el('carrierSignals1');
+  const carrierSignals2Input = el('carrierSignals2');
   const headerIconSizeInput = el('headerIconSize');
 
   const messageTypeInput = el('messageType');
@@ -28,6 +29,7 @@
   const messagesContainer = el('messagesContainer');
   const displayTime = el('displayTime');
   const batteryPercent = el('batteryPercent');
+  const carrierSignalsDisplay = el('carrierSignalsDisplay');
   const phoneScreen = el('phoneScreen');
   const chatHeaderRight = document.querySelector('.chat-header-right');
   const backArrow = document.querySelector('.back-arrow');
@@ -226,6 +228,17 @@
     if (isNaN(level) || level < 0) level = 0;
     if (level > 100) level = 100;
     batteryPercent.textContent = level + '%';
+  }
+
+  function syncCarrierSignals() {
+    const isOneCarrier = carrierSignals1Input.checked;
+    if (carrierSignalsDisplay) {
+      if (isOneCarrier) {
+        carrierSignalsDisplay.classList.add('single-carrier');
+      } else {
+        carrierSignalsDisplay.classList.remove('single-carrier');
+      }
+    }
   }
 
   function syncHeaderIconSize() {
@@ -517,7 +530,8 @@
   batteryLevelInput.addEventListener('input', () => { syncStatusBar(); saveToLocalStorage(); });
   timeDisplayInput.addEventListener('input', () => { syncStatusBar(); saveToLocalStorage(); });
   headerIconSizeInput.addEventListener('input', () => { syncHeaderIconSize(); saveToLocalStorage(); });
-  networkProviderInput.addEventListener('input', saveToLocalStorage);
+  carrierSignals1Input.addEventListener('change', () => { syncCarrierSignals(); saveToLocalStorage(); });
+  carrierSignals2Input.addEventListener('change', () => { syncCarrierSignals(); saveToLocalStorage(); });
 
   addMessageBtn.addEventListener('click', () => { addMessage(); saveToLocalStorage(); });
   messageTextInput.addEventListener('keydown', (e) => {
@@ -554,7 +568,7 @@
       profilePic: profilePicInput.value,
       batteryLevel: batteryLevelInput.value,
       timeDisplay: timeDisplayInput.value,
-      networkProvider: networkProviderInput.value,
+      carrierSignals: carrierSignals1Input.checked ? '1' : '2',
       headerIconSize: headerIconSizeInput.value
     };
     
@@ -572,7 +586,15 @@
       profilePicInput.value = chatData.profilePic || '';
       batteryLevelInput.value = chatData.batteryLevel || 85;
       timeDisplayInput.value = chatData.timeDisplay || '19:30';
-      networkProviderInput.value = chatData.networkProvider || 'Carrier';
+      
+      // Load carrier signals (default to 2 carriers)
+      const carrierSignalCount = chatData.carrierSignals || '2';
+      if (carrierSignalCount === '1') {
+        carrierSignals1Input.checked = true;
+      } else {
+        carrierSignals2Input.checked = true;
+      }
+      
       headerIconSizeInput.value = chatData.headerIconSize || 1.0;
       
       // Load messages
@@ -585,6 +607,7 @@
       // Sync UI
       syncHeader();
       syncStatusBar();
+      syncCarrierSignals();
       syncHeaderIconSize();
     }
   }
@@ -609,6 +632,7 @@
   function init() {
     syncHeader();
     syncStatusBar();
+    syncCarrierSignals();
     syncHeaderIconSize();
     
     // Try to load saved data first
