@@ -1325,3 +1325,30 @@ body {
 .message-edit-form button.cancel:hover {
     background: #545b62;
 }
+
+/* FAQ Section Styling */
+.faq-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--white);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.faq-item h4 {
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.faq-item p {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.faq-item p strong {
+    color: var(--primary-color);
+}
