@@ -1314,16 +1314,25 @@
             .alert-content {
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                gap: 15px;
-                flex-wrap: wrap;
-                text-align: center;
+                justify-content: space-between;
+                gap: 12px;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            .alert-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
             }
 
             .alert-content > i {
-                font-size: 24px;
+                font-size: 22px;
                 color: white;
                 animation: bounce 2s ease-in-out infinite;
+                flex-shrink: 0;
             }
 
             @keyframes bounce {
@@ -1335,23 +1344,24 @@
                 color: white;
                 font-weight: 600;
                 font-size: 16px;
-                flex: 1;
-                min-width: 250px;
+                white-space: nowrap;
             }
 
             .simple-join-btn {
                 background: rgba(255, 255, 255, 0.9);
                 color: #25d366;
-                padding: 8px 20px;
+                padding: 8px 18px;
                 border-radius: 25px;
                 text-decoration: none;
                 font-weight: 600;
                 font-size: 14px;
                 display: inline-flex;
                 align-items: center;
-                gap: 6px;
+                gap: 5px;
                 transition: all 0.3s ease;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                flex-shrink: 0;
+                white-space: nowrap;
             }
 
             .simple-join-btn:hover {
@@ -1361,10 +1371,17 @@
             }
 
             .simple-join-btn i {
-                font-size: 16px;
+                font-size: 14px;
             }
 
             /* Mobile responsiveness for alert banner */
+            @media (max-width: 1024px) {
+                .alert-text {
+                    white-space: normal;
+                    font-size: 15px;
+                }
+            }
+
             @media (max-width: 768px) {
                 .whatsapp-alert-banner {
                     margin: 15px;
@@ -1372,29 +1389,34 @@
                 }
                 
                 .alert-content {
+                    flex-direction: column;
                     gap: 10px;
                     padding: 0 15px;
+                    text-align: center;
+                }
+                
+                .alert-left {
+                    justify-content: center;
                 }
                 
                 .alert-text {
                     font-size: 15px;
-                    min-width: 200px;
+                    text-align: center;
                 }
             }
 
             @media (max-width: 480px) {
                 .alert-content {
-                    flex-direction: column;
                     gap: 8px;
                 }
                 
                 .alert-text {
                     font-size: 14px;
-                    min-width: auto;
                 }
                 
                 .simple-join-btn {
-                    padding: 10px 25px;
+                    padding: 10px 20px;
+                    font-size: 13px;
                 }
             }
         </style>
@@ -1705,8 +1727,10 @@
             <div class="whatsapp-alert-banner">
                 <div class="container">
                     <div class="alert-content">
-                        <i class="fab fa-whatsapp"></i>
-                        <span class="alert-text">Join Our Official WhatsApp Group for Exclusive Updates!</span>
+                        <div class="alert-left">
+                            <i class="fab fa-whatsapp"></i>
+                            <span class="alert-text">Join Our Official WhatsApp Group for Exclusive Updates!</span>
+                        </div>
                         <!-- TODO: Replace '#' with actual WhatsApp group link when ready -->
                         <!-- Example: href="https://chat.whatsapp.com/YOUR_GROUP_INVITE_LINK" -->
                         <a href="#" class="simple-join-btn" id="officialWhatsAppBtn">
