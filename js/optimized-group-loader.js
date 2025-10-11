@@ -78,6 +78,10 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
 
         // Initialize state for initial load
         if (!append) {
+            // Show simple loading message only for completely fresh loads
+            if (container.children.length === 0) {
+                container.innerHTML = '<div class="simple-loading">Loading groups...</div>';
+            }
             loadingState.lastDoc = null;
             loadingState.totalLoaded = 0;
             loadingState.hasMore = true;
@@ -108,9 +112,12 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
                 return;
             }
             
-            // Clear container for initial load
+            // Only clear container if it has loading message or error, not existing groups
             if (!append) {
-                container.innerHTML = '';
+                const hasLoadingOrError = container.querySelector('.simple-loading, .error-state, .no-groups');
+                if (hasLoadingOrError) {
+                    container.innerHTML = '';
+                }
             }
             
             renderGroupsWithLazyLoading(displayGroups, container, append);
@@ -162,9 +169,12 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
                 loadingState.hasMore = false;
             }
 
-            // Clear container for initial load
+            // Only clear container if it has loading message or error, not existing groups
             if (!append) {
-                container.innerHTML = '';
+                const hasLoadingOrError = container.querySelector('.simple-loading, .error-state, .no-groups');
+                if (hasLoadingOrError) {
+                    container.innerHTML = '';
+                }
             }
 
             renderGroupsWithLazyLoading(groups, container, append);
@@ -433,6 +443,18 @@ function renderGroupsWithLazyLoading(groups, container, append = false) {
         const card = createOptimizedGroupCard(group, index);
         fragment.appendChild(card);
     });
+
+    if (!append && groups.length > 0) {
+        // For non-append renders, replace content smoothly
+        // Remove loading messages and errors, but keep existing groups during update
+        const loadingElements = container.querySelectorAll('.simple-loading, .error-state, .no-groups');
+        loadingElements.forEach(el => el.remove());
+        
+        // If container was empty or only had loading/error messages, clear it
+        if (container.children.length === 0) {
+            container.innerHTML = '';
+        }
+    }
 
     container.appendChild(fragment);
 
@@ -783,22 +805,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeSmartLoader();
 });
 
-// Visibility change handler - refresh data when tab becomes active
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        console.log('👁️ Page became visible - refreshing groups silently...');
-        
-        // Refresh data when page becomes visible without loading messages
-        const searchInput = document.querySelector('#searchGroups');
-        const currentSearch = searchInput ? searchInput.value : '';
-        
-        loadGroupsOptimized(
-            loadingState.currentFilter.topic,
-            loadingState.currentFilter.country,
-            currentSearch
-        );
-    }
-});
+// Visibility change handler - DISABLED to prevent blinking
+// document.addEventListener('visibilitychange', () => {
+//     if (!document.hidden) {
+//         console.log('👁️ Page became visible - refreshing groups silently...');
+//         
+//         // Refresh data when page becomes visible without loading messages
+//         const searchInput = document.querySelector('#searchGroups');
+//         const currentSearch = searchInput ? searchInput.value : '';
+//         
+//         loadGroupsOptimized(
+//             loadingState.currentFilter.topic,
+//             loadingState.currentFilter.country,
+//             currentSearch
+//         );
+//     }
+// });
 
 // Save state before user leaves
 window.addEventListener('beforeunload', () => {

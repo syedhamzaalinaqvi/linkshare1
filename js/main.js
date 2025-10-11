@@ -139,7 +139,10 @@ function loadGroups(
         });
 
         if (!loadMore) {
-            // Reset state without showing loading message
+            // Show loading message only if container is empty (first visit)
+            if (groupContainer.children.length === 0) {
+                groupContainer.innerHTML = '<div class="simple-loading">Loading groups...</div>';
+            }
             lastDoc = null;
             isLastPage = false;
         }
@@ -192,9 +195,12 @@ function loadGroups(
         baseQuery
             .get(queryOptions)
             .then((querySnapshot) => {
-                // Clear container if not loading more
+                // Only clear container if it has loading message or error, not existing groups
                 if (!loadMore) {
-                    groupContainer.innerHTML = "";
+                    const hasLoadingOrError = groupContainer.querySelector('.simple-loading, .error-state, .no-groups, .loading');
+                    if (hasLoadingOrError) {
+                        groupContainer.innerHTML = "";
+                    }
                 }
 
                 // Create array of groups
