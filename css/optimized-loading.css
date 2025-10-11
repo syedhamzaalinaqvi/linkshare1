@@ -396,6 +396,7 @@
 }
 
 /* SKELETON LOADING ANIMATION - Beautiful lazy loading */
+/* NOTE: Mobile layout MUST match main groups-grid 2-column layout! */
 .skeleton-loader {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -619,10 +620,12 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Responsive skeleton loading */
-@media (max-width: 768px) {
+/* Responsive skeleton loading - MATCH YOUR MOBILE 2-COLUMN LAYOUT */
+
+/* Small tablets (596px to 767px) - 2 columns */
+@media (min-width: 596px) and (max-width: 767px) {
     .skeleton-loader {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
         padding: 1rem 0;
     }
@@ -633,6 +636,124 @@
     
     .skeleton-content {
         padding: 1rem;
+    }
+}
+
+/* Mobile devices (up to 595px) - MATCH YOUR EXACT MOBILE LAYOUT */
+@media screen and (max-width: 595px) {
+    .skeleton-loader {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 2px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+        padding: 1rem 2px !important;
+    }
+    
+    .skeleton-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        height: 220px;
+        padding: 0.3rem;
+    }
+    
+    .skeleton-image {
+        height: 60px; /* Compact mobile height */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .skeleton-image::after {
+        font-size: 2rem; /* Smaller mobile icon */
+        opacity: 0.5;
+    }
+    
+    .skeleton-content {
+        padding: 0.5rem;
+    }
+    
+    .skeleton-title {
+        height: 18px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .skeleton-line {
+        height: 12px;
+        margin-bottom: 0.3rem;
+    }
+    
+    .skeleton-button {
+        height: 32px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .skeleton-badge {
+        height: 16px;
+    }
+    
+    .skeleton-views, .skeleton-date {
+        height: 10px;
+    }
+}
+
+/* Very small devices (up to 380px) - MATCH YOUR LAYOUT */
+@media (max-width: 380px) {
+    .skeleton-loader {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 2px !important;
+        padding: 1rem 2px !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    .skeleton-card {
+        height: 220px;
+        padding: 0.3rem;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box;
+        margin: 0;
+    }
+    
+    .skeleton-image {
+        height: 50px;
+    }
+    
+    .skeleton-image::after {
+        font-size: 1.5rem;
+    }
+    
+    .skeleton-content {
+        padding: 0.4rem;
+    }
+    
+    .skeleton-title {
+        height: 16px;
+        margin-bottom: 0.4rem;
+    }
+    
+    .skeleton-line {
+        height: 10px;
+        margin-bottom: 0.25rem;
+    }
+    
+    .skeleton-button {
+        height: 28px;
+        margin-bottom: 0.4rem;
+    }
+    
+    .skeleton-badge {
+        height: 14px;
+    }
+    
+    .skeleton-views, .skeleton-date {
+        height: 8px;
     }
 }
 
@@ -650,6 +771,30 @@
     max-width: 400px;
     position: relative;
     overflow: hidden;
+}
+
+/* Mobile responsive beautiful loading */
+@media (max-width: 595px) {
+    .beautiful-loading {
+        padding: 2rem 1rem;
+        margin: 1rem auto;
+        max-width: 90%;
+        border-radius: 15px;
+    }
+    
+    .loading-icon {
+        font-size: 2.5rem !important;
+        margin-bottom: 0.8rem !important;
+    }
+    
+    .loading-text {
+        font-size: 1rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+    
+    .loading-subtext {
+        font-size: 0.8rem !important;
+    }
 }
 
 .beautiful-loading::before {

@@ -1157,7 +1157,18 @@ window.updateGroupViews = updateGroupViews;
 // BEAUTIFUL LOADING HELPER FUNCTIONS
 
 // Generate skeleton loading animation (shows while groups are loading)
-function generateSkeletonLoader(count = 6) {
+function generateSkeletonLoader(count) {
+    // Smart count based on screen size
+    if (!count) {
+        const screenWidth = window.innerWidth || document.documentElement.clientWidth || 900;
+        if (screenWidth <= 595) {
+            count = 8; // 4 rows of 2 columns on mobile
+        } else if (screenWidth <= 768) {
+            count = 6; // 3 rows of 2 columns on tablets
+        } else {
+            count = 6; // Desktop default
+        }
+    }
     const skeletonCards = Array.from({length: count}, (_, index) => `
         <div class="skeleton-card" style="animation-delay: ${index * 100}ms;">
             <div class="skeleton-image"></div>
