@@ -76,9 +76,8 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
         loadingState.currentFilter = { topic, country, search: searchTerm };
         saveUserState(); // Save user state
 
-        // Show loading for initial load only with perfect centering
+        // Initialize state for initial load
         if (!append) {
-            container.innerHTML = '<div class="optimized-loading">Loading fresh groups...</div>';
             loadingState.lastDoc = null;
             loadingState.totalLoaded = 0;
             loadingState.hasMore = true;
@@ -780,26 +779,24 @@ window.initializeSmartLoader = initializeSmartLoader;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('⚡ Optimized Group Loader initialized');
     
-    // Use smart initialization instead of clearing cache
-    setTimeout(initializeSmartLoader, 200);
+    // Use smart initialization immediately - NO DELAY
+    initializeSmartLoader();
 });
 
 // Visibility change handler - refresh data when tab becomes active
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-        console.log('👁️ Page became visible - loading fresh data...');
+        console.log('👁️ Page became visible - refreshing groups silently...');
         
-        // Refresh data when page becomes visible (but with small delay)
-        setTimeout(() => {
-            const searchInput = document.querySelector('#searchGroups');
-            const currentSearch = searchInput ? searchInput.value : '';
-            
-            loadGroupsOptimized(
-                loadingState.currentFilter.topic,
-                loadingState.currentFilter.country,
-                currentSearch
-            );
-        }, 500); // Small delay to let page settle
+        // Refresh data when page becomes visible without loading messages
+        const searchInput = document.querySelector('#searchGroups');
+        const currentSearch = searchInput ? searchInput.value : '';
+        
+        loadGroupsOptimized(
+            loadingState.currentFilter.topic,
+            loadingState.currentFilter.country,
+            currentSearch
+        );
     }
 });
 

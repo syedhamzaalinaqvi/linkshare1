@@ -70,20 +70,18 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         console.log("Firebase initialized successfully and global functions set");
         
-        // Trigger FAST loading with fresh data immediately
+        // Trigger INSTANT loading with fresh data
         if (document.querySelector('.groups-grid')) {
-            console.log('🚀 Starting FAST fresh data loader...');
-            setTimeout(() => {
-                // Use optimized fast loader instead of old loadGroups
-                if (typeof loadGroupsOptimized === 'function') {
-                    loadGroupsOptimized();
-                } else {
-                    // Fallback to current approach but with fresh data priority
-                    const currentTopic = window.currentTopic || 'all';
-                    const currentCountry = window.currentCountry || 'all';
-                    loadGroups(currentTopic, currentCountry);
-                }
-            }, 50);
+            console.log('🚀 Loading groups instantly...');
+            // Use optimized fast loader instead of old loadGroups - NO DELAY
+            if (typeof loadGroupsOptimized === 'function') {
+                loadGroupsOptimized();
+            } else {
+                // Fallback to current approach but with fresh data priority
+                const currentTopic = window.currentTopic || 'all';
+                const currentCountry = window.currentCountry || 'all';
+                loadGroups(currentTopic, currentCountry);
+            }
         }
     } catch (error) {
         console.error("Error initializing Firebase:", error);

@@ -125,14 +125,10 @@ function loadGroups(
     // Check if Firebase is initialized
     if (!window.db) {
         console.log("Firebase not initialized yet. Waiting...");
-        // Show loading message
-        groupContainer.innerHTML =
-            '<div class="loading">Connecting to database...</div>';
-
-        // Try again in 1 second
+        // Try again in 500ms - reduced delay
         setTimeout(() => {
             loadGroups(filterTopic, filterCountry, loadMore);
-        }, 1000);
+        }, 500);
         return;
     }
 
@@ -143,8 +139,7 @@ function loadGroups(
         });
 
         if (!loadMore) {
-            // Simple loading message
-            groupContainer.innerHTML = '<div class="simple-loading">Loading groups...</div>';
+            // Reset state without showing loading message
             lastDoc = null;
             isLastPage = false;
         }
@@ -331,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
             initializeApp();
         } else {
             console.log("Firebase not initialized yet, waiting...");
-            setTimeout(checkFirebaseAndInitialize, 300);
+            setTimeout(checkFirebaseAndInitialize, 100);
         }
     };
 
@@ -342,8 +337,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Don't return - let Firebase initialize as fallback
     }
     
-    // Start initialization process only if database groups haven't loaded
-    setTimeout(checkFirebaseAndInitialize, 100);
+    // Start initialization process immediately
+    checkFirebaseAndInitialize();
 
     // Main app initialization
     function initializeApp() {

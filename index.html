@@ -2748,16 +2748,14 @@
                 // Smart initialization - no aggressive cache clearing
                 console.log('🧠 Using smart initialization...');
                 
-                // Use smart loader that preserves user state
-                setTimeout(() => {
-                    if (window.initializeSmartLoader) {
-                        console.log('⚡ Starting smart loader...');
-                        window.initializeSmartLoader();
-                    } else if (window.loadGroupsOptimized) {
-                        console.log('⚡ Fallback to optimized loader...');
-                        window.loadGroupsOptimized();
-                    }
-                }, 300);
+                // Use smart loader immediately - NO DELAYS!
+                if (window.initializeSmartLoader) {
+                    console.log('⚡ Starting smart loader instantly...');
+                    window.initializeSmartLoader();
+                } else if (window.loadGroupsOptimized) {
+                    console.log('⚡ Fallback to optimized loader instantly...');
+                    window.loadGroupsOptimized();
+                }
             });
             
             // Smart visibility handling - managed by optimized loader
