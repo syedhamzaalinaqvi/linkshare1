@@ -78,9 +78,9 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
 
         // Initialize state for initial load
         if (!append) {
-            // Show simple loading message only for completely fresh loads
+            // Show beautiful skeleton loading only for completely fresh loads
             if (container.children.length === 0) {
-                container.innerHTML = '<div class="simple-loading">Loading groups...</div>';
+                container.innerHTML = window.generateSkeletonLoader ? window.generateSkeletonLoader() : '<div class="simple-loading">Loading groups...</div>';
             }
             loadingState.lastDoc = null;
             loadingState.totalLoaded = 0;
@@ -114,7 +114,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
             
             // Only clear container if it has loading message or error, not existing groups
             if (!append) {
-                const hasLoadingOrError = container.querySelector('.simple-loading, .error-state, .no-groups');
+                const hasLoadingOrError = container.querySelector('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups');
                 if (hasLoadingOrError) {
                     container.innerHTML = '';
                 }
@@ -171,7 +171,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
 
             // Only clear container if it has loading message or error, not existing groups
             if (!append) {
-                const hasLoadingOrError = container.querySelector('.simple-loading, .error-state, .no-groups');
+                const hasLoadingOrError = container.querySelector('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups');
                 if (hasLoadingOrError) {
                     container.innerHTML = '';
                 }
@@ -193,31 +193,24 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
 
     } catch (error) {
         console.error('❌ Optimized loader error:', error);
-        if (!append) {
-            container.innerHTML = `
-                <div class="error-state">
-                    <div style="font-size: 1.1rem; margin-bottom: 1rem;">Loading Error</div>
-                    <div style="font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8;">There was a problem loading groups</div>
-                    <button onclick="loadGroupsOptimized()" class="retry-btn" style="
-                        background: #25D366;
-                        color: white;
-                        border: none;
-                        padding: 0.8rem 1.5rem;
-                        border-radius: 25px;
-                        cursor: pointer;
-                        font-weight: 500;
-                        transition: all 0.3s ease;
-                    ">
-                        🔄 Try Again
-                    </button>
-                </div>
-            `;
+        if (!append && container.children.length === 0) {
+            // Show beautiful loading with auto-retry instead of error
+            container.innerHTML = window.generateBeautifulLoading ? 
+                window.generateBeautifulLoading('Connection Issue', 'Retrying automatically...') : 
+                '<div class="simple-loading">Retrying...</div>';
+            
+            // Auto-retry after 2 seconds
+            setTimeout(() => {
+                if (container.innerHTML.includes('Connection Issue') || container.innerHTML.includes('Retrying')) {
+                    loadGroupsOptimized(topic, country, searchTerm, false);
+                }
+            }, 2000);
         }
     } finally {
         loadingState.isLoading = false;
         
         // Remove any loading indicators
-        const loadingElements = container.querySelectorAll('.optimized-loading, .loading-more');
+        const loadingElements = container.querySelectorAll('.optimized-loading, .loading-more, .skeleton-loader, .beautiful-loading');
         loadingElements.forEach(el => el.remove());
     }
 }
@@ -447,7 +440,7 @@ function renderGroupsWithLazyLoading(groups, container, append = false) {
     if (!append && groups.length > 0) {
         // For non-append renders, replace content smoothly
         // Remove loading messages and errors, but keep existing groups during update
-        const loadingElements = container.querySelectorAll('.simple-loading, .error-state, .no-groups');
+        const loadingElements = container.querySelectorAll('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups');
         loadingElements.forEach(el => el.remove());
         
         // If container was empty or only had loading/error messages, clear it

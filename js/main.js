@@ -139,9 +139,9 @@ function loadGroups(
         });
 
         if (!loadMore) {
-            // Show loading message only if container is empty (first visit)
+            // Show beautiful skeleton loading only if container is empty
             if (groupContainer.children.length === 0) {
-                groupContainer.innerHTML = '<div class="simple-loading">Loading groups...</div>';
+                groupContainer.innerHTML = generateSkeletonLoader();
             }
             lastDoc = null;
             isLastPage = false;
@@ -197,7 +197,7 @@ function loadGroups(
             .then((querySnapshot) => {
                 // Only clear container if it has loading message or error, not existing groups
                 if (!loadMore) {
-                    const hasLoadingOrError = groupContainer.querySelector('.simple-loading, .error-state, .no-groups, .loading');
+                    const hasLoadingOrError = groupContainer.querySelector('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups, .loading');
                     if (hasLoadingOrError) {
                         groupContainer.innerHTML = "";
                     }
@@ -285,38 +285,40 @@ function loadGroups(
             })
             .catch((error) => {
                 console.error("Error loading groups:", error);
-                groupContainer.innerHTML = `<div class="error-state">
-                <div style="font-size: 1.1rem; margin-bottom: 1rem;">Loading Error</div>
-                <div style="font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8;">${error.message}</div>
-                <button onclick="location.reload()" style="
-                    background: #25D366;
-                    color: white;
-                    border: none;
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: 500;
-                    transition: all 0.3s ease;
-                ">Retry</button>
-            </div>`;
+                
+                // Only show error if this is not the first load or if we actually tried to load
+                if (groupContainer.children.length === 0) {
+                    // For first load errors, show a gentle retry message
+                    groupContainer.innerHTML = generateBeautifulLoading('Unable to load groups', 'Please check your connection and try again');
+                    
+                    // Auto-retry after 3 seconds
+                    setTimeout(() => {
+                        if (groupContainer.innerHTML.includes('Unable to load groups')) {
+                            loadGroups(filterTopic, filterCountry, loadMore);
+                        }
+                    }, 3000);
+                } else {
+                    // If we have existing groups, just update load more button
+                    console.warn('Failed to load more groups:', error.message);
+                }
+                
                 updateLoadMoreButton(0);
             });
     } catch (error) {
         console.error("Error loading groups:", error);
-        groupContainer.innerHTML = `<div class="error-state">
-            <div style="font-size: 1.1rem; margin-bottom: 1rem;">Loading Error</div>
-            <div style="font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8;">${error.message}</div>
-            <button onclick="location.reload()" style="
-                background: #25D366;
-                color: white;
-                border: none;
-                padding: 0.8rem 1.5rem;
-                border-radius: 25px;
-                cursor: pointer;
-                font-weight: 500;
-                transition: all 0.3s ease;
-            ">Retry</button>
-        </div>`;
+        
+        // Only show error if container is empty
+        if (groupContainer.children.length === 0) {
+            groupContainer.innerHTML = generateBeautifulLoading('Connection Issue', 'Retrying automatically in a moment...');
+            
+            // Auto-retry after 2 seconds
+            setTimeout(() => {
+                if (groupContainer.innerHTML.includes('Connection Issue')) {
+                    loadGroups(currentTopic, currentCountry, false);
+                }
+            }, 2000);
+        }
+        
         updateLoadMoreButton(0);
     }
 }
@@ -1151,3 +1153,52 @@ function updateGroupViews(groupId) {
 
 // Make updateGroupViews available globally
 window.updateGroupViews = updateGroupViews;
+
+// BEAUTIFUL LOADING HELPER FUNCTIONS
+
+// Generate skeleton loading animation (shows while groups are loading)
+function generateSkeletonLoader(count = 6) {
+    const skeletonCards = Array.from({length: count}, (_, index) => `
+        <div class="skeleton-card" style="animation-delay: ${index * 100}ms;">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-badges">
+                    <div class="skeleton-badge"></div>
+                    <div class="skeleton-badge"></div>
+                </div>
+                <div class="skeleton-title"></div>
+                <div class="skeleton-description">
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                    <div class="skeleton-line"></div>
+                </div>
+                <div class="skeleton-button"></div>
+                <div class="skeleton-footer">
+                    <div class="skeleton-views"></div>
+                    <div class="skeleton-date"></div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    return `<div class="skeleton-loader">${skeletonCards}</div>`;
+}
+
+// Generate beautiful loading message (for connection issues or retries)
+function generateBeautifulLoading(title = 'Loading Groups', subtitle = 'Finding the best WhatsApp groups for you') {
+    return `
+        <div class="beautiful-loading">
+            <div class="loading-icon">⚡</div>
+            <div class="loading-text">${title}<span class="loading-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </span></div>
+            <div class="loading-subtext">${subtitle}</div>
+        </div>
+    `;
+}
+
+// Make helper functions globally available
+window.generateSkeletonLoader = generateSkeletonLoader;
+window.generateBeautifulLoading = generateBeautifulLoading;
