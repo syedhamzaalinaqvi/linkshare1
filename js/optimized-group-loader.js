@@ -114,7 +114,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
             
             // Only clear container if it has loading message or error, not existing groups
             if (!append) {
-                const hasLoadingOrError = container.querySelector('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups');
+                const hasLoadingOrError = container.querySelector('.simple-loading, .skeleton-card, .beautiful-loading, .error-state, .no-groups');
                 if (hasLoadingOrError) {
                     container.innerHTML = '';
                 }
@@ -171,7 +171,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
 
             // Only clear container if it has loading message or error, not existing groups
             if (!append) {
-                const hasLoadingOrError = container.querySelector('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups');
+                const hasLoadingOrError = container.querySelector('.simple-loading, .skeleton-card, .beautiful-loading, .error-state, .no-groups');
                 if (hasLoadingOrError) {
                     container.innerHTML = '';
                 }
@@ -210,7 +210,7 @@ async function loadGroupsOptimized(topic = 'all', country = 'all', searchTerm = 
         loadingState.isLoading = false;
         
         // Remove any loading indicators
-        const loadingElements = container.querySelectorAll('.optimized-loading, .loading-more, .skeleton-loader, .beautiful-loading');
+        const loadingElements = container.querySelectorAll('.optimized-loading, .loading-more, .skeleton-card, .beautiful-loading');
         loadingElements.forEach(el => el.remove());
     }
 }
@@ -440,7 +440,7 @@ function renderGroupsWithLazyLoading(groups, container, append = false) {
     if (!append && groups.length > 0) {
         // For non-append renders, replace content smoothly
         // Remove loading messages and errors, but keep existing groups during update
-        const loadingElements = container.querySelectorAll('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups');
+        const loadingElements = container.querySelectorAll('.simple-loading, .skeleton-card, .beautiful-loading, .error-state, .no-groups');
         loadingElements.forEach(el => el.remove());
         
         // If container was empty or only had loading/error messages, clear it

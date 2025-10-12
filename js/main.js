@@ -197,7 +197,7 @@ function loadGroups(
             .then((querySnapshot) => {
                 // Only clear container if it has loading message or error, not existing groups
                 if (!loadMore) {
-                    const hasLoadingOrError = groupContainer.querySelector('.simple-loading, .skeleton-loader, .beautiful-loading, .error-state, .no-groups, .loading');
+                    const hasLoadingOrError = groupContainer.querySelector('.simple-loading, .skeleton-card, .beautiful-loading, .error-state, .no-groups, .loading');
                     if (hasLoadingOrError) {
                         groupContainer.innerHTML = "";
                     }
@@ -1192,7 +1192,8 @@ function generateSkeletonLoader(count) {
         </div>
     `).join('');
     
-    return `<div class="skeleton-loader">${skeletonCards}</div>`;
+    // Return skeleton cards directly - they'll be placed inside the existing groups-grid
+    return skeletonCards;
 }
 
 // Generate beautiful loading message (for connection issues or retries)
