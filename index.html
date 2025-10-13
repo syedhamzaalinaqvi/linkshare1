@@ -1,6 +1,91 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <!-- Share Buttons Panel HTML -->
+        <style>
+            /* Share Buttons Styles */
+            .share-buttons-panel {
+                position: fixed;
+                left: -200px; /* Hidden by default */
+                top: 50%;
+                transform: translateY(-50%);
+                background: white;
+                padding: 15px;
+                border-radius: 0 15px 15px 0;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+                transition: left 0.3s ease;
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 200px;
+            }
+
+            .share-buttons-panel.active {
+                left: 0;
+            }
+
+            .share-toggle-btn {
+                position: absolute;
+                right: -40px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #128C7E;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 0 5px 5px 0;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                transition: background 0.3s ease;
+            }
+
+            .share-toggle-btn:hover {
+                background: #0d6b5e;
+            }
+
+            .share-buttons-panel .share-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            .share-button {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 15px;
+                border-radius: 5px;
+                color: white;
+                text-decoration: none;
+                font-size: 14px;
+                transition: transform 0.2s ease, opacity 0.2s ease;
+            }
+
+            .share-button:hover {
+                transform: translateX(5px);
+                opacity: 0.9;
+            }
+
+            .share-button i {
+                font-size: 18px;
+            }
+
+            .share-facebook { background: #1877f2; }
+            .share-twitter { background: #1da1f2; }
+            .share-whatsapp { background: #25d366; }
+            .share-telegram { background: #0088cc; }
+            .share-linkedin { background: #0077b5; }
+            .share-pinterest { background: #e60023; }
+            .share-reddit { background: #ff4500; }
+            .share-email { background: #ea4335; }
+        </style>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
@@ -90,6 +175,89 @@
             }
         </script>
         <style>
+            /* Share Buttons Styles */
+            .share-buttons-panel {
+                position: fixed;
+                left: -200px; /* Hidden by default */
+                top: 50%;
+                transform: translateY(-50%);
+                background: white;
+                padding: 15px;
+                border-radius: 0 15px 15px 0;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+                transition: left 0.3s ease;
+                z-index: 999;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                width: 200px;
+            }
+
+            .share-buttons-panel.active {
+                left: 0;
+            }
+
+            .share-toggle-btn {
+                position: absolute;
+                right: -40px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: #128C7E;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 0 5px 5px 0;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                transition: background 0.3s ease;
+            }
+
+            .share-toggle-btn:hover {
+                background: #0d6b5e;
+            }
+
+            .share-buttons-panel .share-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            .share-button {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 15px;
+                border-radius: 5px;
+                color: white;
+                text-decoration: none;
+                font-size: 14px;
+                transition: transform 0.2s ease, opacity 0.2s ease;
+            }
+
+            .share-button:hover {
+                transform: translateX(5px);
+                opacity: 0.9;
+            }
+
+            .share-button i {
+                font-size: 18px;
+            }
+
+            .share-facebook { background: #1877f2; }
+            .share-twitter { background: #1da1f2; }
+            .share-whatsapp { background: #25d366; }
+            .share-telegram { background: #0088cc; }
+            .share-linkedin { background: #0077b5; }
+            .share-pinterest { background: #e60023; }
+            .share-reddit { background: #ff4500; }
+            .share-email { background: #ea4335; }
+
             /* SEO Blog Section Styles */
             .seo-blog-section {
                 background: #f8f9fa;
@@ -1516,6 +1684,46 @@
             </div>
         </section>
 
+                <!-- Share Buttons Panel -->
+        <div class="share-buttons-panel" id="sharePanel">
+            <button class="share-toggle-btn" id="shareToggle">
+                <i class="fas fa-share-alt"></i>
+            </button>
+            <div class="share-title">Share This Page</div>
+            <a href="#" class="share-button share-facebook" id="shareFacebook">
+                <i class="fab fa-facebook-f"></i>
+                Facebook
+            </a>
+            <a href="#" class="share-button share-twitter" id="shareTwitter">
+                <i class="fab fa-twitter"></i>
+                Twitter
+            </a>
+            <a href="#" class="share-button share-whatsapp" id="shareWhatsApp">
+                <i class="fab fa-whatsapp"></i>
+                WhatsApp
+            </a>
+            <a href="#" class="share-button share-telegram" id="shareTelegram">
+                <i class="fab fa-telegram-plane"></i>
+                Telegram
+            </a>
+            <a href="#" class="share-button share-linkedin" id="shareLinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+                LinkedIn
+            </a>
+            <a href="#" class="share-button share-pinterest" id="sharePinterest">
+                <i class="fab fa-pinterest-p"></i>
+                Pinterest
+            </a>
+            <a href="#" class="share-button share-reddit" id="shareReddit">
+                <i class="fab fa-reddit-alien"></i>
+                Reddit
+            </a>
+            <a href="#" class="share-button share-email" id="shareEmail">
+                <i class="fas fa-envelope"></i>
+                Email
+            </a>
+        </div>
+        
         <!-- Main Content -->
         <main id="main-content" class="container" role="main">
             <!-- first slder 
@@ -1987,6 +2195,46 @@
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
             
+            <!-- Share Buttons Script -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const sharePanel = document.getElementById('sharePanel');
+                    const shareToggle = document.getElementById('shareToggle');
+                    const pageUrl = encodeURIComponent(window.location.href);
+                    const pageTitle = encodeURIComponent(document.title);
+
+                    // Toggle share panel
+                    shareToggle.addEventListener('click', function() {
+                        sharePanel.classList.toggle('active');
+                    });
+
+                    // Close panel when clicking outside
+                    document.addEventListener('click', function(event) {
+                        if (!sharePanel.contains(event.target)) {
+                            sharePanel.classList.remove('active');
+                        }
+                    });
+
+                    // Share button click handlers
+                    document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
+                    document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${pageUrl}&text=${pageTitle}`;
+                    document.getElementById('shareWhatsApp').href = `https://api.whatsapp.com/send?text=${pageTitle}%20${pageUrl}`;
+                    document.getElementById('shareTelegram').href = `https://telegram.me/share/url?url=${pageUrl}&text=${pageTitle}`;
+                    document.getElementById('shareLinkedIn').href = `https://www.linkedin.com/sharing/share-offsite/?url=${pageUrl}`;
+                    document.getElementById('sharePinterest').href = `https://pinterest.com/pin/create/button/?url=${pageUrl}&description=${pageTitle}`;
+                    document.getElementById('shareReddit').href = `https://reddit.com/submit?url=${pageUrl}&title=${pageTitle}`;
+                    document.getElementById('shareEmail').href = `mailto:?subject=${pageTitle}&body=Check%20this%20out:%20${pageUrl}`;
+
+                    // Open share links in new window
+                    document.querySelectorAll('.share-button').forEach(button => {
+                        button.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            window.open(this.href, 'ShareWindow', 'width=600,height=400,left=200,top=200');
+                        });
+                    });
+                });
+            </script>
+
             <!-- Scripts moved to bottom of page -->
             <!-- Tools Section -->
             <section
