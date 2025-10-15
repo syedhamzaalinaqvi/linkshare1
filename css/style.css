@@ -234,7 +234,7 @@ main {
     /* Expands clickable area */
     width: 100%;
     /* Makes the link take full width of its parent */
-    padding: 5px 5px;
+    padding: 5px 4px;
     /* Adds padding for better clickability */
     color: var(--text-color);
     text-decoration: none;
