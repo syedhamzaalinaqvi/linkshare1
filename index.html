@@ -3066,6 +3066,18 @@
             <i class="fas fa-arrow-up"></i>
         </button>
 
+
+
+
+                <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+        <!-- Firebase Configuration -->
+        <script src="js/firebase-config.js"></script>
+        <script src="js/optimized-group-loader.js"></script>
+
+
         <script>
             // Scroll to groups function
             function scrollToGroups() {
@@ -3143,18 +3155,10 @@
             Add Group
         </a>
 
-        <!-- Firebase SDK -->
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
-        
         <!-- Optimized Loading Styles -->
         <link rel="stylesheet" href="css/optimized-loading.css">
         
-        <!-- All scripts loaded once at the end -->
-        <!-- Firebase Configuration -->
-        <script src="js/firebase-config.js"></script>
-        <script src="js/optimized-group-loader.js"></script>
+        <!-- All scripts loaded once at the end -->        
         <script src="js/main.js"></script>
         
         <!-- Smart initialization script - DISABLED to prevent double loading -->
@@ -3177,7 +3181,7 @@
             // });
             
             // Single initialization handled by optimized-group-loader.js
-            console.log('✨ Single initialization enabled - no double loading');
+            //console.log('✨ Single initialization enabled - no double loading');
         </script>
         
         <!-- Official WhatsApp Group Script -->
