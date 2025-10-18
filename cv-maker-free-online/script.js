@@ -205,9 +205,9 @@ function updatePreview() {
     let experienceHTML = '';
     if (experience && experience.trim()) {
         const experienceLines = experience.split('\n').filter(line => line.trim());
-        experienceHTML = '<ul style="margin-left: 20px; margin-top: 5px;">';
+        experienceHTML = '<ul style="margin: 0; padding-left: 20px; list-style-type: disc;">';
         experienceLines.forEach(line => {
-            experienceHTML += `<li style="margin-bottom: 3px;">${line}</li>`;
+            experienceHTML += `<li style="margin-bottom: 5px; font-weight: normal; font-size: 11px; color: #2c3e50;">${line}</li>`;
         });
         experienceHTML += '</ul>';
     } else {
@@ -529,36 +529,25 @@ async function downloadPDF() {
     
     try {
         const canvas = await html2canvas(cvPreview, {
-            scale: 3,
+            scale: 2,
             useCORS: true,
             logging: false,
-            backgroundColor: '#ffffff',
-            letterRendering: true,
-            allowTaint: false,
-            removeContainer: true,
-            imageTimeout: 0,
-            scrollY: -window.scrollY,
-            scrollX: -window.scrollX,
-            windowWidth: cvPreview.scrollWidth,
-            windowHeight: cvPreview.scrollHeight
+            backgroundColor: '#ffffff'
         });
         
-        const imgData = canvas.toDataURL('image/png', 1.0);
+        const imgData = canvas.toDataURL('image/png');
         
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4',
-            compress: true,
-            precision: 16
+            format: 'a4'
         });
         
         const imgWidth = 210;
-        const pageHeight = 297;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
         
         const fileName = document.getElementById('cvFileName').value.trim() || 'my_cv';
         pdf.save(fileName + '.pdf');
