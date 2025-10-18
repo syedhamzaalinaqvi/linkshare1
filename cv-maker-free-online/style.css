@@ -1054,54 +1054,133 @@ body {
 }
 
 @media (max-width: 480px) {
+    /* Prevent horizontal overflow */
+    * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
     /* Container fixes for small screens */
     .container {
         padding: 8px;
         width: 100%;
-        min-width: 300px;
+        min-width: unset;
         max-width: 100%;
-        margin: 0 auto;
+        margin: 0;
+        overflow-x: hidden;
     }
 
-    .cv-maker-container  {
-        padding: 10px;
+    .group-section {
+        padding: 0 5px;
         width: 100%;
-        margin: 0 auto;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .cv-maker-container {
+        padding: 8px;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
         border-radius: 8px;
+        overflow-x: hidden;
     }
 
     /* Header adjustments */
     .page-header {
-        padding: 20px 10px;
+        padding: 15px 8px;
         margin-bottom: 15px;
     }
 
     .page-header-h1 {
         font-size: 1.5em;
+        word-wrap: break-word;
     }
 
     .page-header-p {
         font-size: 0.9em;
     }
 
-    /* Form elements */
+    /* Template selector */
+    .template-selector {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+
     .template-selector label {
         font-size: 1em;
+        margin-bottom: 8px;
+    }
+
+    .template-dropdown {
+        max-width: 100%;
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    /* Section headers */
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 15px;
     }
 
     .section-header h2 {
-        font-size: 1.2em;
+        font-size: 1.1em;
+        width: 100%;
+    }
+
+    /* Form tabs - make them stack properly */
+    .form-tabs {
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+        border-bottom: none;
+        margin-bottom: 15px;
     }
 
     .tab-button {
-        font-size: 13px;
-        padding: 8px 12px;
+        font-size: 12px;
+        padding: 10px 12px;
         width: 100%;
         text-align: left;
+        border-bottom: none;
+        border-left: 3px solid transparent;
+        border-radius: 5px;
+    }
+
+    .tab-button i {
+        font-size: 14px;
+        min-width: 20px;
+    }
+
+    .tab-button.active {
+        border-left-color: var(--primary-color);
+        border-bottom-color: transparent;
+    }
+
+    /* Form elements */
+    .form-container {
+        padding: 10px;
+        margin: 0;
+        width: 100%;
+    }
+
+    .tab-content {
+        padding: 10px;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+        width: 100%;
     }
 
     .form-group label {
-        font-size: 14px;
+        font-size: 13px;
+        margin-bottom: 5px;
     }
 
     .form-group input,
@@ -1113,11 +1192,82 @@ body {
         box-sizing: border-box;
     }
 
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* Image upload container */
+    .image-upload-container {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .upload-image-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    /* Education section */
+    .education-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .add-education-btn {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .education-entry {
+        padding: 12px;
+        width: 100%;
+    }
+
+    /* Navigation buttons */
+    .tab-navigation {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .nav-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 13px;
+        justify-content: center;
+    }
+
+    /* Action buttons */
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        margin-top: 15px;
+    }
+
     .action-button {
-        padding: 10px 15px;
+        padding: 12px 15px;
         font-size: 14px;
         width: 100%;
-        margin-bottom: 8px;
+        max-width: 100%;
+        margin-bottom: 0;
+    }
+
+    /* Content wrapper */
+    .content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    .form-section,
+    .preview-section {
+        width: 100%;
     }
 
     /* Preview container adjustments */
@@ -1126,39 +1276,95 @@ body {
         margin: 0;
         width: 100%;
         box-sizing: border-box;
+        overflow-x: auto;
     }
 
     .cv-preview {
-        max-width: 100%;
+        max-width: 95%;
         margin: 0 auto;
         box-sizing: border-box;
+        font-size: 10px;
+    }
+
+    .cv-header {
+        padding: 20px 15px;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cv-name {
+        font-size: 24px;
+    }
+
+    .cv-logo {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+
+    .cv-content {
+        grid-template-columns: 1fr;
+        padding: 20px 15px;
+        gap: 15px;
+    }
+
+    .cv-footer {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    /* Download section */
+    .download-section {
+        margin-top: 15px;
+        width: 100%;
+    }
+
+    .filename-input {
+        width: 100%;
+    }
+
+    .filename-field {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    /* Recent CVs */
+    .recent-cvs-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        width: 100%;
+    }
+
+    .recent-cvs-list {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        width: 100%;
     }
 
     .cv-card {
         padding: 12px;
         margin-bottom: 10px;
+        width: 100%;
     }
 
-    /* Form container spacing */
-    .form-container {
-        padding: 12px;
-        margin: 0;
+    .cv-card-actions {
+        flex-direction: column;
+        gap: 8px;
     }
 
-    .tab-content {
-        padding: 10px;
-        margin-bottom: 15px;
+    .cv-action-btn {
+        width: 100%;
     }
 
-    /* Fix content wrapper spacing */
-    .content-wrapper {
-        gap: 15px;
-        margin-bottom: 15px;
+    /* Scroll to top button */
+    .scroll-to-top {
+        bottom: 15px;
+        right: 15px;
+        width: 45px;
+        height: 45px;
+        font-size: 16px;
     }
-/*
-    .footer {
-        padding: 30px 15px 15px;
-    }*/
 }
 
 @media (max-width: 360px) {
