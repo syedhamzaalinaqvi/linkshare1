@@ -679,6 +679,7 @@ body {
     justify-content: center;
     gap: 40px;
     border-top: 3px solid #e74c3c;
+    margin-top: 20px;
 }
 
 .modern-template .cv-footer {
