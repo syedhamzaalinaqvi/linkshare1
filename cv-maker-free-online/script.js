@@ -529,25 +529,36 @@ async function downloadPDF() {
     
     try {
         const canvas = await html2canvas(cvPreview, {
-            scale: 2,
+            scale: 3,
             useCORS: true,
             logging: false,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            letterRendering: true,
+            allowTaint: false,
+            removeContainer: true,
+            imageTimeout: 0,
+            scrollY: -window.scrollY,
+            scrollX: -window.scrollX,
+            windowWidth: cvPreview.scrollWidth,
+            windowHeight: cvPreview.scrollHeight
         });
         
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/png', 1.0);
         
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
-            format: 'a4'
+            format: 'a4',
+            compress: true,
+            precision: 16
         });
         
         const imgWidth = 210;
+        const pageHeight = 297;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
         
         const fileName = document.getElementById('cvFileName').value.trim() || 'my_cv';
         pdf.save(fileName + '.pdf');
