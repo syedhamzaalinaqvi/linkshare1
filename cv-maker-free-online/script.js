@@ -47,11 +47,6 @@ function setupEventListeners() {
     document.getElementById('clearAllBtn').addEventListener('click', clearAllCVs);
     
     document.getElementById('cvFileName').addEventListener('input', updateFileName);
-
-    const formInputs = document.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('input', autoSaveFormData);
-    });
 }
 
 function goToTab(tabName) {
@@ -526,6 +521,9 @@ async function downloadPDF() {
     
     downloadBtn.disabled = true;
     downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+    
+    // Small delay to ensure animation is visible
+    await new Promise(resolve => setTimeout(resolve, 300));
     
     try {
         // Force desktop layout for PDF generation

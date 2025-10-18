@@ -230,6 +230,16 @@ body {
     animation: fadeIn 0.3s ease;
 }
 
+/* Spinner animation for download button */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-spinner.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -615,6 +625,10 @@ body {
     margin-bottom: 20px;
 }
 
+.cv-section:last-child {
+    margin-bottom: 0;
+}
+
 .cv-section-title {
     color: #e74c3c;
     font-size: 14px;
@@ -674,12 +688,12 @@ body {
 
 .cv-footer {
     background: var(--light-bg);
-    padding: 20px 30px;
+    padding: 15px 30px;
     display: flex;
     justify-content: center;
     gap: 40px;
     border-top: 3px solid #e74c3c;
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .modern-template .cv-footer {
