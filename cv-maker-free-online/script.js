@@ -528,12 +528,49 @@ async function downloadPDF() {
     downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
     
     try {
+        // Force desktop layout for PDF generation
+        const originalWidth = cvPreview.style.minWidth;
+        const cvContent = cvPreview.querySelector('.cv-content');
+        const cvHeader = cvPreview.querySelector('.cv-header');
+        const cvFooter = cvPreview.querySelector('.cv-footer');
+        
+        const originalContentDisplay = cvContent ? cvContent.style.display : '';
+        const originalContentGrid = cvContent ? cvContent.style.gridTemplateColumns : '';
+        const originalHeaderFlex = cvHeader ? cvHeader.style.flexDirection : '';
+        const originalFooterFlex = cvFooter ? cvFooter.style.flexDirection : '';
+        
+        // Apply desktop layout
+        cvPreview.style.minWidth = '800px';
+        if (cvContent) {
+            cvContent.style.display = 'grid';
+            cvContent.style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
+        }
+        if (cvHeader) {
+            cvHeader.style.flexDirection = 'row';
+        }
+        if (cvFooter) {
+            cvFooter.style.flexDirection = 'row';
+        }
+        
         const canvas = await html2canvas(cvPreview, {
             scale: 2,
             useCORS: true,
             logging: false,
             backgroundColor: '#ffffff'
         });
+        
+        // Restore original styles
+        cvPreview.style.minWidth = originalWidth;
+        if (cvContent) {
+            cvContent.style.display = originalContentDisplay;
+            cvContent.style.gridTemplateColumns = originalContentGrid;
+        }
+        if (cvHeader) {
+            cvHeader.style.flexDirection = originalHeaderFlex;
+        }
+        if (cvFooter) {
+            cvFooter.style.flexDirection = originalFooterFlex;
+        }
         
         const imgData = canvas.toDataURL('image/png');
         
