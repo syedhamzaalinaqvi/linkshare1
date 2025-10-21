@@ -95,53 +95,9 @@
     </div>
     </main>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo-container">
-                    <img src="/linkshare-favicon.png" alt="LinkShare Logo" class="logo">
-                    <h3>LinkShare</h3>
-                </div>
-                <div class="footer-tagline">
-                    <p>Share and discover amazing WhatsApp groups links</p>
-                </div>
-            </div>
-            <div class="footer-links">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
-                <a href="/privacy">Privacy</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 LinkShare. All rights reserved.</p>
-        </div>
-    </footer>
-    <button class="scroll-to-top" aria-label="Scroll to top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+      <!-- Footer -->
+    <script src="..js/footer-loader.js"></script>
 
-        
-    
-        <script>
-            const scrollToTopBtn = document.querySelector('.scroll-to-top');
-            
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.add('visible');
-                } else {
-                    scrollToTopBtn.classList.remove('visible');
-                }
-            });
-    
-            scrollToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-        </script>    
-  
     <script src="js/main.js"></script>
 </body>
 </html>
