@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinkShare — Frontend Plagiarism Checker (Demo)</title>
+  <style>
+    :root{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;color:#111}
+    body{padding:24px;background:#f7fafc}
+    .card{background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);padding:20px;max-width:1100px;margin:0 auto}
+    h1{margin:0 0 10px;font-size:20px}
+    .row{display:flex;gap:16px}
+    textarea{width:100%;height:180px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px}
+    input[type=file]{display:block}
+    button{background:#2563eb;color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+    small{color:#6b7280}
+    .results{margin-top:16px}
+    .doc{border:1px solid #e6e8eb;padding:12px;border-radius:8px;margin-bottom:10px}
+    .snippet{background:#fff8c4;border-radius:6px;padding:8px;margin-top:8px}
+    .meta{display:flex;justify-content:space-between;gap:12px}
+    label{font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>LinkShare — Plagiarism Checker (Frontend Demo)</h1>
+    <p><small>This is a browser-only prototype demonstrating client-side plagiarism detection using n-gram (shingle) matching and Jaccard similarity. It compares the <strong>target text</strong> against uploaded reference files or against sample documents provided in the demo.</small></p>
+
+    <div style="margin-top:12px">
+      <label for="target">Target text (paste or type the text you want checked):</label>
+      <textarea id="target" placeholder="Paste article, essay, or paragraph here..."></textarea>
+    </div>
+
+    <div style="margin-top:12px">
+      <label for="files">Reference documents (optional) — upload one or more text files (.txt). If none are provided, demo corpus will be used.</label>
+      <input id="files" type="file" accept=".txt" multiple />
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+      <label>Shingle size (words):</label>
+      <input id="shingleSize" type="number" value="5" min="2" max="12" style="width:80px;padding:8px;border-radius:6px;border:1px solid #d1d5db" />
+      <label>Similarity threshold (%):</label>
+      <input id="threshold" type="number" value="20" min="1" max="100" style="width:80px;padding:8px;border-radius:6px;border:1px solid #d1d5db" />
+      <button id="checkBtn">Run Check</button>
+    </div>
+
+    <div class="results" id="results"></div>
+  </div>
+
+  <script>
+    // ---------- Utility functions ----------
+    function normalize(text){
+      return text
+        .replace(/\r\n|\r|\n/g, ' ')               // newlines -> space
+        .replace(/[^\w\s'-]/g, ' ')                 // remove punctuation except apostrophes/hyphens
+        .replace(/\s+/g, ' ')                       // collapse whitespace
+        .trim()
+        .toLowerCase();
+    }
+
+    function tokenize(text){
+      if(!text) return [];
+      return normalize(text).split(' ');
+    }
+
+    function shingles(tokens, k){
+      const s = new Set();
+      for(let i=0;i<=tokens.length-k;i++){
+        s.add(tokens.slice(i,i+k).join(' '));
+      }
+      return s;
+    }
+
+    function jaccard(setA, setB){
+      const a = Array.from(setA);
+      const b = new Set(setB);
+      if(a.length === 0 && b.size === 0) return 1;
+      let inter = 0;
+      for(const x of a) if(b.has(x)) inter++;
+      const union = a.length + b.size - inter;
+      return union === 0 ? 0 : inter/union;
+    }
+
+    async function readUploadedFiles(fileList){
+      const docs = [];
+      for(const file of fileList){
+        try{
+          const text = await file.text();
+          docs.push({name: file.name, text});
+        }catch(e){console.warn('Failed to read', file.name)}
+      }
+      return docs;
+    }
+
+    // ---------- Demo corpus (used if user doesn't upload refs) ----------
+    const demoCorpus = [
+      {name:'Sample Article A', text: `Open-source projects are a great way to learn from other developers. Large platforms often provide tools and examples to help you start quickly. When building web applications, focusing on user experience and performance is crucial.`},
+      {name:'Sample Article B', text: `Learning to code requires practice and patience. Students who engage in real projects improve faster. Sharing code, receiving feedback, and iterating will drastically speed up the learning progress.`}
+    ];
+
+    // ---------- Main handler ----------
+    document.getElementById('checkBtn').addEventListener('click', async ()=>{
+      const targetText = document.getElementById('target').value || '';
+      const files = document.getElementById('files').files;
+      const k = Math.max(2, parseInt(document.getElementById('shingleSize').value || 5));
+      const threshold = Math.max(1, parseInt(document.getElementById('threshold').value || 20))/100;
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if(!targetText.trim()){
+        resultsDiv.innerHTML = '<div class="doc">Please paste or enter the target text to check.</div>';
+        return;
+      }
+
+      // load reference documents
+      let refs = [];
+      if(files && files.length>0){
+        refs = await readUploadedFiles(files);
+      } else {
+        refs = demoCorpus;
+      }
+
+      // compute shingles for target
+      const tTokens = tokenize(targetText);
+      const tShingles = shingles(tTokens, k);
+
+      // summarize findings
+      let anyAbove = false;
+      for(const ref of refs){
+        const rTokens = tokenize(ref.text);
+        const rShingles = shingles(rTokens, k);
+        const sim = jaccard(tShingles, rShingles);
+        const pct = Math.round(sim*10000)/100; // 2 decimals
+
+        const docEl = document.createElement('div');
+        docEl.className = 'doc';
+        docEl.innerHTML = `<div class="meta"><div><strong>${ref.name}</strong></div><div><strong>${pct}%</strong> similarity</div></div>`;
+
+        if(sim >= threshold){
+          anyAbove = true;
+          // find a few matching shingles as snippets
+          const matches = [];
+          for(const s of tShingles){ if(rShingles.has(s)) matches.push(s); if(matches.length>=5) break; }
+          if(matches.length){
+            const snipCont = document.createElement('div');
+            snipCont.innerHTML = '<div style="margin-top:8px;font-weight:600">Matching snippets (from target text):</div>';
+            for(const m of matches){
+              const sp = document.createElement('div');
+              sp.className = 'snippet';
+              sp.textContent = m;
+              snipCont.appendChild(sp);
+            }
+            docEl.appendChild(snipCont);
+          }
+        } else {
+          const note = document.createElement('div');
+          note.style.marginTop = '8px';
+          note.innerHTML = '<small>No significant similarity detected (below threshold).</small>';
+          docEl.appendChild(note);
+        }
+
+        resultsDiv.appendChild(docEl);
+      }
+
+      if(!anyAbove){
+        resultsDiv.insertAdjacentHTML('afterbegin','<div class="doc"><strong>Result:</strong> No references exceeded the similarity threshold.</div>');
+      } else {
+        resultsDiv.insertAdjacentHTML('afterbegin','<div class="doc"><strong>Result:</strong> One or more references exceeded the threshold. Review the snippets for details.</div>');
+      }
+
+    });
+  </script>
+</body>
+</html>
