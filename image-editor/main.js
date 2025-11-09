@@ -1,16 +1,53 @@
 // Ensure Fabric.js is available before initializing the editor.
 function loadFabricThenInit(initFn) {
+  // First try: CDN
+  function tryLoadFromCDN() {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js';
+    script.onload = function() {
+      if (window.fabric) {
+        console.log('Fabric.js loaded successfully');
+        initFn();
+      } else {
+        console.error('Fabric.js failed to initialize properly');
+        tryLoadFromBackup();
+      }
+    };
+    script.onerror = function() {
+      console.warn('Failed to load Fabric.js from primary CDN, trying backup...');
+      tryLoadFromBackup();
+    };
+    document.head.appendChild(script);
+  }
+
+  // Backup: Alternative CDN
+  function tryLoadFromBackup() {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/fabric@4.6.0/dist/fabric.min.js';
+    script.onload = function() {
+      if (window.fabric) {
+        console.log('Fabric.js loaded successfully from backup CDN');
+        initFn();
+      } else {
+        console.error('Fabric.js failed to initialize from backup CDN');
+        alert('Could not load Fabric.js. Please refresh the page or check your internet connection.');
+      }
+    };
+    script.onerror = function() {
+      console.error('Failed to load Fabric.js from both CDNs');
+      alert('Could not load Fabric.js. Please refresh the page or check your internet connection.');
+    };
+    document.head.appendChild(script);
+  }
+
+  // Check if already loaded
   if (window.fabric) {
+    console.log('Fabric.js already loaded');
     return initFn();
   }
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js';
-  script.onload = initFn;
-  script.onerror = function() {
-    console.error('Failed to load Fabric.js from CDN');
-    alert('Could not load Fabric.js. Check your internet connection or try again.');
-  };
-  document.head.appendChild(script);
+
+  // Start loading process
+  tryLoadFromCDN();
 }
 
 loadFabricThenInit(function init() {
@@ -76,46 +113,104 @@ loadFabricThenInit(function init() {
     e.target.value = '';
   }
 
+  // Tool state management
+  let currentTool = null;
+  const panels = {
+    text: document.getElementById('textPanel'),
+    draw: document.getElementById('drawPanel'),
+    sticker: document.getElementById('stickerPanel')
+  };
+
+  function setActiveTool(toolName) {
+    // Reset all tools and panels
+    currentTool = toolName;
+    canvas.isDrawingMode = false;
+    Object.values(panels).forEach(panel => panel.classList.remove('active'));
+    document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Activate the selected tool
+    if (toolName) {
+      const btn = document.querySelector(`[data-tool="${toolName}"]`);
+      if (btn) btn.classList.add('active');
+      
+      if (panels[toolName]) {
+        panels[toolName].classList.add('active');
+      }
+
+      if (toolName === 'draw') {
+        canvas.isDrawingMode = true;
+      }
+    }
+  }
+
+  // Text handling
+  const textInput = document.getElementById('textInput');
+  const fontFamily = document.getElementById('fontFamily');
+  const fontSize = document.getElementById('fontSize');
+  const textColor = document.getElementById('textColor');
+  const addTextToCanvas = document.getElementById('addTextToCanvas');
+
   addTextBtn.addEventListener('click', () => {
-    const text = prompt('Enter text to add on image', 'Your text here');
+    setActiveTool('text');
+  });
+
+  addTextToCanvas.addEventListener('click', () => {
+    const text = textInput.value.trim();
     if (!text) return;
+    
     const textbox = new fabric.Textbox(text, {
       left: canvas.getWidth()/2,
       top: canvas.getHeight()/2,
       originX: 'center',
       originY: 'center',
-      fontSize: 28,
-      fill: '#222',
-      fontFamily: 'Arial',
+      fontSize: parseInt(fontSize.value),
+      fill: textColor.value,
+      fontFamily: fontFamily.value,
       editable: true
     });
     canvas.add(textbox);
     canvas.setActiveObject(textbox);
+    textInput.value = '';
   });
 
+  // Sticker handling
   stickerBtn.addEventListener('click', () => {
-    // add a simple emoji sticker — you can replace with image stickers
-    const emoji = prompt('Enter emoji (e.g. 😄) or leave blank to add default', '😄');
-    const txt = emoji || '😄';
-    const sticker = new fabric.Text(txt, {
-      left: 80,
-      top: 80,
-      fontSize: 64,
-      originX: 'center',
-      originY: 'center'
-    });
-    canvas.add(sticker);
-    canvas.setActiveObject(sticker);
+    setActiveTool('sticker');
   });
 
-  // Drawing
+  document.querySelectorAll('.sticker-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sticker = new fabric.Text(btn.textContent, {
+        left: canvas.getWidth()/2,
+        top: canvas.getHeight()/2,
+        fontSize: 64,
+        originX: 'center',
+        originY: 'center'
+      });
+      canvas.add(sticker);
+      canvas.setActiveObject(sticker);
+    });
+  });
+
+  // Drawing handling
+  const brushColor = document.getElementById('brushColor');
+  const brushSize = document.getElementById('brushSize');
+  const brushSizeLabel = document.getElementById('brushSizeLabel');
+
   drawBtn.addEventListener('click', () => {
-    canvas.isDrawingMode = !canvas.isDrawingMode;
-    drawBtn.style.background = canvas.isDrawingMode ? '#e8f8f0' : '';
-    // default brush settings
+    setActiveTool(currentTool === 'draw' ? null : 'draw');
+  });
+
+  brushColor.addEventListener('change', () => {
     if (canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.width = 3;
-      canvas.freeDrawingBrush.color = '#ff0000';
+      canvas.freeDrawingBrush.color = brushColor.value;
+    }
+  });
+
+  brushSize.addEventListener('input', () => {
+    if (canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.width = parseInt(brushSize.value);
+      brushSizeLabel.textContent = brushSize.value + 'px';
     }
   });
 
