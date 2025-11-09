@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Image editor & annotator — crop, resize, rotate, add text/stickers, draw, export PNG/JPEG." />
+    <title>Image Editor — LinkShare Tools</title>
+    <link rel="icon" href="/favicon-96x96.png" />
+    <link rel="stylesheet" href="../css/style.css"> 
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.6.0/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></script>
+    <!-- navbar -->
+    <script src="../js/nav-loader.js"></script>
+  </head>
+  <body>
+    <main class="page-container">
+      <header class="page-header">
+        <h1 class="page-header-h1">Image Editor & Annotator</h1>
+        <p class="page-header-p">Crop, resize, add text, stickers, draw and export images — runs fully in the browser.</p>
+      </header>
+
+      <section class="tool-section">
+        <div class="tool-toolbar">
+          <input id="uploadInput" type="file" accept="image/*" style="display:none">
+          <button id="uploadBtn" class="tool-btn"><i class="fas fa-upload"></i> Upload</button>
+          <button id="addTextBtn" class="tool-btn"><i class="fas fa-font"></i> Add Text</button>
+          <button id="stickerBtn" class="tool-btn"><i class="fas fa-smile"></i> Sticker</button>
+          <button id="drawBtn" class="tool-btn"><i class="fas fa-pencil-alt"></i> Draw</button>
+          <button id="cropStartBtn" class="tool-btn"><i class="fas fa-crop"></i> Crop</button>
+          <button id="applyCropBtn" class="tool-btn" disabled><i class="fas fa-check"></i> Apply Crop</button>
+          <button id="rotateBtn" class="tool-btn"><i class="fas fa-redo"></i> Rotate 90°</button>
+          <button id="flipBtn" class="tool-btn"><i class="fas fa-arrows-alt-h"></i> Flip</button>
+          <button id="clearBtn" class="tool-btn"><i class="fas fa-trash"></i> Clear</button>
+          <button id="exportPngBtn" class="tool-btn primary"><i class="fas fa-download"></i> Export PNG</button>
+          <button id="exportJpgBtn" class="tool-btn primary"><i class="fas fa-image"></i> Export JPG</button>
+        </div>
+
+        <div class="editor-wrap">
+          <canvas id="editor" width="900" height="600"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <script src="main.js"></script>
+    <script src="js/footer-loader.js"></script>
+  </body>
+</html>
