@@ -13,7 +13,7 @@
    "redirects": [
     {
       "source": "/add-group",
-      "destination": "https://whatuplink.online",
+      "destination": "https://www.whatsuplink.online/?submit-form=true",
       "permanent": true
     }
   ]
