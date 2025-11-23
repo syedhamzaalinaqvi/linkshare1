@@ -9,5 +9,12 @@
         { "key": "Cache-Control", "value": "s-maxage=1, stale-while-revalidate" }
       ]
     }
+  ],
+   "redirects": [
+    {
+      "source": "/add-group",
+      "destination": "https://whatuplink.online",
+      "permanent": true
+    }
   ]
 }
