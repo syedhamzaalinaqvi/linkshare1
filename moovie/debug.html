@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - H-TV</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #0a0a0a; 
+            color: white; 
+            padding: 20px; 
+        }
+        .debug-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #333; 
+            border-radius: 8px; 
+        }
+        .error { color: #ff4444; }
+        .success { color: #44ff44; }
+    </style>
+</head>
+<body>
+    <h1>🔧 H-TV Debug Test</h1>
+    
+    <div class="debug-section">
+        <h2>JavaScript Status:</h2>
+        <div id="jsStatus">Loading...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2>Function Tests:</h2>
+        <div id="functionTests">Testing...</div>
+    </div>
+
+    <div class="debug-section">
+        <h2>TMDB API Test:</h2>
+        <div id="apiTests">Testing...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jsStatus = document.getElementById('jsStatus');
+            const functionTests = document.getElementById('functionTests');
+            const apiTests = document.getElementById('apiTests');
+            
+            // Test 1: JavaScript Loading
+            jsStatus.innerHTML = '<span class="success">✅ JavaScript is working!</span>';
+            
+            // Test 2: Check if main script is loaded
+            setTimeout(() => {
+                let results = [];
+                
+                // Check functions
+                if (typeof fetchTMDBData === 'function') {
+                    results.push('<span class="success">✅ fetchTMDBData function exists</span>');
+                } else {
+                    results.push('<span class="error">❌ fetchTMDBData function missing</span>');
+                }
+                
+                if (typeof loadMoviesWithTMDBData === 'function') {
+                    results.push('<span class="success">✅ loadMoviesWithTMDBData function exists</span>');
+                } else {
+                    results.push('<span class="error">❌ loadMoviesWithTMDBData function missing</span>');
+                }
+                
+                if (typeof createVideoCard === 'function') {
+                    results.push('<span class="success">✅ createVideoCard function exists</span>');
+                } else {
+                    results.push('<span class="error">❌ createVideoCard function missing</span>');
+                }
+                
+                if (typeof videoData !== 'undefined') {
+                    results.push(`<span class="success">✅ videoData exists (${videoData.length} items)</span>`);
+                } else {
+                    results.push('<span class="error">❌ videoData missing</span>');
+                }
+                
+                functionTests.innerHTML = results.join('<br>');
+                
+                // Test 3: TMDB API
+                if (typeof TMDB_API_KEY !== 'undefined') {
+                    apiTests.innerHTML = `<span class="success">✅ TMDB API Key loaded: ${TMDB_API_KEY.substring(0, 8)}...</span>`;
+                } else {
+                    apiTests.innerHTML = '<span class="error">❌ TMDB API Key missing</span>';
+                }
+            }, 100);
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

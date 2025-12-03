@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load More Test</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .load-more-container {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin: 40px 0;
+            padding: 20px 0;
+            grid-column: 1 / -1 !important;
+            min-height: 80px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px dashed #ff0000;
+        }
+        
+        .load-more-btn {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+        }
+        
+        .load-more-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+        }
+        
+        .info {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Load More Button Test</h1>
+    
+    <div class="info">
+        <h2>Test Information:</h2>
+        <p>Total Movies: <span id="totalCount">25</span></p>
+        <p>Currently Showing: <span id="showingCount">12</span></p>
+        <p>Remaining: <span id="remainingCount">13</span></p>
+    </div>
+    
+    <div class="test-grid" id="testGrid">
+        <!-- Cards will be added here -->
+    </div>
+    
+    <script>
+        let displayed = 12;
+        const total = 25;
+        const perLoad = 12;
+        
+        function renderCards() {
+            const grid = document.getElementById('testGrid');
+            grid.innerHTML = '';
+            
+            // Add cards
+            for (let i = 0; i < displayed && i < total; i++) {
+                const card = document.createElement('div');
+                card.className = 'test-card';
+                card.innerHTML = `<h3>Movie ${i + 1}</h3>`;
+                grid.appendChild(card);
+            }
+            
+            // Add load more button
+            if (displayed < total) {
+                const container = document.createElement('div');
+                container.className = 'load-more-container';
+                
+                const btn = document.createElement('button');
+                btn.className = 'load-more-btn';
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="8 12 12 16 16 12"></polyline>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                    </svg>
+                    <span>Load More Movies (${total - displayed} remaining)</span>
+                `;
+                
+                btn.onclick = () => {
+                    displayed += perLoad;
+                    updateInfo();
+                    renderCards();
+                };
+                
+                container.appendChild(btn);
+                grid.appendChild(container);
+                
+                console.log('✅ Load More button added!');
+            } else {
+                console.log('✅ All movies displayed!');
+            }
+            
+            updateInfo();
+        }
+        
+        function updateInfo() {
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('showingCount').textContent = Math.min(displayed, total);
+            document.getElementById('remainingCount').textContent = Math.max(0, total - displayed);
+        }
+        
+        // Initial render
+        renderCards();
+    </script>
+</body>
+</html>

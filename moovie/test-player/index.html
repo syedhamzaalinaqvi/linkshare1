@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 BULLETPROOF HLS PLAYER</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00a8ff, #00d2d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .player-container {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        
+        .video-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto 20px auto;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        video {
+            width: 100%;
+            height: auto;
+            min-height: 400px;
+            background: #000;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .url-input {
+            width: 100%;
+            max-width: 800px;
+            padding: 15px 20px;
+            background: #2a2a2a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #00a8ff;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00a8ff, #00d2d3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 168, 255, 0.3);
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #00ff7f, #00d2d3);
+        }
+        
+        .stop-btn {
+            background: linear-gradient(135deg, #ff4757, #ff6b6b);
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            background: #2a2a2a;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .status.success {
+            background: rgba(0, 255, 127, 0.2);
+            color: #00ff7f;
+            border: 1px solid #00ff7f;
+        }
+        
+        .status.error {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+        }
+        
+        .status.loading {
+            background: rgba(0, 168, 255, 0.2);
+            color: #00a8ff;
+            border: 1px solid #00a8ff;
+        }
+        
+        .debug {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+        
+        .debug div {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .debug .error {
+            color: #ff4757;
+        }
+        
+        .debug .success {
+            color: #00ff7f;
+        }
+        
+        .debug .info {
+            color: #ccc;
+        }
+        
+        .test-urls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .test-url {
+            padding: 15px;
+            background: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-url:hover {
+            border-color: #00a8ff;
+            background: rgba(0, 168, 255, 0.1);
+        }
+        
+        .test-url h4 {
+            margin-bottom: 5px;
+            color: #00a8ff;
+        }
+        
+        .test-url p {
+            font-size: 0.9rem;
+            color: #ccc;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 BULLETPROOF HLS PLAYER</h1>
+            <p>Last Chance - Ultra Simple Approach</p>
+        </div>
+
+        <div class="player-container">
+            <div class="video-container">
+                <video id="video" controls preload="none">
+                    <p>Your browser does not support HTML5 video.</p>
+                </video>
+            </div>
+
+            <div class="status" id="status">Ready to test streams</div>
+
+            <div class="controls">
+                <input 
+                    type="text" 
+                    class="url-input" 
+                    id="urlInput" 
+                    placeholder="Enter M3U8/HLS stream URL..."
+                    value="https://hubstream.art/hls/kqjVwJcl0qqPKAjlXnR-5w/9ow/r8cznln3/mswoq3/tt/master.m3u8?v=1751082628"
+                >
+
+                <div class="buttons">
+                    <button onclick="playStream()">▶️ PLAY STREAM</button>
+                    <button onclick="testWorkingStream()" class="test-btn">✅ TEST WORKING</button>
+                    <button onclick="stopStream()" class="stop-btn">⏹️ STOP</button>
+                </div>
+            </div>
+
+            <div class="test-urls">
+                <div class="test-url" onclick="loadUrl('https://ml-pull-rtmp-pk1.myco.io/AsiaCupMain/hls/index.m3u8')">
+                    <h4>✅ Working Stream</h4>
+                    <p>https://ml-pull-rtmp-pk1.myco.io/AsiaCupMain/hls/index.m3u8</p>
+                </div>
+                <div class="test-url" onclick="loadUrl('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">
+                    <h4>🌟 Mux Test</h4>
+                    <p>https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8</p>
+                </div>
+                <div class="test-url" onclick="loadUrl('https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8')">
+                    <h4>🎬 Bitdash Test</h4>
+                    <p>https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8</p>
+                </div>
+                <div class="test-url" onclick="loadUrl('https://hubstream.art/hls/kqjVwJcl0qqPKAjlXnR-5w/9ow/r8cznln3/mswoq3/tt/master.m3u8?v=1751082628')">
+                    <h4>🔴 Your Problem Stream</h4>
+                    <p>https://hubstream.art/hls/...</p>
+                </div>
+            </div>
+
+            <div class="debug" id="debug"></div>
+        </div>
+    </div>
+
+    <!-- Only load HLS.js, nothing else -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+    
+    <script>
+        let video = document.getElementById('video');
+        let hls = null;
+        let currentUrl = '';
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.createElement('div');
+            logDiv.className = type;
+            logDiv.textContent = `[${timestamp}] ${message}`;
+            
+            const debug = document.getElementById('debug');
+            debug.appendChild(logDiv);
+            debug.scrollTop = debug.scrollHeight;
+            
+            // Keep only last 20 entries
+            if (debug.children.length > 20) {
+                debug.removeChild(debug.children[0]);
+            }
+            
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function updateStatus(message, type = '') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function loadUrl(url) {
+            document.getElementById('urlInput').value = url;
+            playStream();
+        }
+
+        function testWorkingStream() {
+            loadUrl('https://ml-pull-rtmp-pk1.myco.io/AsiaCupMain/hls/index.m3u8');
+        }
+
+        function stopStream() {
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+            
+            video.pause();
+            video.src = '';
+            video.load();
+            
+            updateStatus('Stopped');
+            log('Stream stopped', 'info');
+        }
+
+        async function playStream() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                updateStatus('Please enter a URL', 'error');
+                return;
+            }
+
+            currentUrl = url;
+            log(`🎯 Attempting to play: ${url}`, 'info');
+            updateStatus('Loading...', 'loading');
+            
+            // Clean up any existing player
+            stopStream();
+            
+            // Method 1: Try HLS.js first
+            if (Hls.isSupported()) {
+                log('📺 Using HLS.js', 'info');
+                try {
+                    hls = new Hls({
+                        debug: false,
+                        enableWorker: true,
+                        lowLatencyMode: false,
+                        maxBufferLength: 30,
+                        manifestLoadingTimeOut: 10000,
+                        fragLoadingTimeOut: 20000,
+                    });
+
+                    hls.loadSource(url);
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                        log('✅ HLS manifest parsed successfully!', 'success');
+                        updateStatus('Stream ready - Click play!', 'success');
+                    });
+
+                    hls.on(Hls.Events.ERROR, function (event, data) {
+                        if (data.fatal) {
+                            log(`❌ HLS Fatal Error: ${data.details}`, 'error');
+                            updateStatus('HLS failed - Trying native...', 'error');
+                            // Try native as fallback
+                            setTimeout(() => tryNative(url), 1000);
+                        } else {
+                            log(`⚠️ HLS Warning: ${data.details}`, 'info');
+                        }
+                    });
+
+                } catch (error) {
+                    log(`❌ HLS Setup Error: ${error.message}`, 'error');
+                    tryNative(url);
+                }
+            } else {
+                log('📱 HLS.js not supported, trying native', 'info');
+                tryNative(url);
+            }
+        }
+
+        function tryNative(url) {
+            log('📱 Trying native HTML5 video', 'info');
+            updateStatus('Trying native playback...', 'loading');
+            
+            video.onloadedmetadata = function() {
+                log('✅ Native video metadata loaded!', 'success');
+                updateStatus('Native playback ready!', 'success');
+            };
+            
+            video.onerror = function(e) {
+                const error = e.target.error;
+                let errorMsg = 'Unknown error';
+                if (error) {
+                    switch(error.code) {
+                        case 1: errorMsg = 'Video loading aborted'; break;
+                        case 2: errorMsg = 'Network error'; break;
+                        case 3: errorMsg = 'Video decoding failed'; break;
+                        case 4: errorMsg = 'Video format not supported'; break;
+                    }
+                }
+                log(`❌ Native Error: ${errorMsg}`, 'error');
+                updateStatus(`Failed: ${errorMsg}`, 'error');
+                
+                // Try alternative URLs
+                tryAlternatives(url);
+            };
+            
+            video.src = url;
+            video.load();
+        }
+
+        function tryAlternatives(originalUrl) {
+            log('🔍 Trying alternative URLs...', 'info');
+            
+            const alternatives = [
+                originalUrl.replace('master.m3u8', 'index.m3u8'),
+                originalUrl.replace('master.m3u8', 'playlist.m3u8'),
+                originalUrl.replace('master.m3u8', 'chunklist.m3u8'),
+                originalUrl.split('?')[0], // Remove query params
+                originalUrl.replace('/master.m3u8', '/index-f1-v1.m3u8'),
+                originalUrl.replace('/master.m3u8', '/index-f2-v1.m3u8')
+            ];
+
+            let index = 0;
+            
+            function tryNext() {
+                if (index >= alternatives.length) {
+                    log('💀 All alternatives failed', 'error');
+                    updateStatus('All methods failed - Stream not accessible', 'error');
+                    return;
+                }
+                
+                const alt = alternatives[index];
+                log(`🔄 Trying alternative ${index + 1}: ${alt}`, 'info');
+                
+                video.onloadedmetadata = function() {
+                    log(`✅ Alternative ${index + 1} worked!`, 'success');
+                    updateStatus('Alternative stream loaded!', 'success');
+                };
+                
+                video.onerror = function() {
+                    log(`❌ Alternative ${index + 1} failed`, 'error');
+                    index++;
+                    setTimeout(tryNext, 500);
+                };
+                
+                video.src = alt;
+                video.load();
+            }
+            
+            tryNext();
+        }
+
+        // Video event listeners
+        video.addEventListener('loadstart', () => log('📹 Load started'));
+        video.addEventListener('canplay', () => log('🎬 Can play'));
+        video.addEventListener('playing', () => {
+            log('▶️ Playing successfully!', 'success');
+            updateStatus('Playing ✅', 'success');
+        });
+        video.addEventListener('waiting', () => log('⏳ Buffering...'));
+        video.addEventListener('stalled', () => log('⚠️ Stalled'));
+
+        // Auto-test on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🎯 Player initialized', 'info');
+            updateStatus('Ready - Test with working stream first!');
+        });
+    </script>
+</body>
+</html>
