@@ -11,9 +11,9 @@ const API_BASE_URL = TMDB_BASE_URL;
 
 // Option 1: Use direct configuration
 const FEATURED_MOVIE_CONFIG = {
-   // tmdbId: 1061474,    // Superman (2025) - Change this ID to feature any movie you want!
+    // tmdbId: 1061474,    // Superman (2025) - Change this ID to feature any movie you want!
     //type: "movie"       // "movie" or "tv"
-tmdbId: 110492, type: "tv"  
+    tmdbId: 66732, type: "tv" //stranger things s5 
 };
 
 // Option 2: Choose from pre-configured popular movies (uncomment one to use)
@@ -35,8 +35,15 @@ const FEATURED_MOVIE_OPTIONS = {
 
 // Simplified Video Data - Only tmdbId and embedCode needed
 const videoData = [
-  
-  {
+
+    {
+        id: 1,
+        tmdbId: 66732, // strangerthings s5
+        type: "tv",
+        downloads: ["https://linkmake.in/view/aReS4h8lnI"],
+        embedCode: ``,
+    },
+    {
         id: 1,
         tmdbId: 1109086, // War 2
         type: "movie",
@@ -45,21 +52,21 @@ const videoData = [
 
 <!-- If you prefer to postMessage the playlist, use the player iframe and then send { type: "hplayer.load", payload: {...} } -->`,
     },
-  {
+    {
         id: 1,
         tmdbId: 1061474, // Superman 
         type: "movie",
         downloads: ["https://linkmake.in/view/yz4V4eXOnt"],
         embedCode: `<IFRAME SRC="https://mivalyo.com/embed/euzlk6l3jb90" FRAMEBORDER=0 MARGINWIDTH=0 MARGINHEIGHT=0 SCROLLING=NO WIDTH=640 HEIGHT=360 allowfullscreen></IFRAME>`,
     },
-    
+
     {
         id: 1,
         tmdbId: 205715, //Gen v
         type: "tv",
         downloads: [
-            {url: "https://linkmake.in/view/ulJ1zQxeEE", label: "Season 1"},
-            {url: "https://linkmake.in/view/tohS2UdpS0", label: "Season 2"},
+            { url: "https://linkmake.in/view/ulJ1zQxeEE", label: "Season 1" },
+            { url: "https://linkmake.in/view/tohS2UdpS0", label: "Season 2" },
         ],
         embedCode: `<iframe src="https://h-player-ashen.vercel.app/?embed=1&data=eyJwbGF5bGlzdCI6W3sic2VyaWVzTmFtZSI6ImJhZCBib3kiLCJzZWFzb25zIjpbeyJzZWFzb25OdW1iZXIiOjEsImVwaXNvZGVzIjpbeyJlcGlzb2RlTnVtYmVyIjoxLCJlcGlzb2RlTmFtZSI6ImJiMSIsInVybCI6Imh0dHBzOi8vbWVkaWEuYm95c29udHViZS5jb20vdmlkZW9zLzYvOC9lL2UvNC82OGVlNDM4YTM3YTNjLm1wNCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjowfSx7ImVwaXNvZGVOdW1iZXIiOjIsImVwaXNvZGVOYW1lIjoiYmIyIiwidXJsIjoiaHR0cHM6Ly9tZWRpYS5taWxreXZpZGVvLmNvbS92aWRlb3MvNS83LzcvMC8wLzU3NzAwYzkyMzg4MGQubXA0IiwiZHVyYXRpb24iOiIwMDowMDowMCIsInF1YWxpdHkiOiJBdXRvIiwicHJvZ3Jlc3MiOjB9LHsiZXBpc29kZU51bWJlciI6MywiZXBpc29kZU5hbWUiOiJiYjMiLCJ1cmwiOiJodHRwczovL21lZGlhLm1pbGt5dmlkZW8uY29tL3ZpZGVvcy81LzcvNy8wLzAvNTc3MDBjOTIzODgwZC5tcDQiLCJkdXJhdGlvbiI6IjAwOjAwOjAwIiwicXVhbGl0eSI6IkF1dG8iLCJwcm9ncmVzcyI6MH1dfV19XSwic2F2ZSI6ZmFsc2V9" width="800" height="450" frameborder="0" allowfullscreen></iframe>
 
@@ -161,7 +168,7 @@ const videoData = [
         // OLD way still works: downloads: ["url1", "url2"] (shows "Link 1", "Link 2")
         embedCode: `<iframe src="https://fuhho374key.com/play/tt13443470" width="610" height="370" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`,
     },
-    
+
     {
         id: 12,
         tmdbId: 1106289, //Pickup 2025
@@ -176,7 +183,7 @@ const videoData = [
         download: "https://linkmake.in/view/Ak9SZxt4Vz",
         embedCode: `<iframe src="#" width="610" height="370" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`,
     },
-    
+
 ];
 
 
@@ -208,7 +215,7 @@ async function fetchTMDBData(tmdbId, type) {
         const fetchWithTimeout = (url, options = {}) => {
             return Promise.race([
                 fetch(url, options),
-                new Promise((_, reject) => 
+                new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Request timeout')), 10000)
                 )
             ]);
@@ -280,7 +287,7 @@ async function fetchTMDBData(tmdbId, type) {
                 .filter((p) => p.job === 'Director')
                 .map((p) => p.name)
                 .filter(Boolean);
-                
+
             formattedData.writers = credits.crew
                 .filter((p) => ['Writer', 'Screenplay', 'Story'].includes(p.job))
                 .map((p) => p.name)
@@ -308,23 +315,23 @@ async function fetchTMDBData(tmdbId, type) {
         // Find trailer (prioritize official trailers)
         if (videos?.results) {
             console.log('Video results found:', videos.results.length, 'for', details.title || details.name);
-            
+
             // Only include YouTube trailers and teasers
             const trailers = videos.results.filter(v => {
                 return v.site === 'YouTube' && v.key && ['Trailer', 'Teaser'].includes(v.type);
             });
-            
+
             console.log('Filtered trailers:', trailers.length);
-            
+
             if (trailers.length > 0) {
                 // First try to find an official trailer
-                let trailer = trailers.find(v => 
+                let trailer = trailers.find(v =>
                     v.name.toLowerCase().includes('official trailer')
                 ) || trailers.find(v =>
-                    v.name.toLowerCase().includes('trailer') || 
+                    v.name.toLowerCase().includes('trailer') ||
                     v.name.toLowerCase().includes('official teaser')
                 ) || trailers[0]; // Fallback to first trailer
-                
+
                 if (trailer) {
                     console.log('Selected trailer:', trailer.name, trailer.key);
                     formattedData.trailer = `https://www.youtube.com/embed/${trailer.key}?rel=0&modestbranding=1`;
@@ -333,7 +340,7 @@ async function fetchTMDBData(tmdbId, type) {
         }
 
         console.log('Formatted TMDB data:', formattedData);
-        
+
         // Cache the result
         movieCache.set(cacheKey, formattedData);
         return formattedData;
@@ -355,11 +362,11 @@ async function fetchTrendingContent() {
                 }
             }
         );
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
         return data.results || [];
     } catch (error) {
@@ -388,7 +395,7 @@ function formatRuntime(minutes) {
 
 // Live TV Data
 const liveTvChannels = [
-    
+
     {
         id: "tv1",
         name: "Ten Sports",
@@ -484,11 +491,11 @@ const scrollToTopBtn = document.getElementById("scrollToTop");
 // Load Featured Movie
 async function loadFeaturedMovie() {
     console.log('Loading featured movie with TMDB ID:', FEATURED_MOVIE_CONFIG.tmdbId);
-    
+
     try {
         // Fetch TMDB data for featured movie
         const movieData = await fetchTMDBData(FEATURED_MOVIE_CONFIG.tmdbId, FEATURED_MOVIE_CONFIG.type);
-        
+
         if (movieData) {
             // Update featured section with dynamic data
             const featuredTitle = document.querySelector('.featured-title');
@@ -498,16 +505,16 @@ async function loadFeaturedMovie() {
             const featuredCategory = document.querySelector('.category');
             const featuredPlayer = document.getElementById('featuredPlayer');
             const watchNowBtn = document.querySelectorAll('.featured-section .login-btn')[0];
-            
+
             // Update content
             if (featuredTitle) {
                 featuredTitle.textContent = `${movieData.title} (${movieData.release_year})`;
             }
-            
+
             if (featuredDescription) {
                 featuredDescription.textContent = movieData.overview || movieData.description;
             }
-            
+
             if (featuredDuration && movieData.runtime) {
                 const hours = Math.floor(movieData.runtime / 60);
                 const minutes = movieData.runtime % 60;
@@ -515,15 +522,15 @@ async function loadFeaturedMovie() {
             } else if (featuredDuration && movieData.number_of_seasons) {
                 featuredDuration.textContent = `${movieData.number_of_seasons} Season${movieData.number_of_seasons > 1 ? 's' : ''}`;
             }
-            
+
             if (featuredViews) {
                 featuredViews.textContent = `⭐ ${movieData.rating} TMDB`;
             }
-            
+
             if (featuredCategory && movieData.genres && movieData.genres.length > 0) {
                 featuredCategory.textContent = movieData.genres[0].name;
             }
-            
+
             // Update trailer if available
             if (featuredPlayer && movieData.trailer) {
                 // Extract video ID from trailer URL
@@ -535,12 +542,12 @@ async function loadFeaturedMovie() {
                 } else if (movieData.trailer.includes('youtu.be/')) {
                     videoId = movieData.trailer.split('youtu.be/')[1]?.split('?')[0];
                 }
-                
+
                 if (videoId) {
                     featuredPlayer.src = `https://www.youtube.com/embed/${videoId}?si=qm5j12OBg51YoIMN&autoplay=1&mute=1&loop=1&playlist=${videoId}`;
                 }
             }
-            
+
             // Make Watch Now button clickable
             if (watchNowBtn) {
                 watchNowBtn.onclick = () => {
@@ -555,15 +562,15 @@ async function loadFeaturedMovie() {
                         duration: movieData.runtime ? `${Math.floor(movieData.runtime / 60)}h ${movieData.runtime % 60}m` : 'N/A',
                         category: movieData.genres?.[0]?.name?.toLowerCase() || 'unknown',
                         tmdbData: movieData,
-                        embedCode: movieData.trailer 
+                        embedCode: movieData.trailer
                             ? `<iframe src="${movieData.trailer}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`
                             : '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">Trailer not available for this content</div>',
                     };
-                    
+
                     openVideoModal(featuredMovieForModal);
                 };
             }
-            
+
             console.log('Featured movie loaded successfully:', movieData.title);
         } else {
             console.error('Failed to load featured movie data');
@@ -579,7 +586,7 @@ function savePageState() {
     pageMemory.scrollPosition = window.scrollY;
     pageMemory.currentCategory = currentCategory;
     pageMemory.searchQuery = searchQuery;
-    
+
     try {
         localStorage.setItem(PAGE_MEMORY_KEY, JSON.stringify(pageMemory));
         console.log('Page state saved:', pageMemory);
@@ -596,7 +603,7 @@ function loadPageState() {
             displayedMovies = pageMemory.displayedMovies || 12;
             currentCategory = pageMemory.currentCategory || 'all';
             searchQuery = pageMemory.searchQuery || '';
-            
+
             console.log('Page state loaded:', pageMemory);
             return true;
         }
@@ -617,13 +624,13 @@ function clearPageState() {
 
 function restorePageState() {
     console.log('Restoring page state...');
-    
+
     // Restore search input
     if (searchInput && pageMemory.searchQuery) {
         searchInput.value = pageMemory.searchQuery;
         console.log('Restored search query:', pageMemory.searchQuery);
     }
-    
+
     // Restore active category filter
     if (pageMemory.currentCategory !== 'all') {
         const categoryBtn = document.querySelector(`[data-category="${pageMemory.currentCategory}"]`);
@@ -633,10 +640,10 @@ function restorePageState() {
             console.log('Restored category filter:', pageMemory.currentCategory);
         }
     }
-    
+
     // Apply filters and render with restored movie count
     filterVideos(true); // Pass true to indicate we're restoring state
-    
+
     // Restore scroll position after a delay to ensure content is loaded
     setTimeout(() => {
         if (pageMemory.scrollPosition > 0) {
@@ -652,16 +659,16 @@ function restorePageState() {
 // Initialize the application
 document.addEventListener("DOMContentLoaded", function () {
     console.log('DOM Content Loaded - Starting H-TV initialization...');
-    
+
     // CLEAR OLD PAGE STATE - Start fresh
     clearPageState();
     displayedMovies = 12; // Reset to 12
-    
+
     // Show loading indicator
     if (videosGrid) {
         videosGrid.innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-secondary);"><h3>Loading movies...</h3><p>Fetching data from TMDB...</p></div>';
     }
-    
+
     // Initialize app
     setTimeout(async () => {
         try {
@@ -671,7 +678,7 @@ document.addEventListener("DOMContentLoaded", function () {
             loadLiveTvSlider();
             loadTrendingSlider();
             setupCommentSection();          // Initialize comment section
-            
+
             console.log('H-TV initialization complete!');
             console.log('Total movies loaded:', loadedMovies.length);
             console.log('Displaying:', displayedMovies, 'movies initially');
@@ -696,14 +703,14 @@ async function loadMoviesWithTMDBData() {
         try {
             console.log(`[${i + 1}/${videoData.length}] Loading movie ID ${video.id} - TMDB ID: ${video.tmdbId}`);
             const tmdbData = await fetchTMDBData(video.tmdbId, video.type);
-            
+
             if (tmdbData) {
                 const movieWithData = {
                     ...video,
                     uniqueId: `movie_${i}_${video.id}_${video.tmdbId}`, // Unique ID for each entry
                     title: tmdbData.title,
-                    duration: tmdbData.runtime ? `${Math.floor(tmdbData.runtime / 60)}h ${tmdbData.runtime % 60}m` : 
-                             tmdbData.number_of_seasons ? `${tmdbData.number_of_seasons} seasons` : "Unknown",
+                    duration: tmdbData.runtime ? `${Math.floor(tmdbData.runtime / 60)}h ${tmdbData.runtime % 60}m` :
+                        tmdbData.number_of_seasons ? `${tmdbData.number_of_seasons} seasons` : "Unknown",
                     views: `${tmdbData.rating}⭐`,
                     category: (tmdbData.genres && tmdbData.genres.length > 0) ? tmdbData.genres[0].name.toLowerCase() : "drama",
                     thumbnail: tmdbData.poster_path,
@@ -741,11 +748,11 @@ async function loadMoviesWithTMDBData() {
     }
 
     console.log(`🎬 TOTAL LOADED: ${loadedMovies.length} movies (expected: ${videoData.length})`);
-    
+
     if (loadedMovies.length !== videoData.length) {
         console.error(`⚠️ WARNING: Loaded ${loadedMovies.length} but expected ${videoData.length} movies!`);
     }
-    
+
     filteredVideos = [...loadedMovies];
     renderVideos();
 }
@@ -767,16 +774,16 @@ function setupEventListeners() {
         // Prevent page scrolling on any key press in search
         e.stopPropagation();
     });
-    searchInput.addEventListener("input", function(e) {
+    searchInput.addEventListener("input", function (e) {
         e.stopPropagation(); // Prevent bubbling that might cause scrolling
         handleSearch();
     });
-    
+
     // Prevent search input from causing page scroll
-    searchInput.addEventListener("focus", function(e) {
+    searchInput.addEventListener("focus", function (e) {
         e.stopPropagation();
     });
-    searchInput.addEventListener("blur", function(e) {
+    searchInput.addEventListener("blur", function (e) {
         e.stopPropagation();
     });
 
@@ -815,13 +822,13 @@ function setupEventListeners() {
     if (loginForm) {
         loginForm.addEventListener("submit", handleLogin);
     }
-    
+
     // Slider navigation for Trending and Live TV
     setupSliders();
-    
+
     // Scroll to top button functionality
     setupScrollToTop();
-    
+
     // Page state saving on scroll (throttled)
     let scrollTimer;
     window.addEventListener('scroll', () => {
@@ -830,7 +837,7 @@ function setupEventListeners() {
             savePageState();
         }, 500); // Save state 500ms after user stops scrolling
     });
-    
+
     // Save state when user navigates away
     window.addEventListener('beforeunload', () => {
         savePageState();
@@ -840,12 +847,12 @@ function setupEventListeners() {
 // Render Videos
 function renderVideos() {
     console.log('Rendering videos...', filteredVideos.length, 'videos to render');
-    
+
     if (!videosGrid) {
         console.error('videosGrid element not found!');
         return;
     }
-    
+
     videosGrid.innerHTML = "";
 
     if (filteredVideos.length === 0) {
@@ -862,7 +869,7 @@ function renderVideos() {
     // Show only the number of movies specified by displayedMovies
     console.log('Displaying movies:', { total: filteredVideos.length, showing: displayedMovies });
     const moviesToShow = filteredVideos.slice(0, displayedMovies);
-    
+
     moviesToShow.forEach((video, index) => {
         try {
             console.log(`Rendering video ${index + 1}: ${video.title}`);
@@ -872,10 +879,10 @@ function renderVideos() {
             console.error(`Error rendering video ${index + 1}:`, error, video);
         }
     });
-    
+
     // NEW LOAD MORE BUTTON - Built from scratch
     createLoadMoreButton();
-    
+
     console.log(`Finished rendering videos - Showing ${moviesToShow.length} of ${filteredVideos.length} movies`);
 }
 
@@ -886,10 +893,10 @@ function createLoadMoreButton() {
         console.log('All movies displayed - no load more button needed');
         return;
     }
-    
+
     const remaining = filteredVideos.length - displayedMovies;
     console.log(`Creating load more button: ${remaining} movies remaining`);
-    
+
     // Create wrapper div
     const wrapper = document.createElement('div');
     wrapper.id = 'loadMoreWrapper';
@@ -901,7 +908,7 @@ function createLoadMoreButton() {
         padding: 50px 20px;
         margin-top: 30px;
     `;
-    
+
     // Create button with RED GRADIENT THEME
     const button = document.createElement('button');
     button.id = 'loadMoreButton';
@@ -922,42 +929,42 @@ function createLoadMoreButton() {
         position: relative;
         overflow: hidden;
     `;
-    
+
     button.innerHTML = `
         <span>🔥 Load More Movies</span>
         <span style="background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
             ${remaining} remaining
         </span>
     `;
-    
+
     // Add hover effect with RED GLOW
     button.onmouseover = () => {
         button.style.transform = 'translateY(-5px) scale(1.02)';
         button.style.boxShadow = '0 15px 50px rgba(255, 8, 68, 0.8), 0 0 30px rgba(255, 0, 0, 0.4)';
         button.style.background = 'linear-gradient(135deg, #ff073a 0%, #ff5e62 100%)';
     };
-    
+
     button.onmouseout = () => {
         button.style.transform = 'translateY(0) scale(1)';
         button.style.boxShadow = '0 10px 30px rgba(255, 8, 68, 0.5)';
         button.style.background = 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)';
     };
-    
+
     // Add click handler
     button.onclick = () => {
         console.log('Load More clicked!');
-        
+
         // Show loading state
         button.innerHTML = '⏳ Loading...';
         button.style.pointerEvents = 'none';
         button.style.opacity = '0.7';
-        
+
         // Load more movies after short delay
         setTimeout(() => {
             displayedMovies += moviesPerLoad;
             savePageState();
             renderVideos();
-            
+
             // Scroll to new content
             setTimeout(() => {
                 window.scrollBy({
@@ -967,10 +974,10 @@ function createLoadMoreButton() {
             }, 100);
         }, 300);
     };
-    
+
     wrapper.appendChild(button);
     videosGrid.appendChild(wrapper);
-    
+
     console.log('✅ Load More button created and added to grid!');
 }
 
@@ -978,13 +985,13 @@ function createLoadMoreButton() {
 function createVideoCard(video) {
     const card = document.createElement("div");
     card.className = "video-card";
-    
+
     // Normalize category name for CSS class (remove special characters and spaces)
     const categoryClass = video.category ? video.category.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') : 'unknown';
-    
+
     // Debug: Log category information
     console.log(`Creating card for: ${video.title}, Category: ${video.category}, CSS Class: ${categoryClass}`);
-    
+
     card.innerHTML = `
         <div class="video-thumbnail">
             <img src="${video.thumbnail}" alt="${video.title}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='">
@@ -1024,7 +1031,7 @@ function handleSearch() {
 // Filter Videos
 function filterVideos(isRestoringState = false) {
     console.log('Filtering videos...', { currentCategory, searchQuery });
-    
+
     filteredVideos = loadedMovies.filter((video) => {
         const matchesCategory =
             currentCategory === "all" || video.category === currentCategory;
@@ -1036,7 +1043,7 @@ function filterVideos(isRestoringState = false) {
 
         return matchesCategory && matchesSearch;
     });
-    
+
     console.log('Filtered results:', { total: filteredVideos.length });
 
     // Only reset displayed movies count when not restoring state
@@ -1044,7 +1051,7 @@ function filterVideos(isRestoringState = false) {
         displayedMovies = 12;
         savePageState(); // Save state when user actively filters
     }
-    
+
     renderVideos();
 }
 
@@ -1056,7 +1063,7 @@ async function openVideoModal(video) {
     }
 
     console.log('Opening video modal for:', video);
-    
+
     // Get all modal elements
     const modalElements = {
         video: document.querySelector(".modal-video"),
@@ -1111,13 +1118,13 @@ async function openVideoModal(video) {
                         </div>
                         <div class="download-links-container">
                             ${video.downloads.map((item, index) => {
-                                // Support both string URLs and objects with {url, label}
-                                const downloadUrl = typeof item === 'string' ? item : item.url;
-                                const downloadLabel = typeof item === 'string' 
-                                    ? (video.downloads.length > 1 ? `Link ${index + 1}` : 'Download')
-                                    : (item.label || `Link ${index + 1}`);
-                                
-                                return `
+            // Support both string URLs and objects with {url, label}
+            const downloadUrl = typeof item === 'string' ? item : item.url;
+            const downloadLabel = typeof item === 'string'
+                ? (video.downloads.length > 1 ? `Link ${index + 1}` : 'Download')
+                : (item.label || `Link ${index + 1}`);
+
+            return `
                                     <a href="${downloadUrl}" target="_blank" rel="noopener noreferrer" class="download-link">
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1127,7 +1134,7 @@ async function openVideoModal(video) {
                                         ${downloadLabel}
                                     </a>
                                 `;
-                            }).join('')}
+        }).join('')}
                         </div>
                     </div>
                 ` : ''}
@@ -1139,7 +1146,7 @@ async function openVideoModal(video) {
 
         // Try to get TMDB data if not already available
         let movieData = video.tmdbData;
-        
+
         if ((!movieData || Object.keys(movieData).length === 0) && video.tmdbId) {
             console.log('Fetching TMDB data for ID:', video.tmdbId, 'Type:', video.type);
             movieData = await fetchTMDBData(video.tmdbId, video.type || 'movie');
@@ -1151,9 +1158,9 @@ async function openVideoModal(video) {
             video.title = movieData.title || video.title;
             video.duration = movieData.runtime || video.duration;
             video.views = `⭐ ${movieData.rating || 'N/A'}`;
-            video.category = (movieData.genres && movieData.genres.length > 0 && movieData.genres[0].name) 
-                           ? movieData.genres[0].name.toLowerCase() 
-                           : video.category || 'drama';
+            video.category = (movieData.genres && movieData.genres.length > 0 && movieData.genres[0].name)
+                ? movieData.genres[0].name.toLowerCase()
+                : video.category || 'drama';
             video.description = movieData.overview || movieData.description || video.description;
 
             // Update meta information
@@ -1210,31 +1217,31 @@ async function openVideoModal(video) {
 function displayTMDBDetails(movieData, type, video) {
     console.log('Displaying TMDB details for:', movieData.title || 'Unknown');
     console.log('Trailer available:', movieData.trailer ? 'Yes' : 'No');
-    
+
     const tmdbDetails = document.getElementById("tmdbDetails");
     if (!tmdbDetails) {
         console.error('TMDB details container not found');
         return;
     }
-    
+
     // Make sure the details section is visible
     tmdbDetails.style.display = "block";
-    
+
     try {
         // Create safe strings to prevent XSS
         const safeTitle = movieData.title ? movieData.title.replace(/"/g, '&quot;').replace(/'/g, '&apos;') : 'Unknown Title';
         const safeReleaseYear = movieData.release_year ? movieData.release_year : '';
         const safeDescription = movieData.overview ? movieData.overview.replace(/[\"\']/g, '') : 'No description available';
-        
+
         // Create compact movie info
         let compactInfoHTML = createCompactMovieInfo(movieData, type);
-        
+
         // Create cast section
         let castHTML = createCastSection(movieData);
-        
+
         // Create trailer section
         let trailerHTML = createTrailerSection(movieData);
-        
+
         // Combine all sections with new layout
         const htmlContent = `
             <div class="modern-movie-header">
@@ -1246,9 +1253,9 @@ function displayTMDBDetails(movieData, type, video) {
             ${castHTML}
             ${trailerHTML}
         `;
-        
+
         tmdbDetails.innerHTML = htmlContent;
-        
+
     } catch (error) {
         console.error('Error displaying TMDB details:', error);
         tmdbDetails.innerHTML = '<div class="error-message">Error loading details. Please try again later.</div>';
@@ -1261,7 +1268,7 @@ function createCastSection(movieData) {
         console.log('No cast information available');
         return '';
     }
-    
+
     const castItems = movieData.cast
         .filter(actor => actor && (actor.name || actor.character))
         .slice(0, 12) // Limit to first 12 cast members
@@ -1271,7 +1278,7 @@ function createCastSection(movieData) {
             // Use the profile path already processed from TMDB data
             const profileImage = actor.profile_path || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iNjAiIGZpbGw9IiMzMzMiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjQ1IiByPSIyMCIgZmlsbD0iIzY2NiIvPjxlbGxpcHNlIGN4PSI2MCIgY3k9IjEwMCIgcng9IjMwIiByeT0iMjUiIGZpbGw9IiM2NjYiLz48L3N2Zz4=';
             console.log('Cast member image for', safeName + ':', profileImage);
-            
+
             return `
                 <div class="compact-cast-member">
                     <img 
@@ -1287,12 +1294,12 @@ function createCastSection(movieData) {
                     </div>
                 </div>`;
         });
-    
+
     if (castItems.length === 0) {
         console.log('No valid cast members to display');
         return '';
     }
-    
+
     return `
         <div class="compact-cast-section">
             <h3 class="section-title">🎭 Cast</h3>
@@ -1307,17 +1314,17 @@ function createCompactMovieInfo(movieData, type) {
     // Create compact movie details
     const primaryInfo = [];
     const secondaryInfo = [];
-    
+
     // Primary info (always show)
     if (movieData.vote_average) {
         primaryInfo.push(`<div class="info-chip"><span class="chip-icon">⭐</span>${movieData.vote_average.toFixed(1)}</div>`);
     }
-    
+
     if (movieData.release_date) {
         const year = movieData.release_date.substring(0, 4);
         primaryInfo.push(`<div class="info-chip"><span class="chip-icon">📅</span>${year}</div>`);
     }
-    
+
     if (movieData.runtime) {
         const hours = Math.floor(movieData.runtime / 60);
         const minutes = movieData.runtime % 60;
@@ -1325,22 +1332,22 @@ function createCompactMovieInfo(movieData, type) {
     } else if (movieData.number_of_seasons) {
         primaryInfo.push(`<div class="info-chip"><span class="chip-icon">📺</span>${movieData.number_of_seasons} Season${movieData.number_of_seasons > 1 ? 's' : ''}</div>`);
     }
-    
+
     if (movieData.status && movieData.status !== 'Released') {
         primaryInfo.push(`<div class="info-chip status-chip"><span class="chip-icon">📊</span>${movieData.status}</div>`);
     }
-    
+
     // Secondary info (additional details)
     if (movieData.genres && movieData.genres.length > 0) {
         const genres = movieData.genres.slice(0, 3).map(g => g.name).join(', ');
         secondaryInfo.push(`<div class="info-detail"><strong>Genre:</strong> ${genres}</div>`);
     }
-    
+
     if (movieData.production_countries && movieData.production_countries.length > 0) {
         const countries = movieData.production_countries.slice(0, 2).map(c => c.name).join(', ');
         secondaryInfo.push(`<div class="info-detail"><strong>Country:</strong> ${countries}</div>`);
     }
-    
+
     if (movieData.original_language) {
         const languageNames = {
             'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German',
@@ -1350,26 +1357,26 @@ function createCompactMovieInfo(movieData, type) {
         const lang = languageNames[movieData.original_language] || movieData.original_language.toUpperCase();
         secondaryInfo.push(`<div class="info-detail"><strong>Language:</strong> ${lang}</div>`);
     }
-    
+
     if (movieData.directors && movieData.directors.length > 0) {
         const directors = movieData.directors.slice(0, 2).join(', ');
         secondaryInfo.push(`<div class="info-detail"><strong>Director:</strong> ${directors}</div>`);
     }
-    
+
     if (movieData.writers && movieData.writers.length > 0) {
         const writers = movieData.writers.slice(0, 2).join(', ');
         secondaryInfo.push(`<div class="info-detail"><strong>Writer:</strong> ${writers}</div>`);
     }
-    
+
     // Budget & Revenue (only for movies with significant amounts)
     if (type === 'movie' && movieData.budget > 100000) {
         secondaryInfo.push(`<div class="info-detail"><strong>Budget:</strong> ${formatMoney(movieData.budget)}</div>`);
     }
-    
+
     if (type === 'movie' && movieData.revenue > 100000) {
         secondaryInfo.push(`<div class="info-detail"><strong>Box Office:</strong> ${formatMoney(movieData.revenue)}</div>`);
     }
-    
+
     return `
         <div class="compact-movie-info">
             <div class="primary-info">
@@ -1388,13 +1395,13 @@ function createTrailerSection(movieData) {
         console.log('No trailer available for:', movieData.title || 'Unknown movie');
         return '';
     }
-    
+
     try {
         console.log('Creating trailer section for:', movieData.title, '- Trailer URL:', movieData.trailer);
-        
+
         // Extract video ID from YouTube URL - handles multiple URL formats
         let videoId = null;
-        
+
         if (movieData.trailer.includes('youtube.com/embed/')) {
             // Handle embed URLs: https://www.youtube.com/embed/VIDEO_ID
             videoId = movieData.trailer.split('/embed/')[1]?.split('?')[0];
@@ -1408,18 +1415,18 @@ function createTrailerSection(movieData) {
             // Handle case where it's just the video ID
             videoId = movieData.trailer;
         }
-            
+
         if (!videoId) {
             console.error('Could not extract video ID from trailer URL:', movieData.trailer);
             return '';
         }
-        
+
         console.log('Extracted video ID:', videoId);
-        
+
         // Create safe title for the trailer note
         const safeTitle = movieData.title ? movieData.title.replace(/"/g, '&quot;').replace(/'/g, '&apos;') : 'this content';
         const safeReleaseYear = movieData.release_date ? new Date(movieData.release_date).getFullYear() : '';
-        
+
         return `
             <div class="trailer-section">
                 <h3 class="section-title">🎬 Official Trailer</h3>
@@ -1524,9 +1531,9 @@ function handleNavigation(e) {
         const targetSection = document.getElementById(sectionName);
         if (targetSection) {
             targetSection.scrollIntoView({ behavior: 'smooth' });
-            
+
             // Special actions for specific sections
-            switch(sectionName) {
+            switch (sectionName) {
                 case 'search':
                     // Focus on search input when navigating to search
                     setTimeout(() => {
@@ -1536,11 +1543,11 @@ function handleNavigation(e) {
                         }
                     }, 800);
                     break;
-                    
+
                 case 'categories':
                     // Could add special category actions here if needed
                     break;
-                    
+
                 case 'popular':
                     // Could add popular filtering here if needed
                     break;
@@ -1571,13 +1578,13 @@ function handleViewToggle(e) {
 // Download Movie Function
 function handleDownload(title, year, downloadUrl) {
     console.log('Download initiated:', { title, year, downloadUrl });
-    
+
     // Create download link
     const a = document.createElement('a');
     a.href = downloadUrl;
     a.download = `${title} (${year})`.trim();  // Suggested filename
     a.target = '_blank';  // Open in new tab if direct download not possible
-    
+
     // Show download notification
     const notification = document.createElement("div");
     notification.className = "download-notification show";
@@ -1662,7 +1669,7 @@ async function loadTrendingSlider() {
                 try {
                     // Fetch TMDB data for the trending item
                     const tmdbData = await fetchTMDBData(item.id, item.media_type);
-                    
+
                     // Create a video object with the fetched data
                     const trendingVideo = {
                         id: `trending_${item.id}`,
@@ -1674,11 +1681,11 @@ async function loadTrendingSlider() {
                         duration: item.runtime ? `${item.runtime} min` : 'N/A',
                         category: item.genre_ids ? item.genre_ids[0]?.toString() : 'unknown',
                         tmdbData: tmdbData, // Include the full TMDB data
-                        embedCode: tmdbData?.trailer 
+                        embedCode: tmdbData?.trailer
                             ? `<iframe src="${tmdbData.trailer}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`
                             : '<div style="text-align: center; padding: 50px; color: var(--text-secondary);">Trailer not available for this content</div>',
                     };
-                    
+
                     openVideoModal(trendingVideo);
                 } catch (error) {
                     console.error('Error loading trending content:', error);
@@ -1727,7 +1734,7 @@ function openLiveTvModal(channel) {
 }
 
 // Initialize sliders when the page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     setupSliders();
     console.log("H-TV Video Streaming Platform initialized successfully!");
 });
@@ -1738,7 +1745,7 @@ function setupSliders() {
     const liveTvGrid = document.querySelector('.live-tv-grid');
     const liveTvNext = document.getElementById('liveTvNext');
     const liveTvPrev = document.getElementById('liveTvPrev');
-    
+
     if (liveTvNext && liveTvPrev && liveTvGrid) {
         liveTvNext.addEventListener('click', () => {
             liveTvGrid.scrollBy({
@@ -1746,7 +1753,7 @@ function setupSliders() {
                 behavior: 'smooth'
             });
         });
-        
+
         liveTvPrev.addEventListener('click', () => {
             liveTvGrid.scrollBy({
                 left: -300, // Adjust this value based on your card width + margin
@@ -1754,12 +1761,12 @@ function setupSliders() {
             });
         });
     }
-    
+
     // Trending Slider
     const trendingGrid = document.querySelector('.trending-grid');
     const trendingNext = document.getElementById('trendingNext');
     const trendingPrev = document.getElementById('trendingPrev');
-    
+
     if (trendingNext && trendingPrev && trendingGrid) {
         trendingNext.addEventListener('click', () => {
             trendingGrid.scrollBy({
@@ -1767,7 +1774,7 @@ function setupSliders() {
                 behavior: 'smooth'
             });
         });
-        
+
         trendingPrev.addEventListener('click', () => {
             trendingGrid.scrollBy({
                 left: -300, // Adjust this value based on your card width + margin
@@ -1782,19 +1789,19 @@ function setupCommentSection() {
     const commentForm = document.getElementById('commentForm');
     const commentText = document.getElementById('commentText');
     const charCount = document.getElementById('charCount');
-    
+
     if (!commentForm || !commentText || !charCount) {
         console.log('❌ Comment section elements not found');
         return;
     }
-    
+
     console.log('✅ Comment section initialized - Firebase will handle form submission');
-    
+
     // Character counter
     commentText.addEventListener('input', () => {
         const count = commentText.value.length;
         charCount.textContent = count;
-        
+
         // Change color when approaching limit
         if (count > 450) {
             charCount.style.color = '#ff0844';
@@ -1804,7 +1811,7 @@ function setupCommentSection() {
             charCount.style.color = 'var(--text-muted)';
         }
     });
-    
+
     // NOTE: Form submission is now handled by Firebase module in index.html
     // This function only sets up the character counter
 }
@@ -1815,7 +1822,7 @@ function setupScrollToTop() {
         console.warn('Scroll to top button not found');
         return;
     }
-    
+
     // Show/hide scroll to top button based on scroll position
     window.addEventListener('scroll', () => {
         if (window.scrollY > 500) {
@@ -1824,7 +1831,7 @@ function setupScrollToTop() {
             scrollToTopBtn.classList.remove('visible');
         }
     });
-    
+
     // Smooth scroll to top when button is clicked
     scrollToTopBtn.addEventListener('click', () => {
         window.scrollTo({
