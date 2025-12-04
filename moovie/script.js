@@ -37,15 +37,6 @@ const FEATURED_MOVIE_OPTIONS = {
 const videoData = [
     {
         id: 1,
-        tmdbId: 12460, // Dracula: a love tale 2025
-        type: "movie",
-        downloads: [
-            { url: "https://linkmake.in/view/B05yw8ufD9", label: "Hin/Eng" },
-        ],
-        embedCode: `<iframe src="https://ensta392zij.com/play/tt31434030" width="797" height="453" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`,
-    },
-    {
-        id: 1,
         tmdbId: 1246049, // Dracula: a love tale 2025
         type: "movie",
         downloads: [
@@ -726,16 +717,11 @@ document.addEventListener("DOMContentLoaded", function () {
     clearPageState();
     displayedMovies = 12; // Reset to 12
 
-    // Show loading indicator
-    if (videosGrid) {
-        videosGrid.innerHTML = '<div style="text-align: center; padding: 60px; color: var(--text-secondary);"><h3>Loading movies...</h3><p>Fetching data from TMDB...</p></div>';
-    }
-
-    // Initialize app
-    setTimeout(async () => {
+    // Initialize app immediately (no delay, no loading message)
+    (async () => {
         try {
             await loadFeaturedMovie();      // Load featured movie first
-            await loadMoviesWithTMDBData(); // Then load other movies
+            await loadMoviesWithTMDBData(); // Then load other movies (now optimized!)
             setupEventListeners();
             loadLiveTvSlider();
             loadTrendingSlider();
@@ -750,73 +736,87 @@ document.addEventListener("DOMContentLoaded", function () {
                 videosGrid.innerHTML = '<div style="text-align: center; padding: 60px; color: red;"><h3>Loading Error</h3><p>Please refresh the page to try again.</p></div>';
             }
         }
-    }, 100);
+    })();
 });
 
-// Load movies with TMDB data
+// Load movies with TMDB data - OPTIMIZED for instant loading
 async function loadMoviesWithTMDBData() {
-    console.log('Starting to load movies with TMDB data...');
+    console.log('🚀 Starting OPTIMIZED parallel movie loading...');
     console.log('Total movies in videoData:', videoData.length);
-    loadedMovies = [];
 
-    // Process each movie - duplicates will reuse cached TMDB data
-    for (let i = 0; i < videoData.length; i++) {
-        const video = videoData[i];
-        try {
-            console.log(`[${i + 1}/${videoData.length}] Loading movie ID ${video.id} - TMDB ID: ${video.tmdbId}`);
-            const tmdbData = await fetchTMDBData(video.tmdbId, video.type);
+    // Step 1: Create placeholder movies immediately and render them
+    loadedMovies = videoData.map((video, i) => ({
+        ...video,
+        uniqueId: `movie_${i}_${video.id}_${video.tmdbId}`,
+        title: `Loading...`,
+        duration: "...",
+        views: "...",
+        category: "loading",
+        thumbnail: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PGNpcmNsZSBjeD0iMTYwIiBjeT0iOTAiIHI9IjMwIiBmaWxsPSJub25lIiBzdHJva2U9IiM2NjYiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWRhc2hhcnJheT0iMTAgNSI+PGFuaW1hdGVUcmFuc2Zvcm0gYXR0cmlidXRlTmFtZT0idHJhbnNmb3JtIiB0eXBlPSJyb3RhdGUiIGZyb209IjAgMTYwIDkwIiB0bz0iMzYwIDE2MCA5MCIgZHVyPSIxcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L2NpcmNsZT48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+TG9hZGluZy4uLjwvdGV4dD48L3N2Zz4=",
+        description: "Loading movie details...",
+        isPlaceholder: true
+    }));
 
-            if (tmdbData) {
-                const movieWithData = {
-                    ...video,
-                    uniqueId: `movie_${i}_${video.id}_${video.tmdbId}`, // Unique ID for each entry
-                    title: tmdbData.title,
-                    duration: tmdbData.runtime ? `${Math.floor(tmdbData.runtime / 60)}h ${tmdbData.runtime % 60}m` :
-                        tmdbData.number_of_seasons ? `${tmdbData.number_of_seasons} seasons` : "Unknown",
-                    views: `${tmdbData.rating}⭐`,
-                    category: (tmdbData.genres && tmdbData.genres.length > 0) ? tmdbData.genres[0].name.toLowerCase() : "drama",
-                    thumbnail: tmdbData.poster_path,
-                    description: tmdbData.overview || tmdbData.description,
-                    tmdbData: tmdbData,
-                };
-                loadedMovies.push(movieWithData);
-                console.log(`✅ [${i + 1}] Successfully loaded: ${tmdbData.title}`);
-            } else {
-                console.warn(`⚠️ No TMDB data for movie ${video.id}, using fallback`);
-                loadedMovies.push({
-                    ...video,
-                    uniqueId: `movie_${i}_${video.id}_fallback`,
-                    title: `Movie ${video.id}`,
-                    duration: "Unknown",
-                    views: "Loading...",
-                    category: "unknown",
-                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==",
-                    description: "Failed to load movie details",
-                });
-            }
-        } catch (error) {
-            console.error(`❌ Error loading movie ${video.id}:`, error);
-            loadedMovies.push({
+    // Render placeholder cards immediately for instant display
+    filteredVideos = [...loadedMovies];
+    renderVideos();
+    console.log('✅ Rendered placeholder cards immediately');
+
+    // Step 2: Fetch all TMDB data in parallel
+    console.log('📡 Fetching TMDB data in parallel...');
+    const fetchPromises = videoData.map((video, i) =>
+        fetchTMDBData(video.tmdbId, video.type)
+            .then(tmdbData => ({ index: i, video, tmdbData, success: true }))
+            .catch(error => {
+                console.error(`❌ Error loading movie ${video.id}:`, error);
+                return { index: i, video, tmdbData: null, success: false, error };
+            })
+    );
+
+    // Wait for all fetches to complete (in parallel)
+    const results = await Promise.all(fetchPromises);
+    console.log(`📦 Received ${results.length} results from TMDB`);
+
+    // Step 3: Update loadedMovies with real data
+    results.forEach(({ index, video, tmdbData, success }) => {
+        if (success && tmdbData) {
+            loadedMovies[index] = {
                 ...video,
-                uniqueId: `movie_${i}_${video.id}_error`,
+                uniqueId: `movie_${index}_${video.id}_${video.tmdbId}`,
+                title: tmdbData.title,
+                duration: tmdbData.runtime ? `${Math.floor(tmdbData.runtime / 60)}h ${tmdbData.runtime % 60}m` :
+                    tmdbData.number_of_seasons ? `${tmdbData.number_of_seasons} seasons` : "Unknown",
+                views: `${tmdbData.rating}⭐`,
+                category: (tmdbData.genres && tmdbData.genres.length > 0) ? tmdbData.genres[0].name.toLowerCase() : "drama",
+                thumbnail: tmdbData.poster_path,
+                description: tmdbData.overview || tmdbData.description,
+                tmdbData: tmdbData,
+                isPlaceholder: false
+            };
+            console.log(`✅ [${index + 1}/${videoData.length}] Updated: ${tmdbData.title}`);
+        } else {
+            // Fallback for failed fetches
+            loadedMovies[index] = {
+                ...video,
+                uniqueId: `movie_${index}_${video.id}_fallback`,
                 title: `Movie ${video.id}`,
                 duration: "Unknown",
-                views: "Error",
+                views: "N/A",
                 category: "unknown",
-                thumbnail: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm9yPC90ZXh0Pjwvc3ZnPg==",
+                thumbnail: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==",
                 description: "Failed to load movie details",
-            });
+                isPlaceholder: false
+            };
+            console.warn(`⚠️ [${index + 1}/${videoData.length}] Fallback for movie ${video.id}`);
         }
-    }
+    });
 
     console.log(`🎬 TOTAL LOADED: ${loadedMovies.length} movies (expected: ${videoData.length})`);
 
-    if (loadedMovies.length !== videoData.length) {
-        console.error(`⚠️ WARNING: Loaded ${loadedMovies.length} but expected ${videoData.length} movies!`);
-    }
-
+    // Step 4: Re-render with real data
     filteredVideos = [...loadedMovies];
     renderVideos();
+    console.log('✅ Updated all cards with TMDB data');
 }
 
 // Setup Event Listeners
