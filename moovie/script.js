@@ -38,17 +38,62 @@ const videoData = [
 
     {
         id: 1,
+        tmdbId: 1246049, // Dracula: a love tale 2025
+        type: "movie",
+        downloads: [
+            { url: "https://linkmake.in/view/B05yw8ufD9", label: "Hin/Eng" },
+        ],
+        embedCode: `<iframe src="https://ensta392zij.com/play/tt31434030" width="797" height="453" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`,
+    },
+    {
+        id: 1,
+        tmdbId: 200875, // IT: Welcome to Derry
+        type: "tv",
+        downloads: [
+            { url: "https://nexdrive.vip/genxfm29007315845/", label: "EP1-6 Hin/Eng" },
+        ],
+        embedCode: `<iframe src="https://ensta392zij.com/play/tt19244304" width="797" height="453" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`,
+    },
+    {
+        id: 1,
         tmdbId: 66732, // strangerthings s5
         type: "tv",
-        downloads: ["https://linkmake.in/view/aReS4h8lnI"],
+        downloads: [
+            { url: "https://linkmake.in/view/7hH61pstIX", label: "S01 Hin/Eng" },
+            { url: "https://linkmake.in/view/EpAizAKC2r", label: "S02 Hin/Eng" },
+            { url: "https://linkmake.in/view/zQpGN5va3l", label: "S03 Hin/Eng" },
+            { url: "https://linkmake.in/view/n32bRO4wOx", label: "S04 Hin/Eng" },
+            { url: "https://linkmake.in/view/aReS4h8lnI", label: "S05 Hin/Eng Vol. 1" },
+        ],
         embedCode: ``,
     },
 
     {
         id: 1,
+        tmdbId: 1242898, // Predator badland 2025
+        type: "movie",
+        downloads: [{ url: "https://hubcloud.foo/drive/i16i0fq1wnwsnih", label: "Hindi/English" }],
+        embedCode: ``,
+    },
+    {
+        id: 1,
+        tmdbId: 1180831, // Troll 2 2025
+        type: "movie",
+        downloads: [{ url: "https://linkmake.in/view/Xrc9N4FbJ9", label: "Hindi/English" }],
+        embedCode: ``,
+    },
+    {
+        id: 1,
         tmdbId: 736526, // Troll 1 2022
         type: "movie",
-        downloads: [{ url: "https://linkmake.in/view/WEBlwBg6UY", label: "Multi language" }],
+        downloads: [{ url: "https://linkmake.in/view/WEBlwBg6UY", label: "Hindi/English" }],
+        embedCode: ``,
+    },
+    {
+        id: 1,
+        tmdbId: 533533, // Trons ares 2025
+        type: "movie",
+        downloads: [{ url: "https://linkmake.in/view/X8AGZjzyXX", label: "Hindi/English" }],
         embedCode: ``,
     },
 
@@ -56,7 +101,7 @@ const videoData = [
         id: 1,
         tmdbId: 1109086, // War 2
         type: "movie",
-        downloads: [{ url: "https://linkmake.in/view/R5PGo1h13A", label: "Multi language" }],
+        downloads: [{ url: "https://linkmake.in/view/R5PGo1h13A", label: "Hindi/English" }],
         embedCode: `<iframe src="https://h-player-ashen.vercel.app/?embed=1&data=eyJwbGF5bGlzdCI6W3sic2VyaWVzTmFtZSI6IldpdGNoZXIiLCJzZWFzb25zIjpbeyJzZWFzb25OdW1iZXIiOjEsImVwaXNvZGVzIjpbeyJlcGlzb2RlTnVtYmVyIjoxLCJlcGlzb2RlTmFtZSI6ImVwMSIsInVybCI6Imh0dHBzOi8vbmV0NTEuY2MvaGxzLzgxNzA1NzIxLm0zdTg%2FaW49NmUxMzczNWMwMjQ5ZTNhMTY0M2M0OTMxMGFmZmM1ZWI6OjIxNTAwODMyMmU2NjFjYzk1YTY1ZmY5YTM5NzMzM2RmOjoxNzYzMTQwMTgwOjprcCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjoyMi43NTMyMTd9LHsiZXBpc29kZU51bWJlciI6MiwiZXBpc29kZU5hbWUiOiJlcDIiLCJ1cmwiOiJodHRwczovL25ldDUxLmNjL2hscy84MTcwNTcyMS5tM3U4P2luPTZlMTM3MzVjMDI0OWUzYTE2NDNjNDkzMTBhZmZjNWViOjoyMTUwMDgzMjJlNjYxY2M5NWE2NWZmOWEzOTczMzNkZjo6MTc2MzE0MDE4MDo6a3AiLCJkdXJhdGlvbiI6IjAwOjAwOjAwIiwicXVhbGl0eSI6IkF1dG8iLCJwcm9ncmVzcyI6NjYuODQzNDMxfSx7ImVwaXNvZGVOdW1iZXIiOjMsImVwaXNvZGVOYW1lIjoiZXAzIiwidXJsIjoiaHR0cHM6Ly9uZXQ1MS5jYy9obHMvODE3MDU3MjEubTN1OD9pbj02ZTEzNzM1YzAyNDllM2ExNjQzYzQ5MzEwYWZmYzVlYjo6MjE1MDA4MzIyZTY2MWNjOTVhNjVmZjlhMzk3MzMzZGY6OjE3NjMxNDAxODA6OmtwIiwiZHVyYXRpb24iOiIwMDowMDowMCIsInF1YWxpdHkiOiJBdXRvIiwicHJvZ3Jlc3MiOjB9LHsiZXBpc29kZU51bWJlciI6NCwiZXBpc29kZU5hbWUiOiJlcDQiLCJ1cmwiOiJodHRwczovL25ldDUxLmNjL2hscy84MTcwNTcyMS5tM3U4P2luPTZlMTM3MzVjMDI0OWUzYTE2NDNjNDkzMTBhZmZjNWViOjoyMTUwMDgzMjJlNjYxY2M5NWE2NWZmOWEzOTczMzNkZjo6MTc2MzE0MDE4MDo6a3AiLCJkdXJhdGlvbiI6IjAwOjAwOjAwIiwicXVhbGl0eSI6IkF1dG8iLCJwcm9ncmVzcyI6MH0seyJlcGlzb2RlTnVtYmVyIjo1LCJlcGlzb2RlTmFtZSI6ImVwNSIsInVybCI6Imh0dHBzOi8vbmV0NTEuY2MvaGxzLzgxNzA1NzIxLm0zdTg%2FaW49NmUxMzczNWMwMjQ5ZTNhMTY0M2M0OTMxMGFmZmM1ZWI6OjIxNTAwODMyMmU2NjFjYzk1YTY1ZmY5YTM5NzMzM2RmOjoxNzYzMTQwMTgwOjprcCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjowfV19LHsic2Vhc29uTnVtYmVyIjoyLCJlcGlzb2RlcyI6W3siZXBpc29kZU51bWJlciI6MSwiZXBpc29kZU5hbWUiOiJzMmVwMSIsInVybCI6Imh0dHBzOi8vbmV0NTEuY2MvaGxzLzgxNzA1NzIxLm0zdTg%2FaW49NmUxMzczNWMwMjQ5ZTNhMTY0M2M0OTMxMGFmZmM1ZWI6OjIxNTAwODMyMmU2NjFjYzk1YTY1ZmY5YTM5NzMzM2RmOjoxNzYzMTQwMTgwOjprcCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjowfV19XX1dLCJzYXZlIjpmYWxzZX0%3D" width="800" height="450" frameborder="0" allowfullscreen></iframe>
 
 <!-- If you prefer to postMessage the playlist, use the player iframe and then send { type: "hplayer.load", payload: {...} } -->`,
