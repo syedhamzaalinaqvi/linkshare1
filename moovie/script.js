@@ -35,7 +35,15 @@ const FEATURED_MOVIE_OPTIONS = {
 
 // Simplified Video Data - Only tmdbId and embedCode needed
 const videoData = [
-
+    {
+        id: 1,
+        tmdbId: 12460, // Dracula: a love tale 2025
+        type: "movie",
+        downloads: [
+            { url: "https://linkmake.in/view/B05yw8ufD9", label: "Hin/Eng" },
+        ],
+        embedCode: `<iframe src="https://ensta392zij.com/play/tt31434030" width="797" height="453" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`,
+    },
     {
         id: 1,
         tmdbId: 1246049, // Dracula: a love tale 2025
