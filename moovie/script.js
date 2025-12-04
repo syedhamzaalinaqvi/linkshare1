@@ -43,11 +43,20 @@ const videoData = [
         downloads: ["https://linkmake.in/view/aReS4h8lnI"],
         embedCode: ``,
     },
+
+    {
+        id: 1,
+        tmdbId: 736526, // Troll 1 2022
+        type: "movie",
+        downloads: [{ url: "https://linkmake.in/view/WEBlwBg6UY", label: "Multi language" }],
+        embedCode: ``,
+    },
+
     {
         id: 1,
         tmdbId: 1109086, // War 2
         type: "movie",
-        downloads: ["https://linkmake.in/view/R5PGo1h13A"],
+        downloads: [{ url: "https://linkmake.in/view/R5PGo1h13A", label: "Multi language" }],
         embedCode: `<iframe src="https://h-player-ashen.vercel.app/?embed=1&data=eyJwbGF5bGlzdCI6W3sic2VyaWVzTmFtZSI6IldpdGNoZXIiLCJzZWFzb25zIjpbeyJzZWFzb25OdW1iZXIiOjEsImVwaXNvZGVzIjpbeyJlcGlzb2RlTnVtYmVyIjoxLCJlcGlzb2RlTmFtZSI6ImVwMSIsInVybCI6Imh0dHBzOi8vbmV0NTEuY2MvaGxzLzgxNzA1NzIxLm0zdTg%2FaW49NmUxMzczNWMwMjQ5ZTNhMTY0M2M0OTMxMGFmZmM1ZWI6OjIxNTAwODMyMmU2NjFjYzk1YTY1ZmY5YTM5NzMzM2RmOjoxNzYzMTQwMTgwOjprcCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjoyMi43NTMyMTd9LHsiZXBpc29kZU51bWJlciI6MiwiZXBpc29kZU5hbWUiOiJlcDIiLCJ1cmwiOiJodHRwczovL25ldDUxLmNjL2hscy84MTcwNTcyMS5tM3U4P2luPTZlMTM3MzVjMDI0OWUzYTE2NDNjNDkzMTBhZmZjNWViOjoyMTUwMDgzMjJlNjYxY2M5NWE2NWZmOWEzOTczMzNkZjo6MTc2MzE0MDE4MDo6a3AiLCJkdXJhdGlvbiI6IjAwOjAwOjAwIiwicXVhbGl0eSI6IkF1dG8iLCJwcm9ncmVzcyI6NjYuODQzNDMxfSx7ImVwaXNvZGVOdW1iZXIiOjMsImVwaXNvZGVOYW1lIjoiZXAzIiwidXJsIjoiaHR0cHM6Ly9uZXQ1MS5jYy9obHMvODE3MDU3MjEubTN1OD9pbj02ZTEzNzM1YzAyNDllM2ExNjQzYzQ5MzEwYWZmYzVlYjo6MjE1MDA4MzIyZTY2MWNjOTVhNjVmZjlhMzk3MzMzZGY6OjE3NjMxNDAxODA6OmtwIiwiZHVyYXRpb24iOiIwMDowMDowMCIsInF1YWxpdHkiOiJBdXRvIiwicHJvZ3Jlc3MiOjB9LHsiZXBpc29kZU51bWJlciI6NCwiZXBpc29kZU5hbWUiOiJlcDQiLCJ1cmwiOiJodHRwczovL25ldDUxLmNjL2hscy84MTcwNTcyMS5tM3U4P2luPTZlMTM3MzVjMDI0OWUzYTE2NDNjNDkzMTBhZmZjNWViOjoyMTUwMDgzMjJlNjYxY2M5NWE2NWZmOWEzOTczMzNkZjo6MTc2MzE0MDE4MDo6a3AiLCJkdXJhdGlvbiI6IjAwOjAwOjAwIiwicXVhbGl0eSI6IkF1dG8iLCJwcm9ncmVzcyI6MH0seyJlcGlzb2RlTnVtYmVyIjo1LCJlcGlzb2RlTmFtZSI6ImVwNSIsInVybCI6Imh0dHBzOi8vbmV0NTEuY2MvaGxzLzgxNzA1NzIxLm0zdTg%2FaW49NmUxMzczNWMwMjQ5ZTNhMTY0M2M0OTMxMGFmZmM1ZWI6OjIxNTAwODMyMmU2NjFjYzk1YTY1ZmY5YTM5NzMzM2RmOjoxNzYzMTQwMTgwOjprcCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjowfV19LHsic2Vhc29uTnVtYmVyIjoyLCJlcGlzb2RlcyI6W3siZXBpc29kZU51bWJlciI6MSwiZXBpc29kZU5hbWUiOiJzMmVwMSIsInVybCI6Imh0dHBzOi8vbmV0NTEuY2MvaGxzLzgxNzA1NzIxLm0zdTg%2FaW49NmUxMzczNWMwMjQ5ZTNhMTY0M2M0OTMxMGFmZmM1ZWI6OjIxNTAwODMyMmU2NjFjYzk1YTY1ZmY5YTM5NzMzM2RmOjoxNzYzMTQwMTgwOjprcCIsImR1cmF0aW9uIjoiMDA6MDA6MDAiLCJxdWFsaXR5IjoiQXV0byIsInByb2dyZXNzIjowfV19XX1dLCJzYXZlIjpmYWxzZX0%3D" width="800" height="450" frameborder="0" allowfullscreen></iframe>
 
 <!-- If you prefer to postMessage the playlist, use the player iframe and then send { type: "hplayer.load", payload: {...} } -->`,
