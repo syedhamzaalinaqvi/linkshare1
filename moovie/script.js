@@ -971,30 +971,33 @@ function createLoadMoreButton() {
         margin-top: 30px;
     `;
 
-    // Create button with RED GRADIENT THEME
+    // Create button with RED GRADIENT THEME - Mobile optimized
     const button = document.createElement('button');
     button.id = 'loadMoreButton';
     button.style.cssText = `
         background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
         color: white;
         border: none;
-        padding: 18px 40px;
-        font-size: 18px;
+        padding: 16px 30px;
+        font-size: 16px;
         font-weight: bold;
         border-radius: 50px;
         cursor: pointer;
         box-shadow: 0 10px 30px rgba(255, 8, 68, 0.5);
         transition: all 0.3s ease;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        gap: 6px;
         position: relative;
         overflow: hidden;
+        min-width: 200px;
     `;
 
     button.innerHTML = `
-        <span>🔥 Load More Movies</span>
-        <span style="background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600;">
+        <span style="white-space: nowrap;">🔥 Load More Movies</span>
+        <span style="background: rgba(255,255,255,0.25); padding: 3px 10px; border-radius: 15px; font-size: 12px; font-weight: 600; white-space: nowrap;">
             ${remaining} remaining
         </span>
     `;
@@ -1902,3 +1905,25 @@ function setupScrollToTop() {
         });
     });
 }
+
+// Back to LinkShare Button functionality
+const backToLinkshareBtn = document.getElementById('backToLinkshare');
+
+function setupBackToLinkshare() {
+    if (!backToLinkshareBtn) {
+        console.warn('Back to LinkShare button not found');
+        return;
+    }
+
+    // Show/hide back button based on scroll position (same as scroll to top)
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+            backToLinkshareBtn.classList.add('visible');
+        } else {
+            backToLinkshareBtn.classList.remove('visible');
+        }
+    });
+}
+
+// Initialize back to linkshare button
+setupBackToLinkshare();
