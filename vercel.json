@@ -1,14 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/moovie",
-      "destination": "/moovie-nextjs"
-    },
-    {
-      "source": "/moovie/:path*",
-      "destination": "/moovie-nextjs/:path*"
-    },
-    {
       "source": "/:shortId([a-zA-Z0-9]+)",
       "destination": "/redirect.html"
     }
@@ -44,18 +36,14 @@
       "source": "/indian-whatsapp-group-links",
       "destination": "https://www.whatsuplink.online/country/in",
       "permanent": true
-    }
-  ],
-  "builds": [
+    },
     {
-      "src": "moovie-nextjs/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
+      "source": "/moovie",
+      "destination": "https://moovie-linkshare.vercel.app"
+    },
     {
-      "src": "/moovie/(.*)",
-      "dest": "/moovie-nextjs/$1"
+      "source": "/moovie/:path*",
+      "destination": "https://moovie-linkshare.vercel.app/:path*"
     }
   ]
 }
