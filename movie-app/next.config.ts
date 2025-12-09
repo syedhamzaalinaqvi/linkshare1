@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  basePath: '/moovie-app',
 
   images: {
     remotePatterns: [
