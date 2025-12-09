@@ -44,6 +44,14 @@
     {
       "source": "/moovie/:path*",
       "destination": "https://moovie-linkshare.vercel.app/:path*"
+    },
+    {
+      "source": "/moovie-app",
+      "destination": "https://moovie-app-linkshare.vercel.app/moovie-app"
+    },
+    {
+      "source": "/moovie-app/:path*",
+      "destination": "https://moovie-app-linkshare.vercel.app/moovie-app/:path*"
     }
   ]
 }
