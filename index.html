@@ -1759,7 +1759,248 @@
             </a>
         </section>
     -->
-            <!-- After the existing slider section, add this new manual slider -->
+    <!-- Featured Tools Section -->
+    <style>
+        .featured-tools-section {
+            padding: 3rem 0;
+            background: #f8f9fa; /* Light background for contrast */
+            margin-bottom: 3rem;
+        }
+
+        .tools-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .tools-header h2 {
+            font-size: 2.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .tools-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .tools-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 0 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 100%;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: #25d366;
+        }
+
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e0f2f1, #e8f5e9);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #128c7e;
+            font-size: 24px;
+        }
+
+        .tool-card:hover .tool-icon {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+        }
+
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .tool-desc {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .tool-btn {
+            padding: 8px 20px;
+            background: transparent;
+            color: #128c7e;
+            border: 1px solid #128c7e;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .tool-card:hover .tool-btn {
+            background: #128c7e;
+            color: white;
+        }
+    </style>
+
+    <section class="featured-tools-section">
+        <div class="tools-header">
+            <h2>🔥 Discover Powerful Tools</h2>
+            <p>Free online tools to boost your productivity</p>
+        </div>
+        <div class="tools-grid-container">
+            <!-- Tool 1 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-check-double"></i></div>
+                <h3 class="tool-title">Plagiarism Checker</h3>
+                <p class="tool-desc">Ensure your content is 100% original and free from plagiarism with our advanced checker.</p>
+                <a href="/plagiarism-checker" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 2 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                <h3 class="tool-title">AI Detector & Humanizer</h3>
+                <p class="tool-desc">Detect AI-generated content and humanize it to bypass detection algorithms.</p>
+                <a href="/ai-detector" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 3 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-file-word"></i></div>
+                <h3 class="tool-title">Word Counter</h3>
+                <p class="tool-desc">Count words, characters, sentences, and paragraphs in your text instantly.</p>
+                <a href="/word-counter" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 4 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-id-card"></i></div>
+                <h3 class="tool-title">CV Maker</h3>
+                <p class="tool-desc">Create professional resumes and CVs in minutes with our easy-to-use builder.</p>
+                <a href="/cv-maker-free-online" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 5 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-file-pdf"></i></div>
+                <h3 class="tool-title">Image to PDF</h3>
+                <p class="tool-desc">Convert your images (JPG, PNG) into high-quality PDF documents quickly.</p>
+                <a href="/image-to-pdf" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 6 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-object-group"></i></div>
+                <h3 class="tool-title">Free PDF Merger</h3>
+                <p class="tool-desc">Combine multiple PDF files into a single, organized document for free.</p>
+                <a href="/pdf-merger" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 7 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-edit"></i></div>
+                <h3 class="tool-title">PDF Editor</h3>
+                <p class="tool-desc">Edit, annotate, and sign your PDF documents directly in your browser.</p>
+                <a href="/pdf-editor-online" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 8 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-image"></i></div>
+                <h3 class="tool-title">Image Editor</h3>
+                <p class="tool-desc">Crop, resize, filter, and enhance your photos with our powerful online editor.</p>
+                <a href="/image-editor" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 9 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fab fa-whatsapp"></i></div>
+                <h3 class="tool-title">Fake WhatsApp Screenshot</h3>
+                <p class="tool-desc">Create realistic-looking fake WhatsApp chat screenshots for fun and pranks.</p>
+                <a href="/fake-whatsapp-screenshot" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 10 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-font"></i></div>
+                <h3 class="tool-title">Stylish Text Generator</h3>
+                <p class="tool-desc">Generate cool, fancy text styles and fonts for social media bios and posts.</p>
+                <a href="/stylish-text-generator" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 11 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-qrcode"></i></div>
+                <h3 class="tool-title">QR Code Generator</h3>
+                <p class="tool-desc">Create custom QR codes for URLs, text, Wi-Fi, and more in seconds.</p>
+                <a href="/qr-code-generator" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 12 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-expand"></i></div>
+                <h3 class="tool-title">QR Code Scanner</h3>
+                <p class="tool-desc">Scan and read QR codes instantly using your device's camera or from an image.</p>
+                <a href="/qr-code-reader" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 13 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-link"></i></div>
+                <h3 class="tool-title">Short URL Generator</h3>
+                <p class="tool-desc">Shorten long, messy URLs into clean, manageable links for easier sharing.</p>
+                <a href="/short-url-generator" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 14 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-file-alt"></i></div>
+                <h3 class="tool-title">Document Converter</h3>
+                <p class="tool-desc">Convert documents between various formats (Word, PDF, Excel, etc.) easily.</p>
+                <a href="/document-converter" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 15 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-list"></i></div>
+                <h3 class="tool-title">M3U Playlist Viewer</h3>
+                <p class="tool-desc">Stream and manage your M3U IPTV playlists with our online player.</p>
+                <a href="/m3u-playlist-viewer" class="tool-btn">Try Now</a>
+            </div>
+
+            <!-- Tool 16 -->
+            <div class="tool-card">
+                <div class="tool-icon"><i class="fas fa-calculator"></i></div>
+                <h3 class="tool-title">Math Problem Solver</h3>
+                <p class="tool-desc">Get step-by-step solutions to complex math problems and equations.</p>
+                <a href="/math-problem-solver" class="tool-btn">Try Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- After the existing slider section, add this new manual slider -->
             <section
                 class="groups-section manual-slider-section"
                 style="width: 100%; margin: auto; padding: 0"
