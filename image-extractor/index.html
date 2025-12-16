@@ -235,6 +235,8 @@
     <script src="../js/footer-loader.js"></script>
 
     <script>
+        const API_KEY = "7a4878286f0a46d3a12029e952aad89a";
+
         async function extractImages() {
             const urlInput = document.getElementById('targetUrl');
             const grid = document.getElementById('imageGrid');
@@ -263,14 +265,30 @@
             loader.style.display = 'block';
 
             try {
-                // Use AllOrigins proxy to bypass CORS
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-                const response = await fetch(proxyUrl);
+                // Use AbstractAPI Web Scraper
+                // Note: AbstractAPI returns the HTML content in the JSON response
+                const apiUrl = `https://scrape.abstractapi.com/v1/?api_key=${API_KEY}&url=${encodeURIComponent(targetUrl)}`;
 
-                if (!response.ok) throw new Error('Network response was not ok');
+                const response = await fetch(apiUrl);
 
-                const data = await response.json();
-                const htmlContent = data.contents;
+                if (!response.ok) throw new Error('API request failed');
+
+                // AbstractAPI returns raw HTML content by direct request? 
+                // Actually documentation usually says JSON, but sometimes direct. 
+                // Let's check headers or assume JSON first.
+                // If it fails parsing JSON, treat as text.
+
+                let htmlContent = '';
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const data = await response.json();
+                    // AbstractAPI standard response has 'content' field
+                    htmlContent = data.content || '';
+                } else {
+                    htmlContent = await response.text();
+                }
+
+                if (!htmlContent) throw new Error('No content returned from website');
 
                 // Parse HTML
                 const parser = new DOMParser();
@@ -278,24 +296,44 @@
 
                 const images = new Set(); // Use Set to avoid duplicates
 
-                // 1. Get <img> tags
+                // 1. Get <img> tags (src, data-src, srcset)
                 doc.querySelectorAll('img').forEach(img => {
+                    // Standard src
                     const src = img.getAttribute('src');
                     if (src) images.add(resolveUrl(src, targetUrl));
 
-                    // Check for data-src (lazy loading)
-                    const dataSrc = img.getAttribute('data-src');
+                    // Lazy load data attributes
+                    const dataSrc = img.getAttribute('data-src') || img.getAttribute('data-original') || img.getAttribute('data-lazy');
                     if (dataSrc) images.add(resolveUrl(dataSrc, targetUrl));
+
+                    // Parse srcset for high-res versions
+                    const srcset = img.getAttribute('srcset');
+                    if (srcset) {
+                        const candidates = srcset.split(',');
+                        candidates.forEach(candidate => {
+                            const url = candidate.trim().split(' ')[0];
+                            if (url) images.add(resolveUrl(url, targetUrl));
+                        });
+                    }
                 });
 
-                // 2. Get Favicons & Icons
+                // 2. CSS Background Images (inline styles)
+                doc.querySelectorAll('*[style]').forEach(el => {
+                    const style = el.getAttribute('style');
+                    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/i);
+                    if (match && match[1]) {
+                        images.add(resolveUrl(match[1], targetUrl));
+                    }
+                });
+
+                // 3. Get Favicons & Icons
                 doc.querySelectorAll('link[rel*="icon"], link[rel="apple-touch-icon"]').forEach(link => {
                     const href = link.getAttribute('href');
                     if (href) images.add(resolveUrl(href, targetUrl));
                 });
 
-                // 3. Get OG Images
-                doc.querySelectorAll('meta[property="og:image"]').forEach(meta => {
+                // 4. Get OG Images & Twitter Cards
+                doc.querySelectorAll('meta[property="og:image"], meta[name="twitter:image"]').forEach(meta => {
                     const content = meta.getAttribute('content');
                     if (content) images.add(resolveUrl(content, targetUrl));
                 });
@@ -304,7 +342,7 @@
 
             } catch (err) {
                 console.error(err);
-                showError("Failed to fetch the website. It might be blocking automated access or the URL is invalid.");
+                showError("Failed to fetch images. The API quota might be exceeded or the site is blocking access.");
             } finally {
                 loader.style.display = 'none';
             }
@@ -312,9 +350,17 @@
 
         function resolveUrl(url, baseUrl) {
             try {
+                // Remove whitespace
+                url = url.trim();
+
+                // Handle protocol-relative URLs //example.com/img.jpg
+                if (url.startsWith('//')) {
+                    return 'https:' + url;
+                }
+
                 return new URL(url, baseUrl).href;
             } catch (e) {
-                return url; // Return original if resolution fails
+                return url;
             }
         }
 
@@ -323,11 +369,12 @@
             const statsBar = document.getElementById('statsBar');
             const imgCount = document.getElementById('imgCount');
 
-            // Filter out base64 data URIs that might be too long or broken, or empty
+            // Filter invalid or tiny URLs
             const validUrls = imgUrls.filter(url =>
                 url &&
                 url.length > 5 &&
-                !url.startsWith('data:image/svg+xml') // Skip inline SVGs usually
+                !url.startsWith('data:image/svg') && // Skip SVG data URIs
+                !url.startsWith('data:image/gif')    // Skip 1x1 spacer GIFs often used
             );
 
             imgCount.textContent = validUrls.length;
@@ -342,8 +389,15 @@
                 const card = document.createElement('div');
                 card.className = 'image-card';
 
-                // Determine file type/name for display
-                const filename = url.split('/').pop().split('?')[0].substring(0, 20) || 'image';
+                // Try to get a clean filename
+                let filename = 'image';
+                try {
+                    const urlObj = new URL(url);
+                    const path = urlObj.pathname;
+                    const parts = path.split('/');
+                    const name = parts[parts.length - 1];
+                    if (name && name.length < 30) filename = name;
+                } catch (e) { }
 
                 card.innerHTML = `
                     <div class="img-wrapper">
@@ -351,20 +405,18 @@
                     </div>
                     <div class="card-actions">
                         <div class="img-info">${filename}</div>
-                        <a href="${url}" class="download-btn" target="_blank" download>
+                        <a href="${url}" class="download-btn" target="_blank">
                             <i class="fas fa-download"></i> Download
                         </a>
                     </div>
                 `;
-                // Note: 'download' attribute only works for same-origin, so target=_blank is reliable fallback
-
                 grid.appendChild(card);
             });
         }
 
         function showError(msg) {
             const el = document.getElementById('errorMsg');
-            el.textContent = msg;
+            el.innerHTML = msg + '<br><small>Tip: Some websites strictly block automated access.</small>';
             el.style.display = 'block';
         }
 
