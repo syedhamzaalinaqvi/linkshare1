@@ -234,4 +234,16 @@
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
+    <url>
+        <loc>https://www.linkshare.online/youtube-thumbnail-downloader</loc>
+        <lastmod>2025-12-16</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://www.linkshare.online/text-repeater</loc>
+        <lastmod>2025-12-16</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
 </urlset>
